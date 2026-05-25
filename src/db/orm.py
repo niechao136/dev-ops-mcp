@@ -1,6 +1,6 @@
 from datetime import datetime, UTC
 from typing import List, Optional
-from sqlalchemy import String, Boolean, Text, ForeignKey, Integer, DateTime, JSON
+from sqlalchemy import String, Boolean, Text, ForeignKey, Integer, DateTime, JSON, LargeBinary
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
 
@@ -34,7 +34,9 @@ class ApiToken(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     token_name: Mapped[str] = mapped_column(String(100))  # 如："生产环境大模型读写Token"
+    encrypted_token: Mapped[bytes] = mapped_column(LargeBinary)
     token_hash: Mapped[str] = mapped_column(String(255), unique=True, index=True)
+    token_prefix: Mapped[Optional[str]] = mapped_column(String(20))
     allowed_projects: Mapped[Optional[str]] = mapped_column(Text)  # JSON数组字符串，空代表全部权限
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
 

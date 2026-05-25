@@ -1,7 +1,13 @@
 
+bcrypt
+contextvars
+cryptography
 fastapi
 mcp
+passlib[bcrypt]
 psutil
+pydantic
 python-dotenv
+python-jose
 sqlalchemy
 uvicorn

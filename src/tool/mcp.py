@@ -5,12 +5,14 @@ import socket
 from datetime import datetime, timedelta, UTC
 from dotenv import load_dotenv
 from mcp.server import FastMCP
+from mcp.server.sse import SseServerTransport
 from mcp.types import TextContent
 from pathlib import Path
 
 from src.db.db import get_db_session
 from src.db.orm import AuditLog, Command, Project
-from src.util.executor import execute_shell_script
+from src.util.context import check_token, check_project
+from src.util.executor import execute_shell_commands_chain
 
 
 load_dotenv()
@@ -30,10 +32,18 @@ async def get_node_overview() -> list[TextContent]:
     获取当前服务器节点上所有被管理的项目列表，以及每个项目支持的操作(actions)。
     在执行任何其他操作前，应该优先调用此工具了解环境全貌。
     """
+    token, is_all_permitted, allowed_list = check_token()
+    if not token:
+        return [TextContent(type="text", text="缺少 API Key")]
+
     overview = []
     with get_db_session() as db:
         projects = db.query(Project).filter(Project.is_active == True).all()
         for p in projects:
+
+            if not is_all_permitted and p.name not in allowed_list:
+                continue
+
             # 提取该项目下所有配置了的 action
             actions = [cmd.action_type for cmd in p.commands]
             overview.append({
@@ -63,6 +73,12 @@ async def execute_action(project_name: str, action: str) -> list[TextContent]:
     # 这里的 token_id 在实际 Web 框架中可以通过 Context/Dependency 传递
     # 演示代码中我们暂时用一个静态标识代表 MCP
     caller_token_id = 1
+    token, is_permitted = check_project(project_name)
+    if not token:
+        return [TextContent(type="text", text="缺少 API Key")]
+
+    if not is_permitted:
+        return [TextContent(type="text", text=f"🚫 权限拒绝: 当前 API Key 无权操作项目 {project_name}")]
 
     with get_db_session() as db:
         project = db.query(Project).filter(Project.name == project_name, Project.is_active == True).first()
@@ -73,12 +89,18 @@ async def execute_action(project_name: str, action: str) -> list[TextContent]:
         if not command:
             return [TextContent(type="text", text=f"❌ 项目 '{project_name}' 未配置 '{action}' 操作。")]
 
-        # 调用底层执行引擎 (即我们上一步写的 async 函数)
-        # 注意: 这里需要 await
-        is_success, status, output_log = await execute_shell_script(
-            command=command.shell_command,
+        # 将数据库里存的命令按行切分，剔除空白行，变成命令链列表
+        raw_command_text = command.shell_command
+        command_list = [line.strip() for line in raw_command_text.splitlines() if line.strip()]
+
+        if not command_list:
+            return [TextContent(type="text", text=f"❌ '{action}' 配置的脚本内容为空。")]
+
+        # 调用我们刚刚重构升级的链式执行引擎
+        is_success, status, output_log = await execute_shell_commands_chain(
+            commands=command_list,
             work_dir=project.work_dir,
-            timeout=command.timeout
+            total_timeout=command.timeout
         )
 
         # 记录审计日志
@@ -106,6 +128,13 @@ async def inspect_script_content(project_name: str, action: str) -> list[TextCon
     """
     在排查故障或执行前，查看某个项目的 action 对应到底运行的是什么 Shell 脚本。
     """
+    token, is_permitted = check_project(project_name)
+    if not token:
+        return [TextContent(type="text", text="缺少 API Key")]
+
+    if not is_permitted:
+        return [TextContent(type="text", text=f"🚫 权限拒绝: 当前 API Key 无权操作项目 {project_name}")]
+
     with get_db_session() as db:
         project = db.query(Project).filter(Project.name == project_name).first()
         if not project:
@@ -129,6 +158,13 @@ async def read_project_file(project_name: str, relative_file_path: str, max_line
     读取项目目录下的指定文件内容（如 .env, nginx.conf, app.log）。
     relative_file_path 必须是相对于项目根目录的相对路径。
     """
+    token, is_permitted = check_project(project_name)
+    if not token:
+        return [TextContent(type="text", text="缺少 API Key")]
+
+    if not is_permitted:
+        return [TextContent(type="text", text=f"🚫 权限拒绝: 当前 API Key 无权操作项目 {project_name}")]
+
     with get_db_session() as db:
         project = db.query(Project).filter(Project.name == project_name).first()
         if not project:
@@ -203,6 +239,13 @@ async def query_audit_logs(project_name: str, hours_ago: int = 24) -> list[TextC
     查询指定项目在过去 N 小时内发生的高危运维操作历史。
     当项目状态异常时，可调用此工具排查是否有人为或AI修改过脚本、执行过错误操作。
     """
+    token, is_permitted = check_project(project_name)
+    if not token:
+        return [TextContent(type="text", text="缺少 API Key")]
+
+    if not is_permitted:
+        return [TextContent(type="text", text=f"🚫 权限拒绝: 当前 API Key 无权操作项目 {project_name}")]
+
     with get_db_session() as db:
         time_threshold = datetime.now(UTC) - timedelta(hours=hours_ago)
 
@@ -225,3 +268,6 @@ async def query_audit_logs(project_name: str, hours_ago: int = 24) -> list[TextC
 
         full_report = f"项目 '{project_name}' 过去 {hours_ago} 小时操作日志 (最新10条):\n" + "\n".join(report_lines)
         return [TextContent(type="text", text=full_report)]
+
+
+sse_transport = SseServerTransport(endpoint="/mcp/messages")
