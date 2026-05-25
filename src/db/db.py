@@ -51,8 +51,8 @@ def init_db():
             print("▶️ [DB Init] 未检测到管理员账号，正在创建初始超级管理员...")
 
             admin_user = User(
-                username="admin",
-                password_hash=pwd_context(admin_pwd),
+                username=admin_usr,
+                password_hash=pwd_context.hash(admin_pwd),
                 role="admin",
                 is_active=True
             )

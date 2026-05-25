@@ -4,6 +4,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 
+from src.api.auth import auth_router
 from src.api.mcp import mcp_router
 from src.db.db import init_db
 
@@ -28,6 +29,7 @@ app.add_middleware(
 )
 
 
+app.include_router(router=auth_router)
 app.include_router(router=mcp_router)
 
 
