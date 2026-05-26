@@ -8,7 +8,7 @@ class UserRole(str, Enum):
 
 
 class TokenDict(BaseModel):
-    id: str = Field(..., description="用户 ID")
+    id: int = Field(..., description="用户 ID")
     name: str = Field(..., description="用户名")
     role: UserRole = Field(..., description="用户权限")
 
