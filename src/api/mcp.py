@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Depends, Request, Response
 
 from src.db.orm import ApiToken
 from src.tool.mcp import mcp, sse_transport
@@ -49,5 +49,6 @@ async def handle_mcp_messages(request: Request, token: ApiToken = Depends(get_ap
             request.receive,
             request._send
         )
+        return Response()
     finally:
         current_mcp_token.reset(ctx_token)
