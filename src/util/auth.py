@@ -7,7 +7,7 @@ from src.db.orm import ApiToken
 from src.schema.auth import TokenDict, UserRole
 from src.util.context import current_mcp_token
 from src.util.jwt import verify_access_token
-from src.util.security import encrypt_api_key
+from src.util.security import verify_api_key
 
 
 ALLOW_ROLE: List[UserRole] = [UserRole.ADMIN]
@@ -72,11 +72,9 @@ async def get_api_key(request: Request) -> ApiToken:
             detail="缺失凭证：请通过 Header (X-API-Key / Authorization) 或 URL 参数 (token / api_key) 提供 API Key。"
         )
 
-    key_encrypted = encrypt_api_key(api_key)
-
     with get_db_session() as db:
         token_record = db.query(ApiToken).filter(
-            ApiToken.encrypted_token == key_encrypted,
+            verify_api_key(api_key, ApiToken.token_hash.__str__()),
             ApiToken.is_active == True
         ).first()
 
