@@ -2,34 +2,36 @@ services:
   # 后端 Python API
   api:
     build: .
-    container_name: bot-backend
+    container_name: dev-ops-mcp-api
     env_file: .env
+    volumes:
+      - ./data:/app/data
     networks:
-      - bot-network
+      - dev-ops-mcp-network
 
   # 前端 Node.js Server
   web:
     build: ./web
-    container_name: bot-frontend
+    container_name: dev-ops-mcp-web
     environment:
       - NEXT_PUBLIC_API_URL=/api
     networks:
-      - bot-network
+      - dev-ops-mcp-network
 
   # Nginx 总入口
   gateway:
     image: nginx:alpine
-    container_name: bot-gateway
+    container_name: dev-ops-mcp-gateway
     ports:
-      - "10093:80"
+      - "10096:80"
     volumes:
       - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
     depends_on:
       - api
       - web
     networks:
-      - bot-network
+      - dev-ops-mcp-network
 
 networks:
-  bot-network:
+  dev-ops-mcp-network:
     driver: bridge
