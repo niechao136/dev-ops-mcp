@@ -74,9 +74,7 @@ async def handle_mcp_messages_raw(request: Request):
                 api_key = api_key_list[0]
 
     if not api_key:
-        res = JSONResponse({"detail": "缺失凭证：请通过 Header (X-API-Key / Authorization) 或 URL 参数 (token / api_key) 提供 API Key。"}, status_code=401)
-        await res(scope, receive, send)
-        return
+        return JSONResponse({"detail": "缺失凭证：请通过 Header (X-API-Key / Authorization) 或 URL 参数 (token / api_key) 提供 API Key。"}, status_code=401)
 
     # 2. 数据库安全校验
     incoming_prefix = api_key[:8]
@@ -94,14 +92,13 @@ async def handle_mcp_messages_raw(request: Request):
                 break
 
     if not token_record:
-        res = JSONResponse({"detail": "无效或已被禁用的 API Key"}, status_code=401)
-        await res(scope, receive, send)
-        return
+        return JSONResponse({"detail": "无效或已被禁用的 API Key"}, status_code=401)
 
     # 3. 校验通过，移交 MCP 传输层接管
     ctx_token = current_mcp_token.set(token_record)
     try:
         # 此时 MCP 响应完 202 后直接结束，FastAPI 毫无插手机会，完美规避冲突
         await sse_transport.handle_post_message(scope, receive, send)
+        return Response(status_code=202)
     finally:
         current_mcp_token.reset(ctx_token)
