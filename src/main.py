@@ -34,7 +34,7 @@ app.add_middleware(
 app.include_router(router=api_key_router)
 app.include_router(router=auth_router)
 app.include_router(router=mcp_router)
-app.router.routes.insert(0, Route("/api/mcp/messages", handle_mcp_messages_raw, methods=["POST"]))
+app.router.routes.insert(0, Route("/mcp/messages", handle_mcp_messages_raw, methods=["POST"]))
 
 
 if __name__ == "__main__":
