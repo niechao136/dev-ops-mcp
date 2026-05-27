@@ -42,10 +42,13 @@ async def handle_mcp_sse(request: Request, token: ApiToken = Depends(get_api_key
         current_mcp_token.reset(ctx_token)
 
 
-async def handle_mcp_messages_raw(scope: Scope, receive: Receive, send: Send):
+async def handle_mcp_messages_raw(request: Request):
     """
     通过原生 ASGI 管道处理大模型的 Tool 调用请求。
     """
+    scope: Scope = request.scope
+    receive: Receive = request.receive
+    send: Send = request._send  # 使用 request 的私有发送通道
     # 1. 从原生底层提取凭证 (优先从 Headers 读)
     api_key = None
     headers = dict(scope.get("headers", []))
