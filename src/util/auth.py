@@ -14,7 +14,7 @@ ALLOW_ROLE: List[UserRole] = [UserRole.ADMIN]
 
 
 async def get_current_user(
-        authorization: Annotated[str, Header()] = None
+        authorization: Annotated[Optional[str], Header()] = None
 ) -> User:
     """
     从请求头 Authorization: Bearer <token> 获取当前用户
