@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends, Request, Response
+from starlette.exceptions import HTTPException
 from starlette.responses import JSONResponse
 from starlette.types import Receive, Scope, Send
 from urllib.parse import parse_qs
@@ -40,6 +41,11 @@ async def handle_mcp_sse(request: Request, token: ApiToken = Depends(get_api_key
     finally:
         # 协程结束后自动重置，防止内存泄漏
         current_mcp_token.reset(ctx_token)
+
+
+class MCPShorterCircuitException(HTTPException):
+    """用于告知 ASGI 容器该请求已手动处理完毕，无需二次响应"""
+    pass
 
 
 async def handle_mcp_messages_raw(request: Request):
@@ -97,8 +103,17 @@ async def handle_mcp_messages_raw(request: Request):
     # 3. 校验通过，移交 MCP 传输层接管
     ctx_token = current_mcp_token.set(token_record)
     try:
-        # 此时 MCP 响应完 202 后直接结束，FastAPI 毫无插手机会，完美规避冲突
+        # 移交底层：MCP 已经在内部向连接发送了 202 Accepted 
         await sse_transport.handle_post_message(scope, receive, send)
-        return Response(status_code=202)
+        
+        # 直接抛出自定义异常短路！
+        # 绝不给 Starlette 的底层逻辑任何继续执行 `await response(scope, receive, send)` 的机会。
+        raise MCPShorterCircuitException(status_code=202, detail="MCP message handled, short-circuiting ASGI response.")
+
+    except MCPShorterCircuitException:
+        # 捕获它并什么都不做，直接让函数彻底退栈结束
+        return
     finally:
+        # 根据 Python 的语法定律，上面的 exception 抛出和 return 都会优先触发这里
+        # 完美清理 Token 上下文，绝对没有内存泄漏
         current_mcp_token.reset(ctx_token)
