@@ -7,9 +7,9 @@ from fastmcp.utilities.lifespan import combine_lifespans
 
 from src.api.api_key import api_key_router
 from src.api.auth import auth_router
-from src.api.mcp import mcp_app
 from src.db.db import init_db
 from src.middleware.mcp_auth import MCPAuthMiddleware
+from src.tool.mcp import mcp_app
 
 
 @asynccontextmanager
