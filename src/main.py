@@ -2,13 +2,14 @@ import uvicorn
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from starlette.routing import Route
+from fastmcp.utilities.lifespan import combine_lifespans
 
 
 from src.api.api_key import api_key_router
 from src.api.auth import auth_router
-from src.api.mcp import mcp_router, handle_mcp_messages_raw
+from src.api.mcp import mcp_app
 from src.db.db import init_db
+from src.middleware.mcp_auth import MCPAuthMiddleware
 
 
 @asynccontextmanager
@@ -19,7 +20,7 @@ async def lifespan(_: FastAPI):
     yield
 
 
-app = FastAPI(root_path="/api", lifespan=lifespan)
+app = FastAPI(root_path="/api", lifespan=combine_lifespans(lifespan, mcp_app.lifespan))
 
 
 app.add_middleware(
@@ -31,10 +32,12 @@ app.add_middleware(
 )
 
 
+app.add_middleware(MCPAuthMiddleware)
+
+
 app.include_router(router=api_key_router)
 app.include_router(router=auth_router)
-app.include_router(router=mcp_router)
-app.router.routes.insert(0, Route("/mcp/messages", handle_mcp_messages_raw, methods=["POST"]))
+app.mount("/mcp", mcp_app)  # 将 MCP 应用挂载到 /mcp 路径下
 
 
 if __name__ == "__main__":

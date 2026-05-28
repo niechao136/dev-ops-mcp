@@ -4,8 +4,7 @@ import psutil
 import socket
 from datetime import datetime, timedelta, UTC
 from dotenv import load_dotenv
-from mcp.server import FastMCP
-from mcp.server.sse import SseServerTransport
+from fastmcp import FastMCP
 from mcp.types import TextContent
 from pathlib import Path
 
@@ -269,5 +268,3 @@ async def query_audit_logs(project_name: str, hours_ago: int = 24) -> list[TextC
         full_report = f"项目 '{project_name}' 过去 {hours_ago} 小时操作日志 (最新10条):\n" + "\n".join(report_lines)
         return [TextContent(type="text", text=full_report)]
 
-
-sse_transport = SseServerTransport(endpoint="/mcp/messages")
