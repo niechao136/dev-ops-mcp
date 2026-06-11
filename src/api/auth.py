@@ -4,7 +4,7 @@ from fastapi import APIRouter, Body
 from src.db.db import get_db_session
 from src.db.orm import User
 from src.schema.api import DataResult
-from src.schema.auth import UserLogin, TokenDict
+from src.schema.auth import TokenDict, UserLogin, UserRole
 from src.util.jwt import create_access_token
 from src.util.security import pwd_context
 
@@ -30,5 +30,5 @@ async def login(
     if not row or not pwd_context.verify(user.password, row.password_hash):
         return DataResult(status=0, msg="Username or password is incorrect")
 
-    token = create_access_token(TokenDict(id=row.id, name=user.username, role=row.role))
+    token = create_access_token(TokenDict(id=row.id, name=user.username, role=UserRole(row.role)))
     return DataResult(status=1, data=token)
