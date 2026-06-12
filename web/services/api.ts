@@ -3,7 +3,8 @@ import type {
   DataResult, UserLogin, UserInfo, PageResult, 
   ProjectInfo, ProjectAdd, ProjectUpdate, 
   CommandInfo, CommandAdd, CommandUpdate,
-  ApiKeyInfo, ApiKeyAdd, ApiKeyUpdate, ApiKeyCreated
+  ApiKeyInfo, ApiKeyAdd, ApiKeyUpdate, ApiKeyCreated,
+  UserAdd, UserUpdate, UserPassword
 } from '@/types/api';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || '/api';
@@ -183,6 +184,67 @@ class ApiService {
 
   async getApiKeysCount(): Promise<DataResult<number>> {
     return this.request<DataResult<number>>('/api_key/count');
+  }
+
+  // User API
+  async getUsers(params?: { 
+    page?: number, 
+    size?: number, 
+    keyword?: string, 
+    order_by?: string, 
+    direction?: string 
+  }): Promise<PageResult<UserInfo>> {
+    const query = new URLSearchParams();
+    if (params?.page) query.append('page', params.page.toString());
+    if (params?.size) query.append('size', params.size.toString());
+    if (params?.keyword) query.append('keyword', params.keyword);
+    if (params?.order_by) query.append('order_by', params.order_by);
+    if (params?.direction) query.append('direction', params.direction);
+    
+    const url = `/user${query.toString() ? '?' + query.toString() : ''}`;
+    return this.request<PageResult<UserInfo>>(url);
+  }
+
+  async getUser(id: number): Promise<DataResult<UserInfo>> {
+    return this.request<DataResult<UserInfo>>(`/user/${id}`);
+  }
+
+  async createUser(data: UserAdd): Promise<DataResult<UserInfo>> {
+    return this.request<DataResult<UserInfo>>('/user', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async updateUser(id: number, data: UserUpdate): Promise<DataResult<UserInfo>> {
+    return this.request<DataResult<UserInfo>>(`/user/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async changeUserPassword(id: number, data: UserPassword): Promise<DataResult> {
+    return this.request<DataResult>(`/user/${id}/password`, {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async toggleUserStatus(id: number): Promise<DataResult<UserInfo>> {
+    return this.request<DataResult<UserInfo>>(`/user/${id}/toggle`, {
+      method: 'PUT',
+    });
+  }
+
+  async deleteUsers(ids: number[]): Promise<DataResult> {
+    return this.request<DataResult>('/user', {
+      method: 'DELETE',
+      body: JSON.stringify({ ids }),
+    });
+  }
+
+  async getUsersCount(): Promise<DataResult<number>> {
+    return this.request<DataResult<number>>('/user/count');
   }
 }
 

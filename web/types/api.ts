@@ -40,7 +40,26 @@ export interface UserInfo {
   username: string;
   role: 'admin' | 'user';
   email?: string;
+  is_active: boolean;
   created_at: string;
+}
+
+export interface UserAdd {
+  username: string;
+  email?: string;
+  password: string;
+  role: 'admin' | 'user';
+}
+
+export interface UserUpdate {
+  username?: string;
+  email?: string;
+  role?: 'admin' | 'user';
+  is_active?: boolean;
+}
+
+export interface UserPassword {
+  password: string;
 }
 
 export interface AuthState {
