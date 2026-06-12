@@ -31,6 +31,5 @@ RUN uv pip install --system --no-cache -r requirements.txt
 COPY src ./src
 COPY .env ./
 
-# 8. 启动命令
-# 既然用了 --system，直接调用 uvicorn 即可
-CMD ["uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "8000"]
+# 8. 启动命令：先执行数据库迁移，再启动服务
+CMD ["sh", "-c", "python -m src.db.migrate && uvicorn src.main:app --host 0.0.0.0 --port 8000"]
