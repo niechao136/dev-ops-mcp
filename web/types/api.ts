@@ -49,3 +49,50 @@ export interface AuthState {
   isAuthenticated: boolean;
   isLoading: boolean;
 }
+
+// Project types
+export interface ProjectInfo {
+  id: number;
+  name: string;
+  description?: string;
+  work_dir: string;
+  is_active: boolean;
+  command_count: number;
+}
+
+export interface ProjectAdd {
+  name: string;
+  description?: string;
+  work_dir: string;
+}
+
+export interface ProjectUpdate {
+  name?: string;
+  description?: string;
+  work_dir?: string;
+  is_active?: boolean;
+}
+
+export interface CommandInfo {
+  id: number;
+  project_id: number;
+  action_type: string;
+  description?: string;
+  shell_command: string;
+  timeout: number;
+}
+
+export interface CommandAdd {
+  project_id: number;
+  action_type: string;
+  description?: string;
+  shell_command: string;
+  timeout: number;
+}
+
+export interface CommandUpdate {
+  action_type?: string;
+  description?: string;
+  shell_command?: string;
+  timeout?: number;
+}

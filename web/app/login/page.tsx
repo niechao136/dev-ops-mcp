@@ -31,7 +31,7 @@ type LoginFormValues = z.infer<typeof loginSchema>;
 export default function LoginPage() {
   const router = useRouter();
   const loginMutation = useLogin();
-  const { isAuthenticated, isLoading: authLoading } = useAuthCheck(true);
+  const { isAuthenticated, isLoading: authLoading } = useAuthCheck(false); // 登录页面不需要强制认证
   const [error, setError] = useState<string | null>(null);
 
   const { control, handleSubmit, formState: { errors, isSubmitting } } = useForm<LoginFormValues>({

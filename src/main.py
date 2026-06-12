@@ -8,6 +8,7 @@ from fastmcp.utilities.lifespan import combine_lifespans
 from src.api.api_key import api_key_router
 from src.api.auth import auth_router
 from src.api.user import user_router
+from src.api.project import project_router
 from src.db.db import init_db
 from src.middleware.mcp_auth import MCPAuthMiddleware
 from src.tool.mcp import mcp_app
@@ -39,6 +40,7 @@ app.add_middleware(MCPAuthMiddleware)
 app.include_router(router=api_key_router)
 app.include_router(router=auth_router)
 app.include_router(router=user_router)
+app.include_router(router=project_router)
 app.mount("/mcp", mcp_app)  # 将 MCP 应用挂载到 /mcp 路径下
 
 

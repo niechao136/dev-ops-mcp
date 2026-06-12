@@ -18,7 +18,7 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
   token: null,
   user: null,
   isAuthenticated: false,
-  isLoading: false,
+  isLoading: true, // 初始状态设置为 loading，避免过早的路由判断
 
   login: async (username: string, password: string) => {
     set({ isLoading: true });
@@ -64,12 +64,13 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
   },
 
   initializeAuth: async () => {
-    set({ isLoading: true });
     const token = await getToken();
     
     if (token) {
       set({ token, isAuthenticated: true });
       await get().fetchUser();
+    } else {
+      set({ isAuthenticated: false });
     }
     
     set({ isLoading: false });
