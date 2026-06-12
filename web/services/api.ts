@@ -1,10 +1,12 @@
 import { getToken, clearToken, saveToken } from '@/utils/cookie';
-import type { 
-  DataResult, UserLogin, UserInfo, PageResult, 
-  ProjectInfo, ProjectAdd, ProjectUpdate, 
+import {
+  DataResult, UserLogin, UserInfo, PageResult,
+  ProjectInfo, ProjectAdd, ProjectUpdate,
   CommandInfo, CommandAdd, CommandUpdate,
   ApiKeyInfo, ApiKeyAdd, ApiKeyUpdate, ApiKeyCreated,
-  UserAdd, UserUpdate, UserPassword
+  UserAdd, UserUpdate, UserPassword,
+  AuditLogInfo, AuditLogQueryParams,
+  DashboardStats
 } from '@/types/api';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || '/api';
@@ -245,6 +247,43 @@ class ApiService {
 
   async getUsersCount(): Promise<DataResult<number>> {
     return this.request<DataResult<number>>('/user/count');
+  }
+
+  // Audit Log API
+  async getAuditLogs(params?: AuditLogQueryParams): Promise<PageResult<AuditLogInfo>> {
+    const query = new URLSearchParams();
+    if (params?.page) query.append('page', params.page.toString());
+    if (params?.size) query.append('size', params.size.toString());
+    if (params?.keyword) query.append('keyword', params.keyword);
+    if (params?.actor_type) query.append('actor_type', params.actor_type);
+    if (params?.action_category) query.append('action_category', params.action_category);
+    if (params?.status) query.append('status', params.status);
+    if (params?.target_project) query.append('target_project', params.target_project);
+    if (params?.order_by) query.append('order_by', params.order_by);
+    if (params?.direction) query.append('direction', params.direction);
+    
+    const url = `/audit_log${query.toString() ? '?' + query.toString() : ''}`;
+    return this.request<PageResult<AuditLogInfo>>(url);
+  }
+
+  async getAuditLog(id: number): Promise<DataResult<AuditLogInfo>> {
+    return this.request<DataResult<AuditLogInfo>>(`/audit_log/${id}`);
+  }
+
+  async deleteAuditLogs(ids: number[]): Promise<DataResult<boolean>> {
+    return this.request<DataResult<boolean>>('/audit_log', {
+      method: 'DELETE',
+      body: JSON.stringify({ ids }),
+    });
+  }
+
+  async getAuditLogsCount(): Promise<DataResult<number>> {
+    return this.request<DataResult<number>>('/audit_log/count');
+  }
+
+  // Dashboard API
+  async getDashboardStats(): Promise<DataResult<DashboardStats>> {
+    return this.request<DataResult<DashboardStats>>('/dashboard/stats');
   }
 }
 

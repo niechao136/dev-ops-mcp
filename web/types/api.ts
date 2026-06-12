@@ -144,3 +144,55 @@ export interface ApiKeyCreated {
   key: string;
   prefix?: string;
 }
+
+export interface UserAdd {
+  username: string;
+  email?: string;
+  password: string;
+  role: 'admin' | 'user';
+}
+
+export interface UserUpdate {
+  username?: string;
+  email?: string;
+  role?: 'admin' | 'user';
+  is_active?: boolean;
+}
+
+export interface UserPassword {
+  password: string;
+}
+
+// 操作日志类型
+export interface AuditLogInfo {
+  id: number;
+  actor_type: string;
+  actor_id: number;
+  actor_name?: string;
+  action_category: string;
+  target_project?: string;
+  action_details: Record<string, any>;
+  status: string;
+  output_log?: string;
+  ip_address?: string;
+  created_at: string;
+}
+
+export interface AuditLogQueryParams {
+  page?: number;
+  size?: number;
+  keyword?: string;
+  actor_type?: string;
+  action_category?: string;
+  status?: string;
+  target_project?: string;
+  order_by?: string;
+  direction?: string;
+}
+
+export interface DashboardStats {
+  project_count: number;
+  api_key_count: number;
+  user_count: number;
+  audit_log_count: number;
+}

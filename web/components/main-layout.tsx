@@ -23,12 +23,12 @@ import {
 import {
   Menu as MenuIcon,
   Dashboard,
-  Settings,
   Logout,
   AccountCircle,
   Storage,
   Security,
   People,
+  History,
 } from '@mui/icons-material';
 import { useAuth } from '@/hooks/auth-query';
 import { useRouter } from 'next/navigation';
@@ -44,7 +44,7 @@ const menuItems = [
   { text: '用户管理', icon: <People />, path: '/users' },
   { text: '项目管理', icon: <Storage />, path: '/projects' },
   { text: 'API Key 管理', icon: <Security />, path: '/api-keys' },
-  { text: '系统设置', icon: <Settings />, path: '/settings' },
+  { text: '操作日志', icon: <History />, path: '/audit-logs' },
 ];
 
 
