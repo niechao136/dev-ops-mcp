@@ -9,7 +9,7 @@ import { useTheme } from '@mui/material/styles';
 
 import { useColorMode } from '@/providers/root-provider';
 
-export default function ToggleThemeButton() {
+export default function ToggleThemeButton({ sx }: { sx?: any }) {
   const theme = useTheme();
   const colorMode = useColorMode();
 
@@ -28,6 +28,7 @@ export default function ToggleThemeButton() {
           '&:hover': {
             backgroundColor: isDarkMode ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.04)',
           },
+          ...sx,
         }}
         aria-label="切换主题模式"
       >

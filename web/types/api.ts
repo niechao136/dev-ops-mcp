@@ -1,5 +1,3 @@
-
-
 export interface ApiRequestOptions extends RequestInit {
   requireAuth?: boolean;
 }
@@ -28,4 +26,26 @@ export interface PageResult<T = string> {
   total: number
   page?: number
   size?: number
+}
+
+
+// Auth types
+export interface UserLogin {
+  username: string;
+  password: string;
+}
+
+export interface UserInfo {
+  id: number;
+  username: string;
+  role: 'admin' | 'user';
+  email?: string;
+  created_at: string;
+}
+
+export interface AuthState {
+  token: string | null;
+  user: UserInfo | null;
+  isAuthenticated: boolean;
+  isLoading: boolean;
 }
