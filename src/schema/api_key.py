@@ -1,3 +1,4 @@
+from datetime import datetime
 from pydantic import BaseModel, Field, field_validator
 from typing import List, Optional
 
@@ -31,11 +32,15 @@ class ApiKeyUpdate(BaseModel):
 class ApiKeyItem(BaseModel):
     id: int = Field(..., description="密钥ID")
     token_name: str = Field(..., description="密钥别名")
-    token_value: str = Field(..., description="密钥内容，用于复制")
     token_prefix: Optional[str] = Field(None, description="密钥前缀，用于显示")
     allowed_projects: Optional[List[str]] = Field(None, description="允许访问的项目名列表，None 代表全部权限")
     is_active: bool = Field(..., description="是否启用")
-    created_by: int = Field(..., description="创建时间（ISO格式）")
+    created_by: int = Field(..., description="创建者用户ID")
+    created_by_name: Optional[str] = Field(None, description="创建者用户名")
+
+
+class ApiKeyDetail(ApiKeyItem):
+    pass
 
 
 class ApiKeyCreated(BaseModel):
@@ -43,3 +48,7 @@ class ApiKeyCreated(BaseModel):
     name: str = Field(..., description="密钥别名")
     key: str = Field(..., description="密钥内容，用于复制")
     prefix: Optional[str] = Field(None, description="密钥前缀，用于显示")
+
+
+class ApiKeyDelete(BaseModel):
+    ids: List[int] = Field(..., description="要删除的密钥ID列表")

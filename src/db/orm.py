@@ -39,6 +39,7 @@ class ApiToken(Base):
     token_prefix: Mapped[Optional[str]] = mapped_column(String(20))
     allowed_projects: Mapped[Optional[str]] = mapped_column(Text)  # JSON数组字符串，空代表全部权限
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now(UTC))
 
     # 外键：是谁在 Web 界面上创建了这个 Token
     created_by: Mapped[int] = mapped_column(ForeignKey("users.id"))
@@ -56,6 +57,7 @@ class Project(Base):
     description: Mapped[Optional[str]] = mapped_column(Text)
     work_dir: Mapped[str] = mapped_column(String(255))
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now(UTC))
 
     # 关联：这个项目下有哪些指令
     commands: Mapped[List["Command"]] = relationship(back_populates="project", cascade="all, delete-orphan")
@@ -73,6 +75,7 @@ class Command(Base):
     description: Mapped[Optional[str]] = mapped_column(Text)
     shell_command: Mapped[str] = mapped_column(Text) # 真实的 Linux 脚本
     timeout: Mapped[int] = mapped_column(Integer, default=60) # 超时时间(秒)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now(UTC))
 
     project: Mapped["Project"] = relationship(back_populates="commands")
 

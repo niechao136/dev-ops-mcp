@@ -96,3 +96,32 @@ export interface CommandUpdate {
   shell_command?: string;
   timeout?: number;
 }
+
+// API Key types
+export interface ApiKeyInfo {
+  id: number;
+  token_name: string;
+  token_prefix?: string;
+  allowed_projects?: string[];
+  is_active: boolean;
+  created_by: number;
+  created_by_name?: string;
+}
+
+export interface ApiKeyAdd {
+  name: string;
+  allowed_projects?: string[];
+}
+
+export interface ApiKeyUpdate {
+  name?: string;
+  allowed_projects?: string[];
+  is_active?: boolean;
+}
+
+export interface ApiKeyCreated {
+  id: number;
+  name: string;
+  key: string;
+  prefix?: string;
+}

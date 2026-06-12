@@ -34,7 +34,9 @@ import {
   Delete,
   Visibility,
   Search,
-  Refresh
+  Refresh,
+  ToggleOff,
+  ToggleOn
 } from '@mui/icons-material';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { enqueueSnackbar } from 'notistack';
@@ -108,6 +110,22 @@ export default function ProjectsPage() {
     },
     onError: () => {
       enqueueSnackbar('更新失败', { variant: 'error' });
+    }
+  });
+
+  const toggleActiveMutation = useMutation({
+    mutationFn: ({ id, isActive }: { id: number; isActive: boolean }) => 
+      apiService.updateProject(id, { is_active: isActive }),
+    onSuccess: (result) => {
+      if (result.status === 1) {
+        enqueueSnackbar('状态更新成功', { variant: 'success' });
+        queryClient.invalidateQueries({ queryKey: ['projects'] });
+      } else {
+        enqueueSnackbar(result.msg || '状态更新失败', { variant: 'error' });
+      }
+    },
+    onError: () => {
+      enqueueSnackbar('状态更新失败', { variant: 'error' });
     }
   });
 
@@ -281,11 +299,23 @@ export default function ProjectsPage() {
                         <TableCell>{project.work_dir}</TableCell>
                         <TableCell>{project.command_count}</TableCell>
                         <TableCell>
-                          <Chip
-                            label={project.is_active ? '启用' : '禁用'}
-                            color={project.is_active ? 'success' : 'default'}
-                            size="small"
-                          />
+                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                            <Chip
+                              label={project.is_active ? '启用' : '禁用'}
+                              color={project.is_active ? 'success' : 'default'}
+                              size="small"
+                            />
+                            <Tooltip title={project.is_active ? '点击禁用' : '点击启用'}>
+                              <IconButton
+                                size="small"
+                                onClick={() => toggleActiveMutation.mutate({ id: project.id, isActive: !project.is_active })}
+                                disabled={toggleActiveMutation.isPending}
+                                color={project.is_active ? 'default' : 'primary'}
+                              >
+                                {project.is_active ? <ToggleOff /> : <ToggleOn />}
+                              </IconButton>
+                            </Tooltip>
+                          </Box>
                         </TableCell>
                         <TableCell align="right">
                           <Tooltip title="查看详情">
