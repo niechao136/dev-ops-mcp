@@ -2,7 +2,7 @@ import { getToken, clearToken, saveToken } from '@/utils/cookie';
 import {
   DataResult, UserLogin, UserInfo, PageResult,
   ProjectInfo, ProjectAdd, ProjectUpdate,
-  CommandInfo, CommandAdd, CommandUpdate,
+  CommandInfo, CommandAdd, CommandUpdate, CommandExecute, CommandExecuteResult,
   ApiKeyInfo, ApiKeyAdd, ApiKeyUpdate, ApiKeyCreated,
   UserAdd, UserUpdate, UserPassword,
   AuditLogInfo, AuditLogQueryParams,
@@ -131,6 +131,13 @@ class ApiService {
     return this.request<DataResult<boolean>>('/projects/commands', {
       method: 'DELETE',
       body: JSON.stringify({ ids }),
+    });
+  }
+
+  async executeCommand(data: CommandExecute): Promise<DataResult<CommandExecuteResult>> {
+    return this.request<DataResult<CommandExecuteResult>>('/projects/execute', {
+      method: 'POST',
+      body: JSON.stringify(data),
     });
   }
 

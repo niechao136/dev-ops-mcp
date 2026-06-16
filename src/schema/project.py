@@ -69,3 +69,9 @@ class CommandUpdate(BaseModel):
 
 class CommandDel(BaseModel):
     ids: List[int] = Field(description="命令 ID 数组")
+
+
+class CommandExecute(BaseModel):
+    project_name: str = Field(..., description="项目名称")
+    action: str = Field(..., description="操作类型")
+    params: Optional[dict] = Field(default=None, description="参数字典，用于替换脚本中的 ${参数名} 占位符")

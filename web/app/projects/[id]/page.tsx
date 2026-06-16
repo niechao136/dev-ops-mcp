@@ -29,18 +29,20 @@ import {
   Divider
 } from '@mui/material';
 import {
+  PlayArrow,
   Add,
   Edit,
   Delete,
   ArrowBack,
-  Refresh
+  Refresh,
+  HelpOutlined
 } from '@mui/icons-material';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { enqueueSnackbar } from 'notistack';
 import ProtectedRoute from '@/components/protected-route';
 import MainLayout from '@/components/main-layout';
 import { apiService } from '@/services/api';
-import type { ProjectInfo, CommandInfo, CommandAdd, CommandUpdate } from '@/types/api';
+import type { ProjectInfo, CommandInfo, CommandAdd, CommandUpdate, CommandExecute, CommandExecuteResult } from '@/types/api';
 
 
 export default function ProjectDetailPage() {
@@ -52,8 +54,11 @@ export default function ProjectDetailPage() {
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [executeDialogOpen, setExecuteDialogOpen] = useState(false);
   const [currentCommand, setCurrentCommand] = useState<CommandInfo | null>(null);
   const [commandToDelete, setCommandToDelete] = useState<number | null>(null);
+  const [executeParams, setExecuteParams] = useState<Record<string, string>>({});
+  const [executeResult, setExecuteResult] = useState<CommandExecuteResult | null>(null);
   const [formData, setFormData] = useState<CommandAdd | CommandUpdate>({
     project_id: projectId,
     action_type: '',
@@ -103,7 +108,7 @@ export default function ProjectDetailPage() {
 
 
   const updateMutation = useMutation({
-    mutationFn: ({ id, data }: { id: number; data: CommandUpdate }) => 
+    mutationFn: ({ id, data }: { id: number; data: CommandUpdate }) =>
       apiService.updateCommand(id, data),
     onSuccess: (result) => {
       if (result.status === 1) {
@@ -139,6 +144,24 @@ export default function ProjectDetailPage() {
   });
 
 
+  const executeMutation = useMutation({
+    mutationFn: (data: CommandExecute) => apiService.executeCommand(data),
+    onSuccess: (result) => {
+      if (result.status === 1) {
+        setExecuteResult(result.data!);
+        enqueueSnackbar(result.data?.is_success ? '执行成功' : '执行失败', {
+          variant: result.data?.is_success ? 'success' : 'error'
+        });
+      } else {
+        enqueueSnackbar(result.msg || '执行失败', { variant: 'error' });
+      }
+    },
+    onError: () => {
+      enqueueSnackbar('执行失败', { variant: 'error' });
+    }
+  });
+
+
   const handleCreate = () => {
     if (!formData.action_type || !formData.shell_command) {
       enqueueSnackbar('请填写必填项', { variant: 'warning' });
@@ -150,9 +173,9 @@ export default function ProjectDetailPage() {
 
   const handleEdit = () => {
     if (!currentCommand) return;
-    updateMutation.mutate({ 
-      id: currentCommand.id, 
-      data: formData 
+    updateMutation.mutate({
+      id: currentCommand.id,
+      data: formData
     });
   };
 
@@ -160,6 +183,38 @@ export default function ProjectDetailPage() {
   const handleDelete = () => {
     if (commandToDelete === null) return;
     deleteMutation.mutate(commandToDelete);
+  };
+
+
+  const openExecuteDialog = (command: CommandInfo) => {
+    setCurrentCommand(command);
+    const placeholders = command.shell_command.match(/\$\{(\w+)\}/g) || [];
+    const params: Record<string, string> = {};
+    placeholders.forEach(p => {
+      const key = p.replace(/\$\{|\}/g, '');
+      params[key] = '';
+    });
+    setExecuteParams(params);
+    setExecuteResult(null);
+    setExecuteDialogOpen(true);
+  };
+
+
+  const handleExecute = () => {
+    if (!currentCommand || !project) return;
+
+    const paramsObj: Record<string, any> = {};
+    Object.entries(executeParams).forEach(([key, value]) => {
+      if (value.trim()) {
+        paramsObj[key] = value.trim();
+      }
+    });
+
+    executeMutation.mutate({
+      project_name: project.name,
+      action: currentCommand.action_type,
+      params: Object.keys(paramsObj).length > 0 ? paramsObj : undefined
+    });
   };
 
 
@@ -271,6 +326,29 @@ export default function ProjectDetailPage() {
                 </Box>
               </Box>
 
+              <Card sx={{ mb: 3 }}>
+                <CardContent>
+                  <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2 }}>
+                    <HelpOutlined sx={{ fontSize: 20, color: 'primary.main', mt: 0.25 }} />
+                    <Box>
+                      <Typography variant="subtitle2" sx={{ fontWeight: 'bold' }} color="text.primary">
+                        可选参数设置说明
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+                        在命令脚本中使用 <code style={{ backgroundColor: 'rgba(0,0,0,0.08)', padding: '2px 4px', borderRadius: 2 }}>${'{'}参数名{'}'}</code> 格式定义占位符，执行时会被替换为实际传入的值。
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+                        <strong>示例：</strong>
+                        <br />
+                        <code style={{ backgroundColor: 'rgba(0,0,0,0.08)', padding: '2px 4px', borderRadius: 2 }}>git checkout ${'{'}version{'}'}</code>
+                        <br />
+                        执行时传入 <code style={{ backgroundColor: 'rgba(0,0,0,0.08)', padding: '2px 4px', borderRadius: 2 }}>{'{'}version: "v1.0.0"{'}'}</code>，实际执行：<code style={{ backgroundColor: 'rgba(0,0,0,0.08)', padding: '2px 4px', borderRadius: 2 }}>git checkout v1.0.0</code>
+                      </Typography>
+                    </Box>
+                  </Box>
+                </CardContent>
+              </Card>
+
               {commandsLoading ? (
                 <Box sx={{ display: 'flex', justifyContent: 'center', py: 8 }}>
                   <CircularProgress />
@@ -299,22 +377,22 @@ export default function ProjectDetailPage() {
                           <TableCell>{command.timeout}</TableCell>
                           <TableCell>
                             <Tooltip title={command.shell_command} placement="top">
-                              <Box 
-                                sx={{ 
+                              <Box
+                                sx={{
                                   maxWidth: 400,
                                   overflow: 'hidden',
                                   textOverflow: 'ellipsis',
                                   whiteSpace: 'nowrap',
                                   fontFamily: 'monospace',
-                                  bgcolor: (theme) => 
+                                  bgcolor: (theme) =>
                                     theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.08)' : 'grey.100',
-                                  color: (theme) => 
+                                  color: (theme) =>
                                     theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.9)' : 'inherit',
                                   p: 1,
                                   borderRadius: 1,
                                   cursor: 'pointer',
                                   border: 1,
-                                  borderColor: (theme) => 
+                                  borderColor: (theme) =>
                                     theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.12)' : 'divider'
                                 }}
                               >
@@ -323,6 +401,15 @@ export default function ProjectDetailPage() {
                             </Tooltip>
                           </TableCell>
                           <TableCell align="right">
+                            <Tooltip title="执行">
+                              <IconButton
+                                size="small"
+                                color="success"
+                                onClick={() => openExecuteDialog(command)}
+                              >
+                                <PlayArrow />
+                              </IconButton>
+                            </Tooltip>
                             <Tooltip title="编辑">
                               <IconButton
                                 size="small"
@@ -403,8 +490,8 @@ export default function ProjectDetailPage() {
           </DialogContent>
           <DialogActions>
             <Button onClick={() => setCreateDialogOpen(false)}>取消</Button>
-            <Button 
-              onClick={handleCreate} 
+            <Button
+              onClick={handleCreate}
               variant="contained"
               disabled={createMutation.isPending}
             >
@@ -454,8 +541,8 @@ export default function ProjectDetailPage() {
           </DialogContent>
           <DialogActions>
             <Button onClick={() => setEditDialogOpen(false)}>取消</Button>
-            <Button 
-              onClick={handleEdit} 
+            <Button
+              onClick={handleEdit}
               variant="contained"
               disabled={updateMutation.isPending}
             >
@@ -474,13 +561,118 @@ export default function ProjectDetailPage() {
           </DialogContent>
           <DialogActions>
             <Button onClick={() => setDeleteDialogOpen(false)}>取消</Button>
-            <Button 
-              onClick={handleDelete} 
-              color="error" 
+            <Button
+              onClick={handleDelete}
+              color="error"
               variant="contained"
               disabled={deleteMutation.isPending}
             >
               {deleteMutation.isPending ? <CircularProgress size={20} /> : '删除'}
+            </Button>
+          </DialogActions>
+        </Dialog>
+
+        {/* 执行命令对话框 */}
+        <Dialog open={executeDialogOpen} onClose={() => setExecuteDialogOpen(false)} maxWidth="lg" fullWidth>
+          <DialogTitle>执行命令</DialogTitle>
+          <DialogContent>
+            <Box sx={{ pt: 1, display: 'flex', flexDirection: 'column', gap: 2 }}>
+              <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
+                <Chip
+                  label={`项目: ${project?.name || ''}`}
+                  size="small"
+                  color="primary"
+                />
+                <Chip
+                  label={`操作: ${currentCommand?.action_type || ''}`}
+                  size="small"
+                  color="secondary"
+                />
+              </Box>
+
+              <Typography variant="subtitle2" color="text.secondary">
+                命令脚本：
+              </Typography>
+              <Box
+                sx={{
+                  fontFamily: 'monospace',
+                  bgcolor: (theme) =>
+                    theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.08)' : 'grey.100',
+                  color: (theme) =>
+                    theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.9)' : 'inherit',
+                  p: 2,
+                  borderRadius: 1,
+                  border: 1,
+                  borderColor: (theme) =>
+                    theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.12)' : 'divider'
+                }}
+              >
+                {currentCommand?.shell_command || ''}
+              </Box>
+
+              {Object.keys(executeParams).length > 0 && (
+                <>
+                  <Typography variant="subtitle2" color="text.secondary">
+                    参数：
+                  </Typography>
+                  <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
+                    {Object.entries(executeParams).map(([key, value]) => (
+                      <TextField
+                        key={key}
+                        label={`${key}`}
+                        value={value}
+                        onChange={(e) => setExecuteParams({ ...executeParams, [key]: e.target.value })}
+                        placeholder={`请输入 ${key}`}
+                        sx={{ width: 200 }}
+                      />
+                    ))}
+                  </Box>
+                </>
+              )}
+
+              {executeResult && (
+                <>
+                  <Typography variant="subtitle2" color="text.secondary">
+                    执行结果：
+                  </Typography>
+                  <Box
+                    sx={{
+                      bgcolor: executeResult.is_success ? 'rgba(76, 175, 80, 0.1)' : 'rgba(244, 67, 54, 0.1)',
+                      p: 2,
+                      borderRadius: 1,
+                      border: 1,
+                      borderColor: executeResult.is_success ? 'rgba(76, 175, 80, 0.3)' : 'rgba(244, 67, 54, 0.3)'
+                    }}
+                  >
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                      <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
+                        状态：{executeResult.is_success ? '成功' : '失败'}
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        {executeResult.status}
+                      </Typography>
+                    </Box>
+                    <Typography
+                      variant="body2"
+                      sx={{ fontFamily: 'fontFamily', whiteSpace: 'pre-wrap', overflow: 'auto', maxHeight: '300px' }}
+                    >
+                      {executeResult.output_log}
+                    </Typography>
+                  </Box>
+                </>
+              )}
+            </Box>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setExecuteDialogOpen(false)}>关闭</Button>
+            <Button
+              onClick={handleExecute}
+              variant="contained"
+              color="success"
+              disabled={executeMutation.isPending}
+              startIcon={<PlayArrow />}
+            >
+              {executeMutation.isPending ? <CircularProgress size={20} /> : '执行'}
             </Button>
           </DialogActions>
         </Dialog>

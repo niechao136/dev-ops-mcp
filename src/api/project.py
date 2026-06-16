@@ -8,7 +8,7 @@ from src.db.orm import Project, Command, User
 from src.schema.api import DataResult, PageResult
 from src.schema.project import (
     ProjectPageParams, ProjectInfo, ProjectAdd, ProjectUpdate, ProjectDel,
-    CommandInfo, CommandAdd, CommandUpdate, CommandDel
+    CommandInfo, CommandAdd, CommandUpdate, CommandDel, CommandExecute
 )
 from src.util.auth import get_current_admin, get_current_user
 
@@ -312,3 +312,82 @@ async def command_delete(
         db.commit()
 
         return DataResult(status=1, data=True, msg=f"删除了 {deleted_count} 个命令")
+
+
+@project_router.post(
+    path="/execute",
+    response_model=DataResult[dict],
+    summary="执行命令"
+)
+async def command_execute(
+    execute_data: CommandExecute,
+    _: User = Depends(get_current_admin)
+):
+    from src.util.executor import execute_shell_commands_chain
+    from src.db.orm import AuditLog
+    from src.util.context import current_mcp_token
+    from datetime import datetime, UTC
+    
+    with get_db_session() as db:
+        project = db.query(Project).filter(
+            Project.name == execute_data.project_name,
+            Project.is_active == True
+        ).first()
+        
+        if not project:
+            return DataResult(status=0, msg=f"找不到激活的项目: {execute_data.project_name}")
+
+        command = db.query(Command).filter(
+            Command.project_id == project.id,
+            Command.action_type == execute_data.action
+        ).first()
+        
+        if not command:
+            return DataResult(status=0, msg=f"项目 '{execute_data.project_name}' 未配置 '{execute_data.action}' 操作。")
+
+        raw_command_text = command.shell_command
+        
+        if execute_data.params:
+            for key, value in execute_data.params.items():
+                placeholder = f"${{{key}}}"
+                raw_command_text = raw_command_text.replace(placeholder, str(value))
+
+        command_list = [line.strip() for line in raw_command_text.splitlines() if line.strip()]
+
+        if not command_list:
+            return DataResult(status=0, msg=f"'{execute_data.action}' 配置的脚本内容为空。")
+
+        is_success, status, output_log = await execute_shell_commands_chain(
+            commands=command_list,
+            work_dir=project.work_dir,
+            total_timeout=command.timeout
+        )
+
+        caller_token = current_mcp_token.get()
+        caller_token_id = caller_token.id if caller_token else 0
+
+        audit = AuditLog(
+            actor_type="human",
+            actor_id=caller_token_id,
+            action_category="execute_cmd",
+            target_project=project.name,
+            action_details={
+                "action": execute_data.action,
+                "script": command.shell_command,
+                "params": execute_data.params
+            },
+            status=status,
+            output_log=output_log
+        )
+        db.add(audit)
+        db.commit()
+
+    return DataResult(
+        status=1,
+        data={
+            "is_success": is_success,
+            "status": status,
+            "output_log": output_log
+        },
+        msg=f"执行 {status}"
+    )

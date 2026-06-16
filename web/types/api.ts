@@ -116,6 +116,18 @@ export interface CommandUpdate {
   timeout?: number;
 }
 
+export interface CommandExecute {
+  project_name: string;
+  action: string;
+  params?: Record<string, any>;
+}
+
+export interface CommandExecuteResult {
+  is_success: boolean;
+  status: string;
+  output_log: string;
+}
+
 // API Key types
 export interface ApiKeyInfo {
   id: number;

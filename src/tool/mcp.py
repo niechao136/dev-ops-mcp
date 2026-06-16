@@ -7,10 +7,11 @@ from dotenv import load_dotenv
 from fastmcp import FastMCP
 from mcp.types import TextContent
 from pathlib import Path
+from typing import Optional
 
 from src.db.db import get_db_session
 from src.db.orm import AuditLog, Command, Project
-from src.util.context import check_token, check_project
+from src.util.context import check_token, check_project, current_mcp_token
 from src.util.executor import execute_shell_commands_chain
 
 
@@ -65,14 +66,21 @@ async def get_node_overview() -> list[TextContent]:
 # Tool 2: 执行具体指令
 # =====================================================================
 @mcp.tool()
-async def execute_action(project_name: str, action: str) -> list[TextContent]:
+async def execute_action(project_name: str, action: str, params: Optional[dict] = None) -> list[TextContent]:
     """
     执行指定项目的特定运维操作（如 start, restart, deploy）。
     执行前请先确保该项目支持该 action。
+    
+    参数说明:
+    - params: 可选参数，字典类型，用于替换命令脚本中的占位符。
+        在命令脚本中使用 ${参数名} 格式定义占位符，执行时会被替换为实际值。
+        示例: 若脚本包含 'git checkout ${version}'，调用时传入 {"version": "v0.1.0"}
     """
-    # 这里的 token_id 在实际 Web 框架中可以通过 Context/Dependency 传递
-    # 演示代码中我们暂时用一个静态标识代表 MCP
-    caller_token_id = 1
+    caller_token = current_mcp_token.get()
+    if not caller_token:
+        return [TextContent(type="text", text="❌ 无法获取调用者身份信息")]
+    
+    caller_token_id = caller_token.id
     token, is_permitted = check_project(project_name)
     if not token:
         return [TextContent(type="text", text="缺少 API Key")]
@@ -89,27 +97,30 @@ async def execute_action(project_name: str, action: str) -> list[TextContent]:
         if not command:
             return [TextContent(type="text", text=f"❌ 项目 '{project_name}' 未配置 '{action}' 操作。")]
 
-        # 将数据库里存的命令按行切分，剔除空白行，变成命令链列表
         raw_command_text = command.shell_command
+        
+        if params:
+            for key, value in params.items():
+                placeholder = f"${{{key}}}"
+                raw_command_text = raw_command_text.replace(placeholder, str(value))
+
         command_list = [line.strip() for line in raw_command_text.splitlines() if line.strip()]
 
         if not command_list:
             return [TextContent(type="text", text=f"❌ '{action}' 配置的脚本内容为空。")]
 
-        # 调用我们刚刚重构升级的链式执行引擎
         is_success, status, output_log = await execute_shell_commands_chain(
             commands=command_list,
             work_dir=project.work_dir,
             total_timeout=command.timeout
         )
 
-        # 记录审计日志
         audit = AuditLog(
             actor_type="ai",
             actor_id=caller_token_id,
             action_category="execute_cmd",
             target_project=project.name,
-            action_details={"action": action, "script": command.shell_command},
+            action_details={"action": action, "script": command.shell_command, "params": params},
             status=status,
             output_log=output_log
         )
