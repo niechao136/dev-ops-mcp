@@ -2,6 +2,7 @@ import os
 import json
 import psutil
 import socket
+import re
 from datetime import datetime, timedelta, UTC
 from dotenv import load_dotenv
 from fastmcp import FastMCP
@@ -45,19 +46,26 @@ async def get_node_overview() -> list[TextContent]:
             if not is_all_permitted and p.name not in allowed_list:
                 continue
 
-            # 提取该项目下所有配置了的 action
-            actions = [cmd.action_type for cmd in p.commands]
+            project_actions = []
+            for cmd in p.commands:
+                placeholders = re.findall(r'\$\{(\w+)\}', cmd.shell_command)
+                action_info = {
+                    "action_type": cmd.action_type,
+                    "description": cmd.description,
+                    "required_params": placeholders
+                }
+                project_actions.append(action_info)
+
             overview.append({
                 "project_name": p.name,
                 "description": p.description,
                 "work_dir": p.work_dir,
-                "available_actions": actions
+                "available_actions": project_actions
             })
 
     if not overview:
         return [TextContent(type="text", text="当前节点尚未配置任何处于激活状态的项目。")]
 
-    # 将 JSON 格式化为漂亮的字符串，方便大模型阅读
     result_text = json.dumps(overview, indent=2, ensure_ascii=False)
     return [TextContent(type="text", text=f"当前节点项目全貌概览:\n{result_text}")]
 
