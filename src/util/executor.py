@@ -2,7 +2,31 @@ import asyncio
 import os
 import signal
 import time
+from dotenv import load_dotenv
 from typing import List, Tuple
+
+
+load_dotenv()
+
+
+SSH_HOST = os.environ.get("HOST_SSH", "host.docker.internal")
+SSH_PORT = os.environ.get("HOST_SSH_PORT", "22")
+SSH_USER = os.environ.get("HOST_SSH_USER", "root")
+SSH_KEY  = os.environ.get("HOST_SSH_KEY", "/root/.ssh/id_rsa")
+
+
+def _build_ssh_command(remote_cmd: str, work_dir: str) -> str:
+    """把本地命令包装成 SSH 远程执行命令"""
+    # 用单引号包裹远程命令，防止本地 shell 提前展开变量
+    escaped = remote_cmd.replace("'", "'\\''")
+    return (
+        f"ssh -i {SSH_KEY} "
+        f"-o StrictHostKeyChecking=no "
+        f"-o ConnectTimeout=10 "
+        f"-p {SSH_PORT} "
+        f"{SSH_USER}@{SSH_HOST} "
+        f"'cd {work_dir} && {escaped}'"
+    )
 
 
 async def execute_shell_script(
@@ -17,9 +41,8 @@ async def execute_shell_script(
         (是否成功: bool, 状态码: str, 组合日志: str)
     """
 
-    # 检查工作目录是否存在，防患于未然
-    if not os.path.isdir(work_dir):
-        return False, "failed", f"执行失败: 工作目录不存在 -> {work_dir}"
+    # 将命令包装为 SSH 调用，在容器本地执行 ssh 客户端
+    ssh_cmd = _build_ssh_command(command, work_dir)
 
     try:
         # 核心 1：创建异步子进程，并开启独立的进程组 (preexec_fn=os.setsid)
@@ -27,8 +50,7 @@ async def execute_shell_script(
         # 如果脚本是 "docker-compose up && python script.py"，超时杀掉主 shell 是不够的，
         # 必须杀掉整个进程组，才能避免后台留下僵尸进程。
         process = await asyncio.create_subprocess_shell(
-            command,
-            cwd=work_dir,
+            ssh_cmd,
             stdout=asyncio.subprocess.PIPE,
             stderr=asyncio.subprocess.PIPE,
             preexec_fn=os.setsid if os.name != 'nt' else None  # Windows 系统需去掉此参数
@@ -61,7 +83,7 @@ async def execute_shell_script(
             else:
                 process.kill()
 
-            timeout_msg = f"执行超时: 脚本运行超过 {timeout} 秒被系统强制终止。\n命令: {command}"
+            timeout_msg = f"执行超时: 脚本运行超过 {timeout} 秒被系统强制终止。\n命令: {ssh_cmd}"
             return False, "timeout", timeout_msg
 
     except Exception as e:
@@ -80,8 +102,6 @@ async def execute_shell_commands_chain(
     返回:
         (是否全部成功: bool, 状态码: str, 步骤分级日志: str)
     """
-    if not os.path.isdir(work_dir):
-        return False, "failed", f"执行失败: 工作目录不存在 -> {work_dir}"
 
     start_time = time.time()
     combined_logs = []
@@ -92,17 +112,18 @@ async def execute_shell_commands_chain(
         elapsed = time.time() - start_time
         remaining_timeout = total_timeout - elapsed
 
+        ssh_cmd = _build_ssh_command(cmd, work_dir)
+
         if remaining_timeout <= 0:
-            combined_logs.append(f"=== 步骤 {index}: [{cmd}] ===\n[错误]: 整体任务总时间超时，触发熔断，未执行此步骤。")
+            combined_logs.append(f"=== 步骤 {index}: [{ssh_cmd}] ===\n[错误]: 整体任务总时间超时，触发熔断，未执行此步骤。")
             return False, "timeout", "\n\n".join(combined_logs)
 
-        combined_logs.append(f"=== 步骤 {index}: [{cmd}] ===")
+        combined_logs.append(f"=== 步骤 {index}: [{ssh_cmd}] ===")
 
         try:
             # 开启独立进程组
             process = await asyncio.create_subprocess_shell(
-                cmd,
-                cwd=work_dir,
+                ssh_cmd,
                 stdout=asyncio.subprocess.PIPE,
                 stderr=asyncio.subprocess.PIPE,
                 preexec_fn=os.setsid if os.name != 'nt' else None
