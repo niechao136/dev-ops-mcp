@@ -29,7 +29,6 @@ RUN uv pip install --system --no-cache -r requirements.txt
 
 # 7. 复制源码
 COPY src ./src
-COPY .env ./
 
 # 8. 启动命令：先执行数据库迁移，再启动服务
 CMD ["sh", "-c", "python -m src.db.migrate && uvicorn src.main:app --host 0.0.0.0 --port 8000"]
