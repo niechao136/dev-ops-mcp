@@ -2,7 +2,7 @@
 # =============================================================
 #  MCP 运维用户初始化脚本
 #  适用系统：Ubuntu / Debian
-#  用法：sudo bash mcp_init.sh
+#  用法：sudo bash mcp-init.sh
 # =============================================================
 
 set -e  # 任意步骤失败立即退出
@@ -45,6 +45,16 @@ else
     passwd -l "${DEVOPS_USER}"
     info "用户 ${DEVOPS_USER} 创建成功，已禁用密码登录。"
 fi
+
+# 加入常用用户组（组不存在时自动跳过）
+for group in docker systemd-journal adm; do
+    if getent group "${group}" &>/dev/null; then
+        usermod -aG "${group}" "${DEVOPS_USER}"
+        info "已将 ${DEVOPS_USER} 加入 ${group} 组。"
+    else
+        warn "用户组 ${group} 不存在，跳过。"
+    fi
+done
 
 # -----------------------------------------------
 # 2. 生成专用 SSH 密钥对
