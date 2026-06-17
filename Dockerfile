@@ -12,6 +12,7 @@ ENV PYTHONUNBUFFERED=1
 RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
     ca-certificates \
+    openssh-client \
     && rm -rf /var/lib/apt/lists/*
 
 # 4. 直接安装 uv (它会自动装到 /usr/local/bin)
