@@ -8,7 +8,7 @@ services:
       - "host.docker.internal:host-gateway"
     volumes:
       - ./data:/app/data
-      - /root/.ssh/id_rsa:/root/.ssh/id_rsa:ro
+      - /root/mcp_keys/mcp_devops:/root/.ssh/id_rsa:ro
     networks:
       - dev-ops-mcp-network
 
