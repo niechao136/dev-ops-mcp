@@ -64,7 +64,8 @@ export default function ProjectDetailPage() {
     action_type: '',
     description: '',
     shell_command: '',
-    timeout: 60
+    timeout: 60,
+    default_params: {}
   });
 
 
@@ -94,7 +95,8 @@ export default function ProjectDetailPage() {
           action_type: '',
           description: '',
           shell_command: '',
-          timeout: 60
+          timeout: 60,
+          default_params: {}
         });
         queryClient.invalidateQueries({ queryKey: ['commands', projectId] });
       } else {
@@ -192,7 +194,7 @@ export default function ProjectDetailPage() {
     const params: Record<string, string> = {};
     placeholders.forEach(p => {
       const key = p.replace(/\$\{|\}/g, '');
-      params[key] = '';
+      params[key] = command.default_params?.[key]?.toString() || '';
     });
     setExecuteParams(params);
     setExecuteResult(null);
@@ -224,7 +226,8 @@ export default function ProjectDetailPage() {
       action_type: command.action_type,
       description: command.description,
       shell_command: command.shell_command,
-      timeout: command.timeout
+      timeout: command.timeout,
+      default_params: command.default_params || {}
     });
     setEditDialogOpen(true);
   };
@@ -473,6 +476,27 @@ export default function ProjectDetailPage() {
                 onChange={(e) => setFormData({ ...formData, timeout: parseInt(e.target.value) || 60 })}
               />
               <TextField
+                label="默认参数 (JSON格式)"
+                fullWidth
+                multiline
+                rows={4}
+                value={JSON.stringify(formData.default_params || {}, null, 2)}
+                onChange={(e) => {
+                  try {
+                    setFormData({ ...formData, default_params: JSON.parse(e.target.value) });
+                  } catch {
+                    setFormData({ ...formData, default_params: {} });
+                  }
+                }}
+                placeholder='{"version": "v1.0.0", "env": "production"}'
+                helperText="使用 JSON 格式设置可选参数的默认值，执行时会自动填充到占位符"
+                sx={{
+                  '& .MuiInputBase-input': {
+                    fontFamily: 'monospace'
+                  }
+                }}
+              />
+              <TextField
                 label="Shell命令"
                 fullWidth
                 multiline
@@ -523,6 +547,27 @@ export default function ProjectDetailPage() {
                 type="number"
                 value={formData.timeout}
                 onChange={(e) => setFormData({ ...formData, timeout: parseInt(e.target.value) || 60 })}
+              />
+              <TextField
+                label="默认参数 (JSON格式)"
+                fullWidth
+                multiline
+                rows={4}
+                value={JSON.stringify(formData.default_params || {}, null, 2)}
+                onChange={(e) => {
+                  try {
+                    setFormData({ ...formData, default_params: JSON.parse(e.target.value) });
+                  } catch {
+                    setFormData({ ...formData, default_params: {} });
+                  }
+                }}
+                placeholder='{"version": "v1.0.0", "env": "production"}'
+                helperText="使用 JSON 格式设置可选参数的默认值，执行时会自动填充到占位符"
+                sx={{
+                  '& .MuiInputBase-input': {
+                    fontFamily: 'monospace'
+                  }
+                }}
               />
               <TextField
                 label="Shell命令"

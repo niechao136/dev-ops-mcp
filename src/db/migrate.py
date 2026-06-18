@@ -62,6 +62,15 @@ def migrate_database():
             except sqlite3.OperationalError as e:
                 print(f"Info: {e}")
         
+        if "default_params" not in commands_columns:
+            print("Adding default_params column to commands table...")
+            try:
+                cursor.execute("ALTER TABLE commands ADD COLUMN default_params TEXT")
+                conn.commit()
+                print("Successfully added default_params column")
+            except sqlite3.OperationalError as e:
+                print(f"Info: {e}")
+        
         print("\nDatabase migration completed!")
         
     except Exception as e:

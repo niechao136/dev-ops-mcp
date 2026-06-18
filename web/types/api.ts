@@ -99,6 +99,7 @@ export interface CommandInfo {
   description?: string;
   shell_command: string;
   timeout: number;
+  default_params?: Record<string, any>;
 }
 
 export interface CommandAdd {
@@ -107,6 +108,7 @@ export interface CommandAdd {
   description?: string;
   shell_command: string;
   timeout: number;
+  default_params?: Record<string, any>;
 }
 
 export interface CommandUpdate {
@@ -114,6 +116,7 @@ export interface CommandUpdate {
   description?: string;
   shell_command?: string;
   timeout?: number;
+  default_params?: Record<string, any>;
 }
 
 export interface CommandExecute {

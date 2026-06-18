@@ -7,7 +7,7 @@
 ### 🎯 核心功能
 
 - **项目管理**: 创建、配置和管理多个运维项目
-- **命令编排**: 为每个项目配置自定义的运维命令（start、stop、restart、deploy 等）
+- **命令编排**: 为每个项目配置自定义的运维命令（start、stop、restart、deploy 等），支持参数占位符和默认值设置
 - **API Key 管理**: 生成和管理用于 MCP 调用的 API 密钥，支持项目级权限控制
 - **用户管理**: 管理员和普通用户角色管理
 - **审计日志**: 完整记录所有操作，区分人类和 AI 操作
@@ -147,7 +147,7 @@ HOST_SSH_KEY=/root/.ssh/id_rsa
 4. **启动服务**
 
 ```bash
-docker-compose up -d
+docker compose up -d
 ```
 
 5. **访问平台**
@@ -295,6 +295,8 @@ result = await client.call_tool(
 print(result)
 ```
 
+> **参数说明**: 如果命令配置了 `default_params`，未传入的参数会自动使用默认值。传入的参数会覆盖默认值。
+
 ### 查看脚本内容
 
 ```python
@@ -376,6 +378,7 @@ print(result)
 | description | text | 命令描述 |
 | shell_command | text | Shell 脚本内容 |
 | timeout | int | 超时时间（秒） |
+| default_params | json | 可选参数默认值（JSON 格式） |
 
 ### 审计日志表 (audit_logs)
 | 字段 | 类型 | 描述 |

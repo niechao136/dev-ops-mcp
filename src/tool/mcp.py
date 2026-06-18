@@ -107,8 +107,10 @@ async def execute_action(project_name: str, action: str, params: Optional[dict] 
 
         raw_command_text = command.shell_command
         
-        if params:
-            for key, value in params.items():
+        merged_params = {**(command.default_params or {}), **(params or {})}
+        
+        if merged_params:
+            for key, value in merged_params.items():
                 placeholder = f"${{{key}}}"
                 raw_command_text = raw_command_text.replace(placeholder, str(value))
 
@@ -128,7 +130,7 @@ async def execute_action(project_name: str, action: str, params: Optional[dict] 
             actor_id=caller_token_id,
             action_category="execute_cmd",
             target_project=project.name,
-            action_details={"action": action, "script": command.shell_command, "params": params},
+            action_details={"action": action, "script": command.shell_command, "params": params, "default_params": command.default_params},
             status=status,
             output_log=output_log
         )

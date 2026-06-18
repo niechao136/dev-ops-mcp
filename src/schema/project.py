@@ -50,6 +50,7 @@ class CommandInfo(BaseModel):
     description: Optional[str] = Field(default=None, description="描述")
     shell_command: str = Field(..., description="Shell 命令")
     timeout: int = Field(default=60, description="超时时间(秒)")
+    default_params: Optional[dict] = Field(default=None, description="可选参数默认值")
 
 
 class CommandAdd(BaseModel):
@@ -58,6 +59,7 @@ class CommandAdd(BaseModel):
     description: Optional[str] = Field(default=None, description="描述")
     shell_command: str = Field(..., description="Shell 命令")
     timeout: int = Field(default=60, ge=1, le=3600, description="超时时间(秒)")
+    default_params: Optional[dict] = Field(default=None, description="可选参数默认值")
 
 
 class CommandUpdate(BaseModel):
@@ -65,6 +67,7 @@ class CommandUpdate(BaseModel):
     description: Optional[str] = Field(default=None, description="描述")
     shell_command: Optional[str] = Field(default=None, description="Shell 命令")
     timeout: Optional[int] = Field(default=None, ge=1, le=3600, description="超时时间(秒)")
+    default_params: Optional[dict] = Field(default=None, description="可选参数默认值")
 
 
 class CommandDel(BaseModel):

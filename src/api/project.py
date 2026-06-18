@@ -222,7 +222,8 @@ async def project_commands(
                 action_type=cmd.action_type,
                 description=cmd.description,
                 shell_command=cmd.shell_command,
-                timeout=cmd.timeout
+                timeout=cmd.timeout,
+                default_params=cmd.default_params
             )
             for cmd in commands
         ]
@@ -255,7 +256,8 @@ async def command_create(
             action_type=command_data.action_type,
             description=command_data.description,
             shell_command=command_data.shell_command,
-            timeout=command_data.timeout
+            timeout=command_data.timeout,
+            default_params=command_data.default_params
         )
         db.add(new_command)
         db.commit()
@@ -290,6 +292,9 @@ async def command_update(
 
         if command_data.timeout:
             command.timeout = command_data.timeout
+
+        if command_data.default_params is not None:
+            command.default_params = command_data.default_params
 
         db.commit()
 
@@ -347,8 +352,10 @@ async def command_execute(
 
         raw_command_text = command.shell_command
         
-        if execute_data.params:
-            for key, value in execute_data.params.items():
+        merged_params = {**(command.default_params or {}), **(execute_data.params or {})}
+        
+        if merged_params:
+            for key, value in merged_params.items():
                 placeholder = f"${{{key}}}"
                 raw_command_text = raw_command_text.replace(placeholder, str(value))
 
@@ -374,7 +381,8 @@ async def command_execute(
             action_details={
                 "action": execute_data.action,
                 "script": command.shell_command,
-                "params": execute_data.params
+                "params": execute_data.params,
+                "default_params": command.default_params
             },
             status=status,
             output_log=output_log
