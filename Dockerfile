@@ -20,16 +20,13 @@ RUN curl -LsSf https://astral.sh/uv/install.sh | sh
 
 WORKDIR /app
 
-# 5. 复制依赖文件
-COPY requirements.txt ./
-
-# 6. 安装依赖 (创建虚拟环境)
-# --system 参数可以让 uv 直接把包装在容器的 Python 环境里，
-# 这样就不需要额外的虚拟环境层，容器更轻量
-RUN uv pip install --system --no-cache -r requirements.txt
-
-# 7. 复制源码
+# 5. 复制依赖文件和源码
+COPY pyproject.toml uv.lock ./
 COPY src ./src
 
-# 8. 启动命令：先执行数据库迁移，再启动服务
+# 6. 安装依赖
+# --frozen 使用锁文件安装，确保版本一致
+RUN uv sync --frozen
+
+# 7. 启动命令：先执行数据库迁移，再启动服务
 CMD ["sh", "-c", "python -m src.db.migrate && uvicorn src.main:app --host 0.0.0.0 --port 8000"]
