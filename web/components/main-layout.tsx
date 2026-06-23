@@ -19,6 +19,12 @@ import {
   MenuItem,
   Tooltip,
   Divider,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Button,
+  TextField,
 } from '@mui/material';
 import {
   Menu as MenuIcon,
@@ -29,11 +35,13 @@ import {
   Security,
   People,
   History,
+  Lock,
 } from '@mui/icons-material';
 import { useAuth } from '@/hooks/auth-query';
 import { useRouter } from 'next/navigation';
 import { useColorMode } from '@/providers/root-provider';
 import ToggleThemeButton from './base/toggle-theme';
+import { apiService } from '@/services/api';
 
 
 const drawerWidth = 240;
@@ -56,6 +64,9 @@ interface MainLayoutProps {
 export default function MainLayout({ children }: MainLayoutProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
+  const [passwordDialogOpen, setPasswordDialogOpen] = useState(false);
+  const [oldPassword, setOldPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
   const { user, logout } = useAuth();
   const router = useRouter();
 
@@ -79,6 +90,36 @@ export default function MainLayout({ children }: MainLayoutProps) {
     logout();
     handleCloseUserMenu();
     router.push('/login');
+  };
+
+
+  const handleChangePassword = () => {
+    handleCloseUserMenu();
+    setPasswordDialogOpen(true);
+  };
+
+
+  const handleSubmitPassword = async () => {
+    if (!oldPassword || !newPassword) {
+      return;
+    }
+    
+    try {
+      const result = await apiService.changeMyPassword({
+        old_password: oldPassword,
+        new_password: newPassword,
+      });
+      
+      if (result.status === 1) {
+        setPasswordDialogOpen(false);
+        setOldPassword('');
+        setNewPassword('');
+        logout();
+        router.push('/login');
+      }
+    } catch (error) {
+      console.error('修改密码失败:', error);
+    }
   };
 
 
@@ -133,9 +174,9 @@ export default function MainLayout({ children }: MainLayoutProps) {
           <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
             运维管理平台
           </Typography>
-          
+
           <ToggleThemeButton sx={{ mr: 2 }} />
-          
+
           <Box sx={{ flexGrow: 0 }}>
             <Tooltip title="用户设置">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
@@ -167,6 +208,12 @@ export default function MainLayout({ children }: MainLayoutProps) {
                 <ListItemText>{user?.username}</ListItemText>
               </MenuItem>
               <Divider />
+              <MenuItem onClick={handleChangePassword}>
+                <ListItemIcon>
+                  <Lock fontSize="small" />
+                </ListItemIcon>
+                <ListItemText>修改密码</ListItemText>
+              </MenuItem>
               <MenuItem onClick={handleLogout}>
                 <ListItemIcon>
                   <Logout fontSize="small" />
@@ -177,7 +224,7 @@ export default function MainLayout({ children }: MainLayoutProps) {
           </Box>
         </Toolbar>
       </AppBar>
-      
+
       <Box
         component="nav"
         sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
@@ -208,7 +255,7 @@ export default function MainLayout({ children }: MainLayoutProps) {
           {drawer}
         </Drawer>
       </Box>
-      
+
       <Box
         component="main"
         sx={{ flexGrow: 1, p: 3, width: { sm: `calc(100% - ${drawerWidth}px)` } }}
@@ -216,6 +263,36 @@ export default function MainLayout({ children }: MainLayoutProps) {
         <Toolbar />
         {children}
       </Box>
+
+      <Dialog open={passwordDialogOpen} onClose={() => setPasswordDialogOpen(false)} maxWidth="sm" fullWidth>
+        <DialogTitle>修改密码</DialogTitle>
+        <DialogContent>
+          <Box sx={{ pt: 1, display: 'flex', flexDirection: 'column', gap: 2 }}>
+            <TextField
+              label="旧密码"
+              fullWidth
+              type="password"
+              value={oldPassword}
+              onChange={(e) => setOldPassword(e.target.value)}
+              placeholder="请输入当前密码"
+            />
+            <TextField
+              label="新密码"
+              fullWidth
+              type="password"
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+              placeholder="请输入新密码"
+            />
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setPasswordDialogOpen(false)}>取消</Button>
+          <Button onClick={handleSubmitPassword} variant="contained">
+            修改
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 }

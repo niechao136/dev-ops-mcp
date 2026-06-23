@@ -6,8 +6,8 @@ from sqlalchemy import asc, desc, or_
 from src.db.db import get_db_session
 from src.db.orm import User
 from src.schema.api import DataResult, PageResult
-from src.schema.auth import TokenDict, UserLogin, UserRole
-from src.schema.user import UserInfo, UserPageParams, UserAdd, UserUpdate, UserPassword, UserDel
+from src.schema.auth import TokenDict, UserRole
+from src.schema.user import UserInfo, UserPageParams, UserAdd, UserUpdate, UserPassword, UserDel, UserChangePassword
 from src.util.auth import get_current_admin, get_current_user
 from src.util.security import pwd_context
 
@@ -37,7 +37,7 @@ async def user_list(
             query = query.filter(
                 or_(
                     User.username.ilike(search),
-                    User.email.ilike(search) if User.email is not None else False
+                    User.email.ilike(search)
                 )
             )
         
@@ -119,6 +119,34 @@ async def current_user(
     )
 
     return DataResult(status=1, data=data)
+
+
+@user_router.post(
+    path="/me/password",
+    response_model=DataResult,
+    summary="修改当前用户密码",
+    description="登录用户修改自己的密码，需要提供旧密码进行验证。"
+)
+async def change_my_password(
+    password_data: UserChangePassword = Body(..., description="密码数据"),
+    user: Annotated[Optional[TokenDict], Depends(get_current_user)] = None
+):
+    if not user:
+        return DataResult(status=0, msg="请先登录")
+    
+    with get_db_session() as db:
+        current_user = db.query(User).filter(User.id == user.id).first()
+        
+        if not current_user:
+            return DataResult(status=0, msg="用户不存在")
+        
+        if not pwd_context.verify(password_data.old_password, current_user.password_hash):
+            return DataResult(status=0, msg="旧密码不正确")
+        
+        current_user.password_hash = pwd_context.hash(password_data.new_password)
+        db.commit()
+        
+        return DataResult(status=1, msg="密码修改成功")
 
 
 @user_router.get(

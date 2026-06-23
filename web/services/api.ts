@@ -4,7 +4,7 @@ import {
   ProjectInfo, ProjectAdd, ProjectUpdate,
   CommandInfo, CommandAdd, CommandUpdate, CommandExecute, CommandExecuteResult,
   ApiKeyInfo, ApiKeyAdd, ApiKeyUpdate, ApiKeyCreated,
-  UserAdd, UserUpdate, UserPassword,
+  UserAdd, UserUpdate, UserPassword, UserChangePassword,
   AuditLogInfo, AuditLogQueryParams,
   DashboardStats
 } from '@/types/api';
@@ -65,12 +65,12 @@ class ApiService {
   }
 
   // Project API
-  async getProjects(params?: { 
-    page?: number, 
-    size?: number, 
-    keyword?: string, 
-    order_by?: string, 
-    direction?: string 
+  async getProjects(params?: {
+    page?: number,
+    size?: number,
+    keyword?: string,
+    order_by?: string,
+    direction?: string
   }): Promise<PageResult<ProjectInfo>> {
     const query = new URLSearchParams();
     if (params?.page) query.append('page', params.page.toString());
@@ -78,7 +78,7 @@ class ApiService {
     if (params?.keyword) query.append('keyword', params.keyword);
     if (params?.order_by) query.append('order_by', params.order_by);
     if (params?.direction) query.append('direction', params.direction);
-    
+
     const url = `/projects${query.toString() ? '?' + query.toString() : ''}`;
     return this.request<PageResult<ProjectInfo>>(url);
   }
@@ -142,12 +142,12 @@ class ApiService {
   }
 
   // API Key API
-  async getApiKeys(params?: { 
-    page?: number, 
-    size?: number, 
-    keyword?: string, 
-    order_by?: string, 
-    direction?: string 
+  async getApiKeys(params?: {
+    page?: number,
+    size?: number,
+    keyword?: string,
+    order_by?: string,
+    direction?: string
   }): Promise<PageResult<ApiKeyInfo>> {
     const query = new URLSearchParams();
     if (params?.page) query.append('page', params.page.toString());
@@ -155,7 +155,7 @@ class ApiService {
     if (params?.keyword) query.append('keyword', params.keyword);
     if (params?.order_by) query.append('order_by', params.order_by);
     if (params?.direction) query.append('direction', params.direction);
-    
+
     const url = `/api_key${query.toString() ? '?' + query.toString() : ''}`;
     return this.request<PageResult<ApiKeyInfo>>(url);
   }
@@ -196,12 +196,12 @@ class ApiService {
   }
 
   // User API
-  async getUsers(params?: { 
-    page?: number, 
-    size?: number, 
-    keyword?: string, 
-    order_by?: string, 
-    direction?: string 
+  async getUsers(params?: {
+    page?: number,
+    size?: number,
+    keyword?: string,
+    order_by?: string,
+    direction?: string
   }): Promise<PageResult<UserInfo>> {
     const query = new URLSearchParams();
     if (params?.page) query.append('page', params.page.toString());
@@ -209,13 +209,20 @@ class ApiService {
     if (params?.keyword) query.append('keyword', params.keyword);
     if (params?.order_by) query.append('order_by', params.order_by);
     if (params?.direction) query.append('direction', params.direction);
-    
+
     const url = `/user${query.toString() ? '?' + query.toString() : ''}`;
     return this.request<PageResult<UserInfo>>(url);
   }
 
   async getUser(id: number): Promise<DataResult<UserInfo>> {
     return this.request<DataResult<UserInfo>>(`/user/${id}`);
+  }
+
+  async changeMyPassword(data: UserChangePassword): Promise<DataResult> {
+    return this.request<DataResult>('/user/me/password', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
   }
 
   async createUser(data: UserAdd): Promise<DataResult<UserInfo>> {
@@ -268,7 +275,7 @@ class ApiService {
     if (params?.target_project) query.append('target_project', params.target_project);
     if (params?.order_by) query.append('order_by', params.order_by);
     if (params?.direction) query.append('direction', params.direction);
-    
+
     const url = `/audit_log${query.toString() ? '?' + query.toString() : ''}`;
     return this.request<PageResult<AuditLogInfo>>(url);
   }

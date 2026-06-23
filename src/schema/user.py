@@ -45,5 +45,10 @@ class UserPassword(BaseModel):
     password: str = Field(..., description="密码")
 
 
+class UserChangePassword(BaseModel):
+    old_password: str = Field(..., description="旧密码")
+    new_password: str = Field(..., description="新密码")
+
+
 class UserDel(BaseModel):
     ids: List[int] = Field(description="用户 ID 数组")

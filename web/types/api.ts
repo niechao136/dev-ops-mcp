@@ -178,6 +178,11 @@ export interface UserPassword {
   password: string;
 }
 
+export interface UserChangePassword {
+  old_password: string;
+  new_password: string;
+}
+
 // 操作日志类型
 export interface AuditLogInfo {
   id: number;
