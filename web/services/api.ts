@@ -191,6 +191,12 @@ class ApiService {
     });
   }
 
+  async getFullApiKey(id: number): Promise<DataResult<string>> {
+    return this.request<DataResult<string>>(`/api_key/${id}/get_key`, {
+      method: 'POST',
+    });
+  }
+
   async getApiKeysCount(): Promise<DataResult<number>> {
     return this.request<DataResult<number>>('/api_key/count');
   }

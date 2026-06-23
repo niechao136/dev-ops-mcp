@@ -236,6 +236,32 @@ async def count_tokens():
 
 
 # =====================================================================
+# 8. 获取完整密钥 (Get Full Key)
+# =====================================================================
+@api_key_router.post(
+    path="/{key_id}/get_key",
+    response_model=DataResult[str],
+    summary="获取完整 API 密钥",
+    description="解密并返回完整的 API 密钥，用于复制。"
+)
+async def get_full_key(key_id: int):
+    with get_db_session() as db:
+        token = db.query(ApiToken).filter(ApiToken.id == key_id).first()
+        
+        if not token:
+            return DataResult(status=0, msg="密钥不存在")
+        
+        if not token.is_active:
+            return DataResult(status=0, msg="密钥已禁用")
+        
+        try:
+            plain_key = decrypt_api_key(token.encrypted_token)
+            return DataResult(status=1, data=plain_key)
+        except Exception:
+            return DataResult(status=0, msg="密钥解密失败")
+
+
+# =====================================================================
 # 7. 重新生成密钥 (Regenerate)
 # =====================================================================
 @api_key_router.post(

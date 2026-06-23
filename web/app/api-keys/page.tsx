@@ -49,7 +49,7 @@ export default function ApiKeysPage() {
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
   const [page, setPage] = useState(1);
   const [pageSize] = useState(10);
-  
+
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -97,7 +97,7 @@ export default function ApiKeysPage() {
   });
 
   const updateMutation = useMutation({
-    mutationFn: ({ id, data }: { id: number; data: ApiKeyUpdate }) => 
+    mutationFn: ({ id, data }: { id: number; data: ApiKeyUpdate }) =>
       apiService.updateApiKey(id, data),
     onSuccess: (result) => {
       if (result.status === 1) {
@@ -115,7 +115,7 @@ export default function ApiKeysPage() {
   });
 
   const toggleActiveMutation = useMutation({
-    mutationFn: ({ id, isActive }: { id: number; isActive: boolean }) => 
+    mutationFn: ({ id, isActive }: { id: number; isActive: boolean }) =>
       apiService.updateApiKey(id, { is_active: isActive }),
     onSuccess: (result) => {
       if (result.status === 1) {
@@ -173,9 +173,9 @@ export default function ApiKeysPage() {
 
   const handleEdit = () => {
     if (!currentKey) return;
-    updateMutation.mutate({ 
-      id: currentKey.id, 
-      data: formData as ApiKeyUpdate 
+    updateMutation.mutate({
+      id: currentKey.id,
+      data: formData as ApiKeyUpdate
     });
   };
 
@@ -197,6 +197,19 @@ export default function ApiKeysPage() {
     }
   };
 
+  const handleCopyApiKey = async (id: number) => {
+    try {
+      const result = await apiService.getFullApiKey(id);
+      if (result.status === 1 && result.data) {
+        await handleCopyKey(result.data);
+      } else {
+        enqueueSnackbar(result.msg || '获取密钥失败', { variant: 'error' });
+      }
+    } catch (error) {
+      enqueueSnackbar('获取密钥失败', { variant: 'error' });
+    }
+  };
+
   const openEditDialog = (key: ApiKeyInfo) => {
     setCurrentKey(key);
     setFormData({
@@ -208,7 +221,7 @@ export default function ApiKeysPage() {
   };
 
   const toggleSelect = (id: number) => {
-    setSelectedIds(prev => 
+    setSelectedIds(prev =>
       prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
     );
   };
@@ -262,10 +275,10 @@ export default function ApiKeysPage() {
             <Box sx={{ mb: 3 }}>
               <Box sx={{ display: 'flex', gap: 1, alignItems: 'center', bgcolor: 'background.paper', p: 1, borderRadius: 1, border: 1, borderColor: 'divider' }}>
                 <input
-                  style={{ 
-                    flex: 1, 
-                    border: 'none', 
-                    outline: 'none', 
+                  style={{
+                    flex: 1,
+                    border: 'none',
+                    outline: 'none',
                     fontSize: '1rem',
                     background: 'transparent'
                   }}
@@ -351,6 +364,14 @@ export default function ApiKeysPage() {
                           </Box>
                         </TableCell>
                         <TableCell align="right">
+                          <Tooltip title="复制密钥">
+                            <IconButton
+                              size="small"
+                              onClick={() => handleCopyApiKey(key.id)}
+                            >
+                              <ContentCopy />
+                            </IconButton>
+                          </Tooltip>
                           <Tooltip title="重新生成">
                             <IconButton
                               size="small"
@@ -411,8 +432,8 @@ export default function ApiKeysPage() {
           </DialogContent>
           <DialogActions>
             <Button onClick={() => setCreateDialogOpen(false)}>取消</Button>
-            <Button 
-              onClick={handleCreate} 
+            <Button
+              onClick={handleCreate}
               variant="contained"
               disabled={createMutation.isPending}
             >
@@ -449,8 +470,8 @@ export default function ApiKeysPage() {
           </DialogContent>
           <DialogActions>
             <Button onClick={() => setEditDialogOpen(false)}>取消</Button>
-            <Button 
-              onClick={handleEdit} 
+            <Button
+              onClick={handleEdit}
               variant="contained"
               disabled={updateMutation.isPending}
             >
@@ -469,9 +490,9 @@ export default function ApiKeysPage() {
           </DialogContent>
           <DialogActions>
             <Button onClick={() => setDeleteDialogOpen(false)}>取消</Button>
-            <Button 
-              onClick={handleDelete} 
-              color="error" 
+            <Button
+              onClick={handleDelete}
+              color="error"
               variant="contained"
               disabled={deleteMutation.isPending}
             >
@@ -487,13 +508,13 @@ export default function ApiKeysPage() {
             <Alert severity="warning" sx={{ mb: 2 }}>
               请复制此 Key 并妥善保存，它将不会再次显示！
             </Alert>
-            <Box sx={{ 
-              bgcolor: (theme) => theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.08)' : 'grey.100', 
-              p: 2, 
-              borderRadius: 1, 
-              fontFamily: 'monospace', 
-              display: 'flex', 
-              alignItems: 'center', 
+            <Box sx={{
+              bgcolor: (theme) => theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.08)' : 'grey.100',
+              p: 2,
+              borderRadius: 1,
+              fontFamily: 'monospace',
+              display: 'flex',
+              alignItems: 'center',
               gap: 2,
               border: 1,
               borderColor: 'divider'
