@@ -65,8 +65,9 @@ export default function ProjectDetailPage() {
     description: '',
     shell_command: '',
     timeout: 60,
-    default_params: {}
+    default_params: undefined
   });
+  const [defaultParamsText, setDefaultParamsText] = useState('');
 
 
   const { data: projectData, isLoading: projectLoading } = useQuery({
@@ -96,8 +97,9 @@ export default function ProjectDetailPage() {
           description: '',
           shell_command: '',
           timeout: 60,
-          default_params: {}
+          default_params: undefined
         });
+        setDefaultParamsText('');
         queryClient.invalidateQueries({ queryKey: ['commands', projectId] });
       } else {
         enqueueSnackbar(result.msg || '创建失败', { variant: 'error' });
@@ -169,15 +171,44 @@ export default function ProjectDetailPage() {
       enqueueSnackbar('请填写必填项', { variant: 'warning' });
       return;
     }
-    createMutation.mutate({ ...formData, project_id: projectId } as CommandAdd);
+
+    let parsedDefaultParams: Record<string, any> | null = null;
+    if (defaultParamsText.trim()) {
+      try {
+        parsedDefaultParams = JSON.parse(defaultParamsText);
+      } catch {
+        enqueueSnackbar('默认参数 JSON 格式错误', { variant: 'error' });
+        return;
+      }
+    }
+
+    createMutation.mutate({
+      ...formData,
+      project_id: projectId,
+      default_params: parsedDefaultParams
+    } as CommandAdd);
   };
 
 
   const handleEdit = () => {
     if (!currentCommand) return;
+
+    let parsedDefaultParams: Record<string, any> | undefined = undefined;
+    if (defaultParamsText.trim()) {
+      try {
+        parsedDefaultParams = JSON.parse(defaultParamsText);
+      } catch {
+        enqueueSnackbar('默认参数 JSON 格式错误', { variant: 'error' });
+        return;
+      }
+    }
+
     updateMutation.mutate({
       id: currentCommand.id,
-      data: formData
+      data: {
+        ...formData,
+        default_params: parsedDefaultParams
+      }
     });
   };
 
@@ -222,13 +253,15 @@ export default function ProjectDetailPage() {
 
   const openEditDialog = (command: CommandInfo) => {
     setCurrentCommand(command);
+    const defaultParams = command.default_params !== null && command.default_params !== undefined ? command.default_params : undefined;
     setFormData({
       action_type: command.action_type,
       description: command.description,
       shell_command: command.shell_command,
       timeout: command.timeout,
-      default_params: command.default_params || {}
+      default_params: defaultParams
     });
+    setDefaultParamsText(defaultParams ? JSON.stringify(defaultParams, null, 2) : '');
     setEditDialogOpen(true);
   };
 
@@ -322,7 +355,18 @@ export default function ProjectDetailPage() {
                   <Button
                     variant="contained"
                     startIcon={<Add />}
-                    onClick={() => setCreateDialogOpen(true)}
+                    onClick={() => {
+                      setFormData({
+                        project_id: projectId,
+                        action_type: '',
+                        description: '',
+                        shell_command: '',
+                        timeout: 60,
+                        default_params: undefined
+                      });
+                      setDefaultParamsText('');
+                      setCreateDialogOpen(true);
+                    }}
                   >
                     新建命令
                   </Button>
@@ -480,14 +524,8 @@ export default function ProjectDetailPage() {
                 fullWidth
                 multiline
                 rows={4}
-                value={JSON.stringify(formData.default_params || {}, null, 2)}
-                onChange={(e) => {
-                  try {
-                    setFormData({ ...formData, default_params: JSON.parse(e.target.value) });
-                  } catch {
-                    setFormData({ ...formData, default_params: {} });
-                  }
-                }}
+                value={defaultParamsText}
+                onChange={(e) => setDefaultParamsText(e.target.value)}
                 placeholder='{"version": "v1.0.0", "env": "production"}'
                 helperText="使用 JSON 格式设置可选参数的默认值，执行时会自动填充到占位符"
                 sx={{
@@ -553,14 +591,8 @@ export default function ProjectDetailPage() {
                 fullWidth
                 multiline
                 rows={4}
-                value={JSON.stringify(formData.default_params || {}, null, 2)}
-                onChange={(e) => {
-                  try {
-                    setFormData({ ...formData, default_params: JSON.parse(e.target.value) });
-                  } catch {
-                    setFormData({ ...formData, default_params: {} });
-                  }
-                }}
+                value={defaultParamsText}
+                onChange={(e) => setDefaultParamsText(e.target.value)}
                 placeholder='{"version": "v1.0.0", "env": "production"}'
                 helperText="使用 JSON 格式设置可选参数的默认值，执行时会自动填充到占位符"
                 sx={{
