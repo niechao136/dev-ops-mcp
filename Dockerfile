@@ -25,8 +25,10 @@ COPY pyproject.toml uv.lock ./
 COPY src ./src
 
 # 6. 安装依赖
-# --frozen 使用锁文件安装，确保版本一致
-RUN uv sync --frozen
+# --system 参数可以让 uv 直接把包装在容器的 Python 环境里，
+# 这样就不需要额外的虚拟环境层，容器更轻量
+RUN uv pip install --system --no-cache -r pyproject.toml || \
+    uv sync --system --no-cache
 
 # 7. 启动命令：先执行数据库迁移，再启动服务
 CMD ["sh", "-c", "python -m src.db.migrate && uvicorn src.main:app --host 0.0.0.0 --port 8000"]
