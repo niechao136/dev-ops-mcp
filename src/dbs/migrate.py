@@ -70,7 +70,31 @@ def migrate_database():
                 print("Successfully added default_params column")
             except sqlite3.OperationalError as e:
                 print(f"Info: {e}")
-        
+
+        # Check and create public_commands table
+        cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='public_commands'")
+        if not cursor.fetchone():
+            print("Creating public_commands table...")
+            cursor.execute("""
+                CREATE TABLE public_commands (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    name VARCHAR(100) NOT NULL,
+                    action_type VARCHAR(50) NOT NULL,
+                    description TEXT,
+                    shell_command TEXT NOT NULL,
+                    timeout INTEGER DEFAULT 60,
+                    default_params TEXT,
+                    tags TEXT,
+                    is_active INTEGER DEFAULT 1,
+                    created_at DATETIME,
+                    updated_at DATETIME
+                )
+            """)
+            conn.commit()
+            print("Successfully created public_commands table")
+        else:
+            print("public_commands table already exists")
+
         print("\nDatabase migration completed!")
         
     except Exception as e:

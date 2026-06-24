@@ -82,6 +82,25 @@ class Command(Base):
 
 
 # ==========================================
+# 4.1 公共命令表 (可复用的命令模板)
+# ==========================================
+class PublicCommand(Base):
+    __tablename__ = "public_commands"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    name: Mapped[str] = mapped_column(String(100))  # 命令名称
+    action_type: Mapped[str] = mapped_column(String(50))  # 操作类型
+    description: Mapped[Optional[str]] = mapped_column(Text)  # 命令描述
+    shell_command: Mapped[str] = mapped_column(Text)  # Shell 脚本内容
+    timeout: Mapped[int] = mapped_column(Integer, default=60)  # 超时时间(秒)
+    default_params: Mapped[Optional[dict]] = mapped_column(JSON, default=None)  # 可选参数默认值
+    tags: Mapped[Optional[str]] = mapped_column(Text)  # 标签，逗号分隔
+    is_active: Mapped[bool] = mapped_column(Boolean, default=True)  # 是否启用
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now(UTC))
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now(UTC), onupdate=datetime.now(UTC))
+
+
+# ==========================================
 # 5. 操作审计日志表 (Audit Log)
 # ==========================================
 class AuditLog(Base):

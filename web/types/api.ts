@@ -216,3 +216,44 @@ export interface DashboardStats {
   user_count: number;
   audit_log_count: number;
 }
+
+// 公共命令类型
+export interface PublicCommandInfo {
+  id: number;
+  name: string;
+  action_type: string;
+  description?: string;
+  shell_command: string;
+  timeout: number;
+  default_params?: Record<string, any>;
+  tags?: string;
+  is_active: boolean;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export interface PublicCommandAdd {
+  name: string;
+  action_type: string;
+  description?: string;
+  shell_command: string;
+  timeout: number;
+  default_params?: Record<string, any>;
+  tags?: string;
+}
+
+export interface PublicCommandUpdate {
+  name?: string;
+  action_type?: string;
+  description?: string;
+  shell_command?: string;
+  timeout?: number;
+  default_params?: Record<string, any>;
+  tags?: string;
+  is_active?: boolean;
+}
+
+export interface PublicCommandImport {
+  public_command_id: number;
+  project_id: number;
+}

@@ -6,7 +6,8 @@ import {
   ApiKeyInfo, ApiKeyAdd, ApiKeyUpdate, ApiKeyCreated,
   UserAdd, UserUpdate, UserPassword, UserChangePassword,
   AuditLogInfo, AuditLogQueryParams,
-  DashboardStats
+  DashboardStats,
+  PublicCommandInfo, PublicCommandAdd, PublicCommandUpdate, PublicCommandImport
 } from '@/types/api';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || '/api';
@@ -275,6 +276,59 @@ class ApiService {
 
   async getUsersCount(): Promise<DataResult<number>> {
     return this.request<DataResult<number>>('/user/count');
+  }
+
+  // 公共命令 API
+  async getPublicCommands(params?: {
+    page?: number;
+    size?: number;
+    keyword?: string;
+    tags?: string;
+    order_by?: string;
+    direction?: string;
+  }): Promise<PageResult<PublicCommandInfo>> {
+    const query = new URLSearchParams();
+    if (params?.page) query.set('page', params.page.toString());
+    if (params?.size) query.set('size', params.size.toString());
+    if (params?.keyword) query.set('keyword', params.keyword);
+    if (params?.tags) query.set('tags', params.tags);
+    if (params?.order_by) query.set('order_by', params.order_by);
+    if (params?.direction) query.set('direction', params.direction);
+    const queryString = query.toString();
+    const url = `/public_commands${queryString ? '?' + queryString : ''}`;
+    return this.request<PageResult<PublicCommandInfo>>(url);
+  }
+
+  async getPublicCommand(id: number): Promise<DataResult<PublicCommandInfo>> {
+    return this.request<DataResult<PublicCommandInfo>>(`/public_commands/${id}`);
+  }
+
+  async createPublicCommand(data: PublicCommandAdd): Promise<DataResult<number>> {
+    return this.request<DataResult<number>>('/public_commands', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async updatePublicCommand(id: number, data: PublicCommandUpdate): Promise<DataResult<PublicCommandInfo>> {
+    return this.request<DataResult<PublicCommandInfo>>(`/public_commands/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async deletePublicCommands(ids: number[]): Promise<DataResult> {
+    return this.request<DataResult>('/public_commands', {
+      method: 'DELETE',
+      body: JSON.stringify({ ids }),
+    });
+  }
+
+  async importPublicCommand(data: PublicCommandImport): Promise<DataResult<number>> {
+    return this.request<DataResult<number>>('/public_commands/import', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
   }
 
   // Audit Log API

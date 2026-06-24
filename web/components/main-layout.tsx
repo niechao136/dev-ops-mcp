@@ -36,6 +36,7 @@ import {
   People,
   History,
   Lock,
+  Public,
 } from '@mui/icons-material';
 import { useAuth } from '@/hooks/auth-query';
 import { useRouter } from 'next/navigation';
@@ -51,6 +52,7 @@ const menuItems = [
   { text: '仪表板', icon: <Dashboard />, path: '/' },
   { text: '用户管理', icon: <People />, path: '/users' },
   { text: '项目管理', icon: <Storage />, path: '/projects' },
+  { text: '公共命令', icon: <Public />, path: '/public-commands' },
   { text: 'API Key 管理', icon: <Security />, path: '/api-keys' },
   { text: '操作日志', icon: <History />, path: '/audit-logs' },
 ];
@@ -103,13 +105,13 @@ export default function MainLayout({ children }: MainLayoutProps) {
     if (!oldPassword || !newPassword) {
       return;
     }
-    
+
     try {
       const result = await apiService.changeMyPassword({
         old_password: oldPassword,
         new_password: newPassword,
       });
-      
+
       if (result.status === 1) {
         setPasswordDialogOpen(false);
         setOldPassword('');

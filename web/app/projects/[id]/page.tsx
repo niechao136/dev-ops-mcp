@@ -36,14 +36,15 @@ import {
   Delete,
   ArrowBack,
   Refresh,
-  HelpOutlined
+  HelpOutlined,
+  Download
 } from '@mui/icons-material';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { enqueueSnackbar } from 'notistack';
 import ProtectedRoute from '@/components/protected-route';
 import MainLayout from '@/components/main-layout';
 import { apiService } from '@/services/api';
-import type { ProjectInfo, CommandInfo, CommandAdd, CommandUpdate, CommandExecute, CommandExecuteResult } from '@/types/api';
+import type { ProjectInfo, CommandInfo, CommandAdd, CommandUpdate, CommandExecute, CommandExecuteResult, PublicCommandInfo } from '@/types/api';
 
 
 export default function ProjectDetailPage() {
@@ -56,6 +57,7 @@ export default function ProjectDetailPage() {
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [executeDialogOpen, setExecuteDialogOpen] = useState(false);
+  const [importDialogOpen, setImportDialogOpen] = useState(false);
   const [currentCommand, setCurrentCommand] = useState<CommandInfo | null>(null);
   const [commandToDelete, setCommandToDelete] = useState<number | null>(null);
   const [executeParams, setExecuteParams] = useState<Record<string, string>>({});
@@ -71,6 +73,7 @@ export default function ProjectDetailPage() {
   const [defaultParamsText, setDefaultParamsText] = useState('');
   const [page, setPage] = useState(1);
   const [pageSize] = useState(10);
+  const [importSearch, setImportSearch] = useState('');
 
 
   const { data: projectData, isLoading: projectLoading } = useQuery({
@@ -85,6 +88,37 @@ export default function ProjectDetailPage() {
       page,
       size: pageSize
     }),
+  });
+
+  // 获取公共命令列表用于导入
+  const { data: publicCommandsData } = useQuery({
+    queryKey: ['publicCommands', importSearch],
+    queryFn: () => apiService.getPublicCommands({
+      page: 1,
+      size: 100,
+      keyword: importSearch || undefined
+    }),
+    enabled: importDialogOpen,
+  });
+
+  // 导入公共命令 mutation
+  const importMutation = useMutation({
+    mutationFn: (publicCommandId: number) => apiService.importPublicCommand({
+      public_command_id: publicCommandId,
+      project_id: projectId
+    }),
+    onSuccess: (result) => {
+      if (result.status === 1) {
+        enqueueSnackbar('导入成功', { variant: 'success' });
+        setImportDialogOpen(false);
+        queryClient.invalidateQueries({ queryKey: ['commands', projectId] });
+      } else {
+        enqueueSnackbar(result.msg || '导入失败', { variant: 'error' });
+      }
+    },
+    onError: () => {
+      enqueueSnackbar('导入失败', { variant: 'error' });
+    }
   });
 
 
@@ -357,6 +391,16 @@ export default function ProjectDetailPage() {
                     onClick={() => refetch()}
                   >
                     刷新
+                  </Button>
+                  <Button
+                    variant="outlined"
+                    startIcon={<Download />}
+                    onClick={() => {
+                      setImportSearch('');
+                      setImportDialogOpen(true);
+                    }}
+                  >
+                    导入公共命令
                   </Button>
                   <Button
                     variant="contained"
@@ -772,6 +816,81 @@ export default function ProjectDetailPage() {
             >
               {executeMutation.isPending ? <CircularProgress size={20} /> : '执行'}
             </Button>
+          </DialogActions>
+        </Dialog>
+
+        {/* 导入公共命令对话框 */}
+        <Dialog open={importDialogOpen} onClose={() => setImportDialogOpen(false)} maxWidth="md" fullWidth>
+          <DialogTitle>导入公共命令</DialogTitle>
+          <DialogContent>
+            <Box sx={{ pt: 1 }}>
+              <TextField
+                label="搜索公共命令"
+                fullWidth
+                size="small"
+                value={importSearch}
+                onChange={(e) => setImportSearch(e.target.value)}
+                placeholder="搜索名称、描述、操作类型..."
+                sx={{ mb: 2 }}
+              />
+              <TableContainer component={Paper} sx={{ maxHeight: 400 }}>
+                <Table size="small">
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>名称</TableCell>
+                      <TableCell>操作类型</TableCell>
+                      <TableCell>描述</TableCell>
+                      <TableCell align="right">操作</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {publicCommandsData?.data?.map((cmd) => (
+                      <TableRow key={cmd.id}>
+                        <TableCell>{cmd.name}</TableCell>
+                        <TableCell>
+                          <Chip label={cmd.action_type} size="small" color="primary" />
+                        </TableCell>
+                        <TableCell>
+                          <Tooltip title={cmd.description || ''}>
+                            <Typography variant="body2" sx={{
+                              maxWidth: 200,
+                              overflow: 'hidden',
+                              textOverflow: 'ellipsis',
+                              whiteSpace: 'nowrap'
+                            }}>
+                              {cmd.description || '-'}
+                            </Typography>
+                          </Tooltip>
+                        </TableCell>
+                        <TableCell align="right">
+                          <Button
+                            size="small"
+                            variant="contained"
+                            startIcon={<Download />}
+                            onClick={() => importMutation.mutate(cmd.id)}
+                            disabled={importMutation.isPending}
+                          >
+                            导入
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                    {(!publicCommandsData?.data || publicCommandsData.data.length === 0) && (
+                      <TableRow>
+                        <TableCell colSpan={4} align="center">
+                          <Typography color="text.secondary" sx={{ py: 2 }}>
+                            暂无公共命令
+                          </Typography>
+                        </TableCell>
+                      </TableRow>
+                    )}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            </Box>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setImportDialogOpen(false)}>关闭</Button>
           </DialogActions>
         </Dialog>
       </MainLayout>
