@@ -1,12 +1,12 @@
 from typing import Annotated
 from fastapi import APIRouter, Body
 
-from src.db.db import get_db_session
-from src.db.orm import User
-from src.schema.api import DataResult
-from src.schema.auth import TokenDict, UserLogin, UserRole
-from src.util.jwt import create_access_token
-from src.util.security import pwd_context
+from src.dbs.db import get_db_session
+from src.dbs.orm import User
+from src.schemas.api import DataResult
+from src.schemas.auth import TokenDict, UserLogin, UserRole
+from src.utils.jwt import create_access_token
+from src.utils.security import pwd_context
 
 
 auth_router = APIRouter(

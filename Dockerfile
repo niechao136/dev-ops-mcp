@@ -20,6 +20,9 @@ RUN curl -LsSf https://astral.sh/uv/install.sh | sh
 
 WORKDIR /app
 
+# 创建一个空目录作为挂载点
+RUN mkdir -p /app/data
+
 # 5. 复制依赖文件和源码
 COPY pyproject.toml uv.lock ./
 COPY src ./src
@@ -31,4 +34,4 @@ RUN uv pip install --system --no-cache -r pyproject.toml || \
     uv sync --system --no-cache
 
 # 7. 启动命令：先执行数据库迁移，再启动服务
-CMD ["sh", "-c", "python -m src.db.migrate && uvicorn src.main:app --host 0.0.0.0 --port 8000"]
+CMD ["sh", "-c", "python -m src.dbs.migrate && uvicorn src.main:app --host 0.0.0.0 --port 8000"]

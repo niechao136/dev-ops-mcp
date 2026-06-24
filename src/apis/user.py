@@ -3,13 +3,13 @@ from typing import List, Optional, Annotated
 from uuid import UUID
 from sqlalchemy import asc, desc, or_
 
-from src.db.db import get_db_session
-from src.db.orm import User
-from src.schema.api import DataResult, PageResult
-from src.schema.auth import TokenDict, UserRole
-from src.schema.user import UserInfo, UserPageParams, UserAdd, UserUpdate, UserPassword, UserDel, UserChangePassword
-from src.util.auth import get_current_admin, get_current_user
-from src.util.security import pwd_context
+from src.dbs.db import get_db_session
+from src.dbs.orm import User
+from src.schemas.api import DataResult, PageResult
+from src.schemas.auth import TokenDict, UserRole
+from src.schemas.user import UserInfo, UserPageParams, UserAdd, UserUpdate, UserPassword, UserDel, UserChangePassword
+from src.utils.auth import get_current_admin, get_current_user
+from src.utils.security import pwd_context
 
 
 user_router = APIRouter(

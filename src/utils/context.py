@@ -2,7 +2,7 @@ import json
 from contextvars import ContextVar
 from typing import List, Optional, Tuple
 
-from src.db.orm import ApiToken
+from src.dbs.orm import ApiToken
 
 
 current_mcp_token: ContextVar[Optional[ApiToken]] = ContextVar("current_mcp_token", default=None)

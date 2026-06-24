@@ -10,10 +10,10 @@ from mcp.types import TextContent
 from pathlib import Path
 from typing import Optional
 
-from src.db.db import get_db_session
-from src.db.orm import AuditLog, Command, Project
-from src.util.context import check_token, check_project, current_mcp_token
-from src.util.executor import execute_shell_commands_chain
+from src.dbs.db import get_db_session
+from src.dbs.orm import AuditLog, Command, Project
+from src.utils.context import check_token, check_project, current_mcp_token
+from src.utils.executor import execute_shell_commands_chain
 
 
 load_dotenv()

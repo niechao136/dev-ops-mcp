@@ -1,10 +1,10 @@
 from fastapi import APIRouter, Depends
 
-from src.db.db import get_db_session
-from src.db.orm import Project, ApiToken, User, AuditLog
-from src.schema.api import DataResult
-from src.schema.dashboard import DashboardStats
-from src.util.auth import get_current_user
+from src.dbs.db import get_db_session
+from src.dbs.orm import Project, ApiToken, User, AuditLog
+from src.schemas.api import DataResult
+from src.schemas.dashboard import DashboardStats
+from src.utils.auth import get_current_user
 
 
 dashboard_router = APIRouter(

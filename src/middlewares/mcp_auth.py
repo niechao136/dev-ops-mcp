@@ -2,10 +2,10 @@ from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.responses import JSONResponse
 from typing import Optional
 
-from src.db.db import get_db_session
-from src.db.orm import ApiToken
-from src.util.context import current_mcp_token
-from src.util.security import verify_api_key
+from src.dbs.db import get_db_session
+from src.dbs.orm import ApiToken
+from src.utils.context import current_mcp_token
+from src.utils.security import verify_api_key
 
 
 class MCPAuthMiddleware(BaseHTTPMiddleware):

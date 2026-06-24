@@ -3,14 +3,14 @@ from typing import List, Annotated, Optional
 
 from sqlalchemy import asc, desc, or_
 
-from src.db.db import get_db_session
-from src.db.orm import Project, Command, User
-from src.schema.api import DataResult, PageResult
-from src.schema.project import (
+from src.dbs.db import get_db_session
+from src.dbs.orm import Project, Command, User
+from src.schemas.api import DataResult, PageResult
+from src.schemas.project import (
     ProjectPageParams, ProjectInfo, ProjectAdd, ProjectUpdate, ProjectDel,
     CommandInfo, CommandAdd, CommandUpdate, CommandDel, CommandExecute
 )
-from src.util.auth import get_current_admin, get_current_user
+from src.utils.auth import get_current_admin, get_current_user
 
 
 project_router = APIRouter(
@@ -328,9 +328,9 @@ async def command_execute(
     execute_data: CommandExecute,
     _: User = Depends(get_current_admin)
 ):
-    from src.util.executor import execute_shell_commands_chain
-    from src.db.orm import AuditLog
-    from src.util.context import current_mcp_token
+    from src.utils.executor import execute_shell_commands_chain
+    from src.dbs.orm import AuditLog
+    from src.utils.context import current_mcp_token
     from datetime import datetime, UTC
     
     with get_db_session() as db:

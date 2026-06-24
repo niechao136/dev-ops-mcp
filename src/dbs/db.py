@@ -5,8 +5,8 @@ from pathlib import Path
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from src.util.path import ROOT_DIR
-from src.util.security import encrypt_api_key, generate_api_key, pwd_context
+from src.utils.path import ROOT_DIR
+from src.utils.security import encrypt_api_key, generate_api_key, pwd_context
 
 from .orm import ApiToken, Base, User
 

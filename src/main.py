@@ -5,15 +5,15 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastmcp.utilities.lifespan import combine_lifespans
 
 
-from src.api.api_key import api_key_router
-from src.api.auth import auth_router
-from src.api.user import user_router
-from src.api.project import project_router
-from src.api.audit_log import audit_log_router
-from src.api.dashboard import dashboard_router
-from src.db.db import init_db
-from src.middleware.mcp_auth import MCPAuthMiddleware
-from src.tool.mcp import mcp_app
+from src.apis.api_key import api_key_router
+from src.apis.auth import auth_router
+from src.apis.user import user_router
+from src.apis.project import project_router
+from src.apis.audit_log import audit_log_router
+from src.apis.dashboard import dashboard_router
+from src.dbs.db import init_db
+from src.middlewares.mcp_auth import MCPAuthMiddleware
+from src.tools.mcp import mcp_app
 
 
 @asynccontextmanager

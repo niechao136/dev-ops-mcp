@@ -2,12 +2,12 @@ from fastapi import Request, HTTPException, Depends, Header, status
 from pydantic import ValidationError
 from typing import Annotated, List, Optional
 
-from src.db.db import get_db_session
-from src.db.orm import ApiToken, User
-from src.schema.auth import UserRole
-from src.util.context import current_mcp_token
-from src.util.jwt import verify_access_token
-from src.util.security import verify_api_key
+from src.dbs.db import get_db_session
+from src.dbs.orm import ApiToken, User
+from src.schemas.auth import UserRole
+from src.utils.context import current_mcp_token
+from src.utils.jwt import verify_access_token
+from src.utils.security import verify_api_key
 
 
 ALLOW_ROLE: List[UserRole] = [UserRole.ADMIN]

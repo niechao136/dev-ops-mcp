@@ -4,12 +4,12 @@ from sqlalchemy.orm import joinedload
 from fastapi import APIRouter, Depends
 from typing import Annotated
 
-from src.db.db import get_db_session
-from src.db.orm import ApiToken, User
-from src.schema.api import DataResult, PageResult
-from src.schema.api_key import ApiKeyCreate, ApiKeyCreated, ApiKeyItem, ApiKeyPageParams, ApiKeyUpdate, ApiKeyDelete, ApiKeyDetail
-from src.util.auth import get_current_admin
-from src.util.security import generate_api_key, encrypt_api_key, decrypt_api_key
+from src.dbs.db import get_db_session
+from src.dbs.orm import ApiToken, User
+from src.schemas.api import DataResult, PageResult
+from src.schemas.api_key import ApiKeyCreate, ApiKeyCreated, ApiKeyItem, ApiKeyPageParams, ApiKeyUpdate, ApiKeyDelete, ApiKeyDetail
+from src.utils.auth import get_current_admin
+from src.utils.security import generate_api_key, encrypt_api_key, decrypt_api_key
 
 
 api_key_router = APIRouter(

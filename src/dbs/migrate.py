@@ -3,7 +3,7 @@ from pathlib import Path
 import sqlite3
 from datetime import datetime, UTC
 
-from src.util.path import ROOT_DIR
+from src.utils.path import ROOT_DIR
 
 DATA_DIR = Path(ROOT_DIR) / "data"
 DB_FILE_PATH = DATA_DIR / "devops.db"

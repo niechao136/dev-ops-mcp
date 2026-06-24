@@ -9,6 +9,9 @@ services:
     volumes:
       - ./data:/app/data
       - /root/mcp_keys/mcp_devops:/root/.ssh/id_rsa:ro
+    environment:
+      # 资料文件夹，默认为 /app/data
+      - DATA_DIR=${DATA_DIR:-/app/data}
     networks:
       - dev-ops-mcp-network
 

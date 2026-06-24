@@ -4,7 +4,7 @@ from datetime import datetime, timedelta, timezone
 
 from jose import jwt, JWTError
 
-from src.schema.auth import TokenDict
+from src.schemas.auth import TokenDict
 
 
 load_dotenv()

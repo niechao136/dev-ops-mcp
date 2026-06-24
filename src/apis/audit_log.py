@@ -3,15 +3,15 @@ from typing import Optional, Annotated
 from sqlalchemy import asc, desc, or_
 import json
 
-from src.db.db import get_db_session
-from src.db.orm import AuditLog, User, ApiToken
-from src.schema.api import DataResult, PageResult
-from src.schema.audit_log import (
+from src.dbs.db import get_db_session
+from src.dbs.orm import AuditLog, User, ApiToken
+from src.schemas.api import DataResult, PageResult
+from src.schemas.audit_log import (
     AuditLogInfo, 
     AuditLogPageParams,
     AuditLogDelete
 )
-from src.util.auth import get_current_user, get_current_admin
+from src.utils.auth import get_current_user, get_current_admin
 
 
 audit_log_router = APIRouter(
@@ -39,7 +39,7 @@ async def get_audit_logs(
             query = query.filter(
                 or_(
                     AuditLog.action_category.ilike(search),
-                    AuditLog.target_project.ilike(search) if AuditLog.target_project else False
+                    AuditLog.target_project.ilike(search)
                 )
             )
         
