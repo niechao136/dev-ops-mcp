@@ -192,10 +192,10 @@ async def read_project_file(project_name: str, relative_file_path: str, max_line
             return [TextContent(type="text", text=f"❌ 找不到项目: {project_name}")]
 
     base_dir = Path(project.work_dir).resolve()
-    # 🔴 安全核心：组合路径，并获取其绝对路径
+    # 组合路径，并获取其绝对路径
     target_path = (base_dir / relative_file_path).resolve()
 
-    # 🔴 安全核心：检查 target_path 是否真的在 base_dir 内部 (防止 ../../../etc/passwd)
+    # 检查 target_path 是否真的在 base_dir 内部 (防止 ../../../etc/passwd)
     if not target_path.is_relative_to(base_dir):
         return [TextContent(type="text", text="🚫 安全拦截: 非法路径逃逸尝试！只允许读取项目工作目录内的文件。")]
 

@@ -8,9 +8,11 @@
 
 - **项目管理**: 创建、配置和管理多个运维项目
 - **命令编排**: 为每个项目配置自定义的运维命令（start、stop、restart、deploy 等），支持参数占位符和默认值设置
-- **API Key 管理**: 生成和管理用于 MCP 调用的 API 密钥，支持项目级权限控制
-- **用户管理**: 管理员和普通用户角色管理
+- **公共命令**: 创建可复用的命令模板，在多个项目间共享，支持快速导入和微调
+- **API Key 管理**: 生成和管理用于 MCP 调用的 API 密钥，支持项目级权限控制，支持一键复制
+- **用户管理**: 管理员和普通用户角色管理，支持修改密码
 - **审计日志**: 完整记录所有操作，区分人类和 AI 操作
+- **分页支持**: 所有列表页面均支持分页浏览
 
 ### 🤖 MCP 工具集
 
@@ -30,6 +32,7 @@
 - 项目级权限隔离
 - 路径安全检查（防止目录遍历攻击）
 - 操作审计追踪
+- 专用运维用户（devops）和 sudo 白名单
 
 ## 技术架构
 
@@ -70,6 +73,7 @@
 - **SQLite** - 数据库
 - **python-jose** - JWT 认证
 - **passlib + bcrypt** - 密码加密
+- **cryptography** - Fernet 加密（API Key）
 
 ### 前端
 - **Next.js 16** - React 框架
@@ -113,8 +117,9 @@ sudo bash mcp-init.sh
 > **脚本功能说明**:
 > - 创建 `devops` 用户（用于 SSH 连接和运维操作）
 > - 生成 SSH 密钥对（保存在 `/root/mcp_keys/mcp_devops`）
-> - 配置 sudo 权限（Docker、Git、服务管理等命令）
+> - 配置 sudo 权限（Docker、Git、服务管理、目录创建等命令）
 > - 加固 SSH 配置（启用公钥登录）
+> - 配置 Git 全局安全目录白名单
 > - 验证 SSH 连接
 
 3. **配置环境变量**
@@ -168,44 +173,52 @@ docker compose up -d
 ```
 dev-ops-mcp/
 ├── src/                    # 后端 Python 代码
-│   ├── api/                # API 路由
+│   ├── apis/               # API 路由
 │   │   ├── api_key.py      # API Key 管理接口
 │   │   ├── auth.py         # 认证接口
 │   │   ├── project.py      # 项目管理接口
 │   │   ├── user.py         # 用户管理接口
 │   │   ├── audit_log.py    # 审计日志接口
-│   │   └── dashboard.py    # 仪表盘接口
-│   ├── db/                 # 数据库层
+│   │   ├── dashboard.py    # 仪表盘接口
+│   │   └── public_command.py # 公共命令接口
+│   ├── dbs/                # 数据库层
 │   │   ├── db.py           # 数据库连接与初始化
-│   │   └── orm.py          # ORM 模型定义
-│   ├── schema/             # Pydantic 数据模型
-│   ├── tool/               # MCP 工具定义
+│   │   ├── orm.py          # ORM 模型定义
+│   │   └── migrate.py      # 数据库迁移脚本
+│   ├── schemas/            # Pydantic 数据模型
+│   ├── tools/              # MCP 工具定义
 │   │   └── mcp.py          # MCP 工具实现
-│   ├── middleware/         # 中间件
+│   ├── middlewares/        # 中间件
 │   │   └── mcp_auth.py     # MCP 认证中间件
-│   ├── util/               # 工具函数
+│   ├── utils/              # 工具函数
 │   │   ├── auth.py         # 认证工具
 │   │   ├── jwt.py          # JWT 工具
 │   │   ├── security.py     # 安全工具
-│   │   ├── executor.py     # 命令执行器
+│   │   ├── executor.py     # 命令执行器（含自动创建目录）
+│   │   ├── path.py         # 路径安全检查
 │   │   └── context.py      # 上下文管理
 │   └── main.py             # FastAPI 入口
 ├── web/                    # 前端 Next.js 代码
 │   ├── app/                # 应用页面
 │   │   ├── login/          # 登录页
 │   │   ├── projects/       # 项目管理页
+│   │   │   └── [id]/       # 项目详情页（含命令管理和导入）
+│   │   ├── public-commands/ # 公共命令管理页
 │   │   ├── api-keys/       # API Key 管理页
 │   │   ├── users/          # 用户管理页
 │   │   └── audit-logs/     # 审计日志页
 │   ├── components/         # 组件
-│   ├── hooks/              # 自定义 Hooks
+│   │   ├── main-layout.tsx # 主布局（侧边栏导航）
+│   │   └── protected-route.tsx # 路由保护
 │   ├── services/           # API 服务
 │   ├── stores/             # 状态管理
-│   └── types/              # 类型定义
+│   ├── types/              # 类型定义
+│   └── utils/              # 工具函数
 ├── data/                   # SQLite 数据库存储目录
 ├── docker-compose.yml      # Docker Compose 配置
 ├── nginx.conf              # Nginx 配置
-├── requirements.txt        # Python 依赖
+├── mcp-init.sh             # 服务器初始化脚本
+├── mcp-share-keys.sh       # 密钥共享脚本
 └── .env.example            # 环境变量模板
 ```
 
@@ -217,45 +230,60 @@ dev-ops-mcp/
 |-----|------|------|
 | POST | `/api/auth/login` | 用户登录 |
 
+### 用户管理
+
+| 方法 | 路径 | 描述 |
+|-----|------|------|
+| GET | `/api/user` | 获取用户列表（分页） |
+| POST | `/api/user` | 创建用户 |
+| GET | `/api/user/me` | 获取当前用户 |
+| PUT | `/api/user/{id}` | 更新用户 |
+| DELETE | `/api/user` | 删除用户 |
+| POST | `/api/user/change_password` | 修改当前用户密码 |
+
 ### 项目管理
 
 | 方法 | 路径 | 描述 |
 |-----|------|------|
-| GET | `/api/projects` | 获取项目列表 |
+| GET | `/api/projects` | 获取项目列表（分页） |
 | POST | `/api/projects` | 创建项目 |
 | GET | `/api/projects/{id}` | 获取项目详情 |
 | PUT | `/api/projects/{id}` | 更新项目 |
 | DELETE | `/api/projects` | 删除项目 |
-| GET | `/api/projects/{id}/commands` | 获取项目命令 |
+| GET | `/api/projects/{id}/commands` | 获取项目命令（分页） |
 | POST | `/api/projects/{id}/commands` | 添加命令 |
+| PUT | `/api/projects/{id}/commands/{command_id}` | 更新命令 |
+| DELETE | `/api/projects/{id}/commands/{command_id}` | 删除命令 |
 | POST | `/api/projects/execute` | 执行命令 |
+
+### 公共命令
+
+| 方法 | 路径 | 描述 |
+|-----|------|------|
+| GET | `/api/public_commands` | 获取公共命令列表（分页、搜索、标签筛选） |
+| GET | `/api/public_commands/{id}` | 获取公共命令详情 |
+| POST | `/api/public_commands` | 创建公共命令（管理员） |
+| PUT | `/api/public_commands/{id}` | 更新公共命令（管理员） |
+| DELETE | `/api/public_commands` | 批量删除公共命令（管理员） |
+| POST | `/api/public_commands/import` | 导入公共命令到项目 |
 
 ### API Key 管理
 
 | 方法 | 路径 | 描述 |
 |-----|------|------|
-| GET | `/api/api_key` | 获取密钥列表 |
+| GET | `/api/api_key` | 获取密钥列表（分页） |
 | POST | `/api/api_key` | 创建密钥 |
 | GET | `/api/api_key/{id}` | 获取密钥详情 |
 | PUT | `/api/api_key/{id}` | 更新密钥 |
 | DELETE | `/api/api_key` | 删除密钥 |
 | POST | `/api/api_key/{id}/regenerate` | 重新生成密钥 |
-
-### 用户管理
-
-| 方法 | 路径 | 描述 |
-|-----|------|------|
-| GET | `/api/user` | 获取用户列表 |
-| POST | `/api/user` | 创建用户 |
-| GET | `/api/user/me` | 获取当前用户 |
-| PUT | `/api/user/{id}` | 更新用户 |
-| DELETE | `/api/user` | 删除用户 |
+| POST | `/api/api_key/{id}/get_key` | 获取完整密钥（用于复制） |
 
 ### 审计日志
 
 | 方法 | 路径 | 描述 |
 |-----|------|------|
-| GET | `/api/audit_log` | 获取日志列表 |
+| GET | `/api/audit_log` | 获取日志列表（分页、搜索） |
 | GET | `/api/audit_log/{id}` | 获取日志详情 |
 | DELETE | `/api/audit_log` | 删除日志 |
 
@@ -380,6 +408,20 @@ print(result)
 | timeout | int | 超时时间（秒） |
 | default_params | json | 可选参数默认值（JSON 格式） |
 
+### 公共命令表 (public_commands)
+| 字段 | 类型 | 描述 |
+|-----|------|------|
+| id | int | 主键 |
+| name | varchar(100) | 命令名称 |
+| action_type | varchar(50) | 操作类型 |
+| description | text | 命令描述 |
+| shell_command | text | Shell 脚本内容 |
+| timeout | int | 超时时间（秒） |
+| default_params | json | 可选参数默认值（JSON 格式） |
+| tags | text | 标签（逗号分隔） |
+| is_active | bool | 是否启用 |
+| updated_at | datetime | 更新时间 |
+
 ### 审计日志表 (audit_logs)
 | 字段 | 类型 | 描述 |
 |-----|------|------|
@@ -399,9 +441,16 @@ print(result)
 **后端开发**:
 
 ```bash
+# 进入目录
 cd dev-ops-mcp
-pip install -r requirements.txt
-python -m uvicorn src.main:app --host 0.0.0.0 --port 10097 --reload
+# 创建虚拟环境
+python -m venv .venv
+# 进入 venv
+.venv\Scripts\activate
+# 安装依赖
+uv sync
+# 运行项目
+python -m src.main 
 ```
 
 **前端开发**:
@@ -411,6 +460,38 @@ cd web
 npm install
 npm run dev
 ```
+
+### 工具脚本
+
+#### `mcp-init.sh` - 服务器初始化脚本
+
+用于初始化服务器环境，创建专用运维用户和 SSH 密钥：
+
+```bash
+sudo bash mcp-init.sh
+```
+
+功能：
+- 创建 `devops` 用户
+- 生成 SSH 密钥对
+- 配置 sudo 权限
+- 加固 SSH 配置
+- 配置 Git 全局安全目录白名单
+
+#### `mcp-share-keys.sh` - SSH 密钥共享脚本
+
+用于将 SSH 密钥从一个用户安全复制到另一个用户，支持自动配置 known_hosts：
+
+```bash
+# 将 root 用户的 SSH 密钥共享给 devops 用户
+sudo bash mcp-share-keys.sh root devops
+```
+
+功能：
+- 批量复制 SSH 密钥（支持 rsa、ed25519、ecdsa、dsa）
+- 自动补充 GitHub/GitLab/Gitee 的 known_hosts 指纹
+- 自动修正文件权限（700、600、644）
+- 验证 GitHub 连通性
 
 ### 代码规范
 
@@ -435,6 +516,7 @@ npm test
 3. **防火墙**: 限制 API 端口只允许内网访问
 4. **HTTPS**: 生产环境启用 HTTPS
 5. **备份**: 定期备份数据库文件
+6. **sudo 权限**: 只授予必要的命令权限，避免使用 `NOPASSWD: ALL`
 
 ## 许可证
 
