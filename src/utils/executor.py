@@ -11,7 +11,7 @@ load_dotenv()
 
 SSH_HOST = os.environ.get("HOST_SSH", "host.docker.internal")
 SSH_PORT = os.environ.get("HOST_SSH_PORT", "22")
-SSH_USER = os.environ.get("HOST_SSH_USER", "root")
+SSH_USER = os.environ.get("HOST_SSH_USER", "devops")
 SSH_KEY  = os.environ.get("HOST_SSH_KEY", "/root/.ssh/id_rsa")
 
 
@@ -19,13 +19,14 @@ def _build_ssh_command(remote_cmd: str, work_dir: str) -> str:
     """把本地命令包装成 SSH 远程执行命令"""
     # 用单引号包裹远程命令，防止本地 shell 提前展开变量
     escaped = remote_cmd.replace("'", "'\\''")
+    # 使用 sudo mkdir -p 确保即使 devops 用户没有权限也能创建目录
     return (
         f"ssh -i {SSH_KEY} "
         f"-o StrictHostKeyChecking=no "
         f"-o ConnectTimeout=10 "
         f"-p {SSH_PORT} "
         f"{SSH_USER}@{SSH_HOST} "
-        f"'cd {work_dir} && {escaped}'"
+        f"'sudo mkdir -p {work_dir} && sudo chown {SSH_USER}:{SSH_USER} {work_dir} && cd {work_dir} && {escaped}'"
     )
 
 

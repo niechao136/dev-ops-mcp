@@ -130,6 +130,9 @@ ${DEVOPS_USER} ALL=(ALL) NOPASSWD: /bin/systemctl status *
 # 日志查看
 ${DEVOPS_USER} ALL=(ALL) NOPASSWD: /usr/bin/journalctl
 
+# 目录创建（支持在任意位置创建工作目录）
+${DEVOPS_USER} ALL=(ALL) NOPASSWD: /usr/bin/mkdir
+
 # 如命令种类繁多，可暂时放开全部权限（安全性降低）
 # ${DEVOPS_USER} ALL=(ALL) NOPASSWD: ALL
 EOF
