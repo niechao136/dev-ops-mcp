@@ -29,7 +29,9 @@ import {
   Accordion,
   AccordionSummary,
   AccordionDetails,
-  Divider
+  Divider,
+  TablePagination,
+  Alert
 } from '@mui/material';
 import {
   Refresh,
@@ -53,7 +55,7 @@ export default function AuditLogsPage() {
   const [page, setPage] = useState(1);
   const [pageSize] = useState(10);
   const [filters, setFilters] = useState<AuditLogQueryParams>({});
-  
+
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [detailDialogOpen, setDetailDialogOpen] = useState(false);
   const [currentLog, setCurrentLog] = useState<AuditLogInfo | null>(null);
@@ -103,9 +105,9 @@ export default function AuditLogsPage() {
 
 
   const toggleSelect = (id: number) => {
-    setSelectedIds(prev => 
-      prev.includes(id) 
-        ? prev.filter(item => item !== id) 
+    setSelectedIds(prev =>
+      prev.includes(id)
+        ? prev.filter(item => item !== id)
         : [...prev, id]
     );
   };
@@ -194,10 +196,10 @@ export default function AuditLogsPage() {
                   <Box sx={{ display: 'flex', gap: 1, alignItems: 'center', bgcolor: 'background.paper', p: 1, borderRadius: 1, border: 1, borderColor: 'divider' }}>
                     <Search color="action" />
                     <input
-                      style={{ 
-                        flex: 1, 
-                        border: 'none', 
-                        outline: 'none', 
+                      style={{
+                        flex: 1,
+                        border: 'none',
+                        outline: 'none',
                         fontSize: '1rem',
                         background: 'transparent'
                       }}
@@ -296,8 +298,8 @@ export default function AuditLogsPage() {
                         <TableCell>{log.action_category}</TableCell>
                         <TableCell>{log.target_project || '-'}</TableCell>
                         <TableCell>
-                          <Chip 
-                            label={getStatusLabel(log.status)} 
+                          <Chip
+                            label={getStatusLabel(log.status)}
                             color={getStatusColor(log.status)}
                             size="small"
                           />
@@ -319,6 +321,27 @@ export default function AuditLogsPage() {
                   </TableBody>
                 </Table>
               </TableContainer>
+            )}
+
+            {!isLoading && data?.data?.length === 0 && (
+              <Alert severity="info" sx={{ mt: 2 }}>
+                暂无日志记录
+              </Alert>
+            )}
+
+            {data && data.total > 0 && (
+              <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
+                <TablePagination
+                  component="div"
+                  count={data.total}
+                  page={page - 1}
+                  onPageChange={(event, newPage) => setPage(newPage + 1)}
+                  rowsPerPage={pageSize}
+                  rowsPerPageOptions={[10, 25, 50]}
+                  labelRowsPerPage="每页行数"
+                  labelDisplayedRows={({ from, to, count }) => `${from}-${to} 共 ${count}`}
+                />
+              </Box>
             )}
           </Box>
 
@@ -347,8 +370,8 @@ export default function AuditLogsPage() {
                       </Box>
                       <Box>
                         <Typography variant="body2" color="text.secondary">操作者类型</Typography>
-                        <Chip 
-                          label={getActorTypeLabel(currentLog.actor_type)} 
+                        <Chip
+                          label={getActorTypeLabel(currentLog.actor_type)}
                           size="small"
                         />
                       </Box>
@@ -362,8 +385,8 @@ export default function AuditLogsPage() {
                       </Box>
                       <Box>
                         <Typography variant="body2" color="text.secondary">状态</Typography>
-                        <Chip 
-                          label={getStatusLabel(currentLog.status)} 
+                        <Chip
+                          label={getStatusLabel(currentLog.status)}
                           color={getStatusColor(currentLog.status)}
                           size="small"
                         />
@@ -373,9 +396,9 @@ export default function AuditLogsPage() {
                         <Typography variant="body1">{currentLog.ip_address || '-'}</Typography>
                       </Box>
                     </Box>
-                    
+
                     <Divider sx={{ my: 1 }} />
-                    
+
                     <Box>
                       <Typography variant="subtitle2" sx={{ mb: 1 }}>操作详情</Typography>
                       <Paper sx={{ p: 2, bgcolor: 'background.default' }}>
@@ -384,7 +407,7 @@ export default function AuditLogsPage() {
                         </pre>
                       </Paper>
                     </Box>
-                    
+
                     {currentLog.output_log && (
                       <>
                         <Divider sx={{ my: 1 }} />
@@ -421,9 +444,9 @@ export default function AuditLogsPage() {
               <Button onClick={() => setDeleteDialogOpen(false)}>
                 取消
               </Button>
-              <Button 
-                onClick={handleDelete} 
-                color="error" 
+              <Button
+                onClick={handleDelete}
+                color="error"
                 variant="contained"
                 disabled={deleteMutation.isPending}
               >

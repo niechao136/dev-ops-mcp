@@ -26,7 +26,8 @@ import {
   TableRow,
   Paper,
   Chip,
-  Divider
+  Divider,
+  TablePagination
 } from '@mui/material';
 import {
   PlayArrow,
@@ -68,6 +69,8 @@ export default function ProjectDetailPage() {
     default_params: undefined
   });
   const [defaultParamsText, setDefaultParamsText] = useState('');
+  const [page, setPage] = useState(1);
+  const [pageSize] = useState(10);
 
 
   const { data: projectData, isLoading: projectLoading } = useQuery({
@@ -77,8 +80,11 @@ export default function ProjectDetailPage() {
 
 
   const { data: commandsData, isLoading: commandsLoading, refetch } = useQuery({
-    queryKey: ['commands', projectId],
-    queryFn: () => apiService.getProjectCommands(projectId),
+    queryKey: ['commands', projectId, page],
+    queryFn: () => apiService.getProjectCommands(projectId, {
+      page,
+      size: pageSize
+    }),
   });
 
 
@@ -489,6 +495,21 @@ export default function ProjectDetailPage() {
                 <Alert severity="info" sx={{ mt: 2 }}>
                   暂无命令，请点击上方按钮创建
                 </Alert>
+              )}
+
+              {commandsData && commandsData.total > 0 && (
+                <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
+                  <TablePagination
+                    component="div"
+                    count={commandsData.total}
+                    page={page - 1}
+                    onPageChange={(event, newPage) => setPage(newPage + 1)}
+                    rowsPerPage={pageSize}
+                    rowsPerPageOptions={[10, 25, 50]}
+                    labelRowsPerPage="每页行数"
+                    labelDisplayedRows={({ from, to, count }) => `${from}-${to} 共 ${count}`}
+                  />
+                </Box>
               )}
             </Box>
           </Box>

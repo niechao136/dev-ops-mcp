@@ -26,7 +26,8 @@ import {
   TableHead,
   TableRow,
   Paper,
-  Checkbox
+  Checkbox,
+  TablePagination
 } from '@mui/material';
 import {
   Add,
@@ -53,7 +54,7 @@ export default function ProjectsPage() {
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
   const [page, setPage] = useState(1);
   const [pageSize] = useState(10);
-  
+
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -96,7 +97,7 @@ export default function ProjectsPage() {
 
 
   const updateMutation = useMutation({
-    mutationFn: ({ id, data }: { id: number; data: ProjectUpdate }) => 
+    mutationFn: ({ id, data }: { id: number; data: ProjectUpdate }) =>
       apiService.updateProject(id, data),
     onSuccess: (result) => {
       if (result.status === 1) {
@@ -114,7 +115,7 @@ export default function ProjectsPage() {
   });
 
   const toggleActiveMutation = useMutation({
-    mutationFn: ({ id, isActive }: { id: number; isActive: boolean }) => 
+    mutationFn: ({ id, isActive }: { id: number; isActive: boolean }) =>
       apiService.updateProject(id, { is_active: isActive }),
     onSuccess: (result) => {
       if (result.status === 1) {
@@ -159,9 +160,9 @@ export default function ProjectsPage() {
 
   const handleEdit = () => {
     if (!currentProject) return;
-    updateMutation.mutate({ 
-      id: currentProject.id, 
-      data: formData as ProjectUpdate 
+    updateMutation.mutate({
+      id: currentProject.id,
+      data: formData as ProjectUpdate
     });
   };
 
@@ -185,7 +186,7 @@ export default function ProjectsPage() {
 
 
   const toggleSelect = (id: number) => {
-    setSelectedIds(prev => 
+    setSelectedIds(prev =>
       prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
     );
   };
@@ -242,10 +243,10 @@ export default function ProjectsPage() {
               <Box sx={{ display: 'flex', gap: 1, alignItems: 'center', bgcolor: 'background.paper', p: 1, borderRadius: 1, border: 1, borderColor: 'divider' }}>
                 <Search color="action" />
                 <input
-                  style={{ 
-                    flex: 1, 
-                    border: 'none', 
-                    outline: 'none', 
+                  style={{
+                    flex: 1,
+                    border: 'none',
+                    outline: 'none',
                     fontSize: '1rem',
                     background: 'transparent'
                   }}
@@ -347,6 +348,21 @@ export default function ProjectsPage() {
                 暂无项目，请点击上方按钮创建
               </Alert>
             )}
+
+            {data && data.total > 0 && (
+              <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
+                <TablePagination
+                  component="div"
+                  count={data.total}
+                  page={page - 1}
+                  onPageChange={(event, newPage) => setPage(newPage + 1)}
+                  rowsPerPage={pageSize}
+                  rowsPerPageOptions={[10, 25, 50]}
+                  labelRowsPerPage="每页行数"
+                  labelDisplayedRows={({ from, to, count }) => `${from}-${to} 共 ${count}`}
+                />
+              </Box>
+            )}
           </Box>
         </Container>
 
@@ -380,8 +396,8 @@ export default function ProjectsPage() {
           </DialogContent>
           <DialogActions>
             <Button onClick={() => setCreateDialogOpen(false)}>取消</Button>
-            <Button 
-              onClick={handleCreate} 
+            <Button
+              onClick={handleCreate}
               variant="contained"
               disabled={createMutation.isPending}
             >
@@ -419,8 +435,8 @@ export default function ProjectsPage() {
           </DialogContent>
           <DialogActions>
             <Button onClick={() => setEditDialogOpen(false)}>取消</Button>
-            <Button 
-              onClick={handleEdit} 
+            <Button
+              onClick={handleEdit}
               variant="contained"
               disabled={updateMutation.isPending}
             >
@@ -439,9 +455,9 @@ export default function ProjectsPage() {
           </DialogContent>
           <DialogActions>
             <Button onClick={() => setDeleteDialogOpen(false)}>取消</Button>
-            <Button 
-              onClick={handleDelete} 
-              color="error" 
+            <Button
+              onClick={handleDelete}
+              color="error"
               variant="contained"
               disabled={deleteMutation.isPending}
             >

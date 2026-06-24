@@ -26,7 +26,9 @@ import {
   TableHead,
   TableRow,
   Paper,
-  Checkbox
+  Checkbox,
+  TablePagination,
+  Alert
 } from '@mui/material';
 import {
   Add,
@@ -52,7 +54,7 @@ export default function UsersPage() {
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
   const [page, setPage] = useState(1);
   const [pageSize] = useState(10);
-  
+
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -99,7 +101,7 @@ export default function UsersPage() {
 
 
   const updateMutation = useMutation({
-    mutationFn: ({ id, data }: { id: number; data: UserUpdate }) => 
+    mutationFn: ({ id, data }: { id: number; data: UserUpdate }) =>
       apiService.updateUser(id, data),
     onSuccess: (result) => {
       if (result.status === 1) {
@@ -134,7 +136,7 @@ export default function UsersPage() {
 
 
   const passwordMutation = useMutation({
-    mutationFn: ({ id, data }: { id: number; data: UserPassword }) => 
+    mutationFn: ({ id, data }: { id: number; data: UserPassword }) =>
       apiService.changeUserPassword(id, data),
     onSuccess: (result) => {
       if (result.status === 1) {
@@ -181,13 +183,13 @@ export default function UsersPage() {
 
   const handleEdit = () => {
     if (!currentUser) return;
-    updateMutation.mutate({ 
-      id: currentUser.id, 
-      data: { 
-        username: formData.username, 
-        email: formData.email, 
-        role: formData.role 
-      } 
+    updateMutation.mutate({
+      id: currentUser.id,
+      data: {
+        username: formData.username,
+        email: formData.email,
+        role: formData.role
+      }
     });
   };
 
@@ -227,9 +229,9 @@ export default function UsersPage() {
 
 
   const toggleSelect = (id: number) => {
-    setSelectedIds(prev => 
-      prev.includes(id) 
-        ? prev.filter(item => item !== id) 
+    setSelectedIds(prev =>
+      prev.includes(id)
+        ? prev.filter(item => item !== id)
         : [...prev, id]
     );
   };
@@ -289,10 +291,10 @@ export default function UsersPage() {
               <Box sx={{ display: 'flex', gap: 1, alignItems: 'center', bgcolor: 'background.paper', p: 1, borderRadius: 1, border: 1, borderColor: 'divider' }}>
                 <Search color="action" />
                 <input
-                  style={{ 
-                    flex: 1, 
-                    border: 'none', 
-                    outline: 'none', 
+                  style={{
+                    flex: 1,
+                    border: 'none',
+                    outline: 'none',
                     fontSize: '1rem',
                     background: 'transparent'
                   }}
@@ -341,8 +343,8 @@ export default function UsersPage() {
                         </TableCell>
                         <TableCell>{user.email || '-'}</TableCell>
                         <TableCell>
-                          <Chip 
-                            label={user.role === 'admin' ? '管理员' : '普通用户'} 
+                          <Chip
+                            label={user.role === 'admin' ? '管理员' : '普通用户'}
                             color={user.role === 'admin' ? 'primary' : 'default'}
                             size="small"
                           />
@@ -390,6 +392,27 @@ export default function UsersPage() {
                   </TableBody>
                 </Table>
               </TableContainer>
+            )}
+
+            {!isLoading && data?.data?.length === 0 && (
+              <Alert severity="info" sx={{ mt: 2 }}>
+                暂无用户，请点击上方按钮创建
+              </Alert>
+            )}
+
+            {data && data.total > 0 && (
+              <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
+                <TablePagination
+                  component="div"
+                  count={data.total}
+                  page={page - 1}
+                  onPageChange={(event, newPage) => setPage(newPage + 1)}
+                  rowsPerPage={pageSize}
+                  rowsPerPageOptions={[10, 25, 50]}
+                  labelRowsPerPage="每页行数"
+                  labelDisplayedRows={({ from, to, count }) => `${from}-${to} 共 ${count}`}
+                />
+              </Box>
             )}
           </Box>
 
@@ -440,9 +463,9 @@ export default function UsersPage() {
               <Button onClick={() => setCreateDialogOpen(false)}>
                 取消
               </Button>
-              <Button 
-                onClick={handleCreate} 
-                variant="contained" 
+              <Button
+                onClick={handleCreate}
+                variant="contained"
                 disabled={createMutation.isPending}
               >
                 {createMutation.isPending ? <CircularProgress size={24} /> : '创建'}
@@ -488,9 +511,9 @@ export default function UsersPage() {
               <Button onClick={() => setEditDialogOpen(false)}>
                 取消
               </Button>
-              <Button 
-                onClick={handleEdit} 
-                variant="contained" 
+              <Button
+                onClick={handleEdit}
+                variant="contained"
                 disabled={updateMutation.isPending}
               >
                 {updateMutation.isPending ? <CircularProgress size={24} /> : '更新'}
@@ -518,9 +541,9 @@ export default function UsersPage() {
               <Button onClick={() => setPasswordDialogOpen(false)}>
                 取消
               </Button>
-              <Button 
-                onClick={handlePassword} 
-                variant="contained" 
+              <Button
+                onClick={handlePassword}
+                variant="contained"
                 disabled={passwordMutation.isPending}
               >
                 {passwordMutation.isPending ? <CircularProgress size={24} /> : '确定'}
@@ -540,9 +563,9 @@ export default function UsersPage() {
               <Button onClick={() => setDeleteDialogOpen(false)}>
                 取消
               </Button>
-              <Button 
-                onClick={handleDelete} 
-                color="error" 
+              <Button
+                onClick={handleDelete}
+                color="error"
                 variant="contained"
                 disabled={deleteMutation.isPending}
               >

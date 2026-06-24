@@ -109,8 +109,16 @@ class ApiService {
   }
 
   // Command API
-  async getProjectCommands(projectId: number): Promise<PageResult<CommandInfo>> {
-    return this.request<PageResult<CommandInfo>>(`/projects/${projectId}/commands`);
+  async getProjectCommands(projectId: number, params?: {
+    page?: number;
+    size?: number;
+  }): Promise<PageResult<CommandInfo>> {
+    const query = new URLSearchParams();
+    if (params?.page) query.set('page', params.page.toString());
+    if (params?.size) query.set('size', params.size.toString());
+    const queryString = query.toString();
+    const url = queryString ? `/projects/${projectId}/commands?${queryString}` : `/projects/${projectId}/commands`;
+    return this.request<PageResult<CommandInfo>>(url);
   }
 
   async createCommand(data: CommandAdd): Promise<DataResult<number>> {

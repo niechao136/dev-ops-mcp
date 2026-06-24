@@ -23,7 +23,8 @@ import {
   TableRow,
   Paper,
   Checkbox,
-  Chip
+  Chip,
+  TablePagination
 } from '@mui/material';
 import {
   Add,
@@ -400,6 +401,21 @@ export default function ApiKeysPage() {
               <Alert severity="info" sx={{ mt: 2 }}>
                 暂无 API Key，请点击上方按钮生成
               </Alert>
+            )}
+
+            {data && data.total > 0 && (
+              <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
+                <TablePagination
+                  component="div"
+                  count={data.total}
+                  page={page - 1}
+                  onPageChange={(event, newPage) => setPage(newPage + 1)}
+                  rowsPerPage={pageSize}
+                  rowsPerPageOptions={[10, 25, 50]}
+                  labelRowsPerPage="每页行数"
+                  labelDisplayedRows={({ from, to, count }) => `${from}-${to} 共 ${count}`}
+                />
+              </Box>
             )}
           </Box>
         </Container>
