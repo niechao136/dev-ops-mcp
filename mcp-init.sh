@@ -135,6 +135,9 @@ ${DEVOPS_USER} ALL=(ALL) NOPASSWD: /usr/bin/mkdir *
 ${DEVOPS_USER} ALL=(ALL) NOPASSWD: /usr/bin/chown *
 ${DEVOPS_USER} ALL=(ALL) NOPASSWD: /usr/bin/chmod *
 
+# 一次性定时任务工具
+${DEVOPS_USER} ALL=(ALL) NOPASSWD: /usr/bin/at *
+
 # 如命令种类繁多，可暂时放开全部权限（安全性降低）
 # ${DEVOPS_USER} ALL=(ALL) NOPASSWD: ALL
 EOF
@@ -144,6 +147,13 @@ chmod 440 "${SUDOERS_FILE}"
 # 语法检查，防止写错导致 sudo 崩溃
 visudo -cf "${SUDOERS_FILE}" || error "sudoers 文件语法错误，请检查 ${SUDOERS_FILE}"
 info "sudo 权限配置成功。"
+
+# 确保 atd 服务存在并运行
+if ! command -v at &>/dev/null; then
+    info "正在安装 at 定时任务组件..."
+    apt-get update && apt-get install -y at
+    systemctl enable --now atd
+fi
 
 # -----------------------------------------------
 # 5. 加固 SSH 配置（禁止 root 直连）
