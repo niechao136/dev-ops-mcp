@@ -49,7 +49,7 @@ class CommandInfo(BaseModel):
     action_type: str = Field(..., description="操作类型")
     description: Optional[str] = Field(default=None, description="描述")
     shell_command: str = Field(..., description="Shell 命令")
-    timeout: int = Field(default=60, description="超时时间(秒)")
+    timeout: int = Field(default=600, description="超时时间(秒)")
     default_params: Optional[dict] = Field(default=None, description="可选参数默认值")
 
 

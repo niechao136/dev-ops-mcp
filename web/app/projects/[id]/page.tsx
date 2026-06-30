@@ -67,7 +67,7 @@ export default function ProjectDetailPage() {
     action_type: '',
     description: '',
     shell_command: '',
-    timeout: 60,
+    timeout: 600,
     default_params: undefined
   });
   const [defaultParamsText, setDefaultParamsText] = useState('');
@@ -136,7 +136,7 @@ export default function ProjectDetailPage() {
           action_type: '',
           description: '',
           shell_command: '',
-          timeout: 60,
+          timeout: 600,
           default_params: undefined
         });
         setDefaultParamsText('');
@@ -411,7 +411,7 @@ export default function ProjectDetailPage() {
                         action_type: '',
                         description: '',
                         shell_command: '',
-                        timeout: 60,
+                        timeout: 600,
                         default_params: undefined
                       });
                       setDefaultParamsText('');
@@ -582,7 +582,7 @@ export default function ProjectDetailPage() {
                 fullWidth
                 type="number"
                 value={formData.timeout}
-                onChange={(e) => setFormData({ ...formData, timeout: parseInt(e.target.value) || 60 })}
+                onChange={(e) => setFormData({ ...formData, timeout: parseInt(e.target.value) || 600 })}
               />
               <TextField
                 label="默认参数 (JSON格式)"
@@ -649,7 +649,7 @@ export default function ProjectDetailPage() {
                 fullWidth
                 type="number"
                 value={formData.timeout}
-                onChange={(e) => setFormData({ ...formData, timeout: parseInt(e.target.value) || 60 })}
+                onChange={(e) => setFormData({ ...formData, timeout: parseInt(e.target.value) || 600 })}
               />
               <TextField
                 label="默认参数 (JSON格式)"

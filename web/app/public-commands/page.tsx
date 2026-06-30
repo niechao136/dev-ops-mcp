@@ -56,7 +56,7 @@ export default function PublicCommandsPage() {
     action_type: '',
     description: '',
     shell_command: '',
-    timeout: 60,
+    timeout: 600,
     default_params: undefined,
     tags: ''
   });
@@ -131,7 +131,7 @@ export default function PublicCommandsPage() {
       action_type: '',
       description: '',
       shell_command: '',
-      timeout: 60,
+      timeout: 600,
       default_params: undefined,
       tags: ''
     });
@@ -401,7 +401,7 @@ export default function PublicCommandsPage() {
                 fullWidth
                 type="number"
                 value={formData.timeout}
-                onChange={(e) => setFormData({ ...formData, timeout: parseInt(e.target.value) || 60 })}
+                onChange={(e) => setFormData({ ...formData, timeout: parseInt(e.target.value) || 600 })}
               />
               <TextField
                 label="默认参数 (JSON格式)"
@@ -481,7 +481,7 @@ export default function PublicCommandsPage() {
                 fullWidth
                 type="number"
                 value={formData.timeout}
-                onChange={(e) => setFormData({ ...formData, timeout: parseInt(e.target.value) || 60 })}
+                onChange={(e) => setFormData({ ...formData, timeout: parseInt(e.target.value) || 600 })}
               />
               <TextField
                 label="默认参数 (JSON格式)"

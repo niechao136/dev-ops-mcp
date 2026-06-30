@@ -82,7 +82,7 @@ def migrate_database():
                     action_type VARCHAR(50) NOT NULL,
                     description TEXT,
                     shell_command TEXT NOT NULL,
-                    timeout INTEGER DEFAULT 60,
+                    timeout INTEGER DEFAULT 600,
                     default_params TEXT,
                     tags TEXT,
                     is_active INTEGER DEFAULT 1,

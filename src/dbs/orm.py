@@ -74,7 +74,7 @@ class Command(Base):
     action_type: Mapped[str] = mapped_column(String(50)) # start, stop, restart, logs
     description: Mapped[Optional[str]] = mapped_column(Text)
     shell_command: Mapped[str] = mapped_column(Text) # 真实的 Linux 脚本
-    timeout: Mapped[int] = mapped_column(Integer, default=60) # 超时时间(秒)
+    timeout: Mapped[int] = mapped_column(Integer, default=600) # 超时时间(秒)
     default_params: Mapped[Optional[dict]] = mapped_column(JSON, default=None) # 可选参数默认值
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now(UTC))
 

@@ -33,7 +33,7 @@ def _build_ssh_command(remote_cmd: str, work_dir: str) -> str:
 async def execute_shell_script(
         command: str,
         work_dir: str,
-        timeout: int = 60
+        timeout: int = 600
 ) -> Tuple[bool, str, str]:
     """
     异步执行 Shell 脚本，支持超时控制、工作目录切换和日志捕获。
@@ -92,9 +92,9 @@ async def execute_shell_script(
 
 
 async def execute_shell_commands_chain(
-        commands: List[str],  # 🔴 升级为接收一个命令列表
+        commands: List[str],
         work_dir: str,
-        total_timeout: int = 120
+        total_timeout: int = 600
 ) -> Tuple[bool, str, str]:
     """
     异步、链式执行一组 Shell 脚本步骤。
