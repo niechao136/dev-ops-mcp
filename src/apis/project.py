@@ -322,37 +322,50 @@ async def command_delete(
 @project_router.post(
     path="/execute",
     response_model=DataResult[dict],
-    summary="执行命令"
+    summary="执行命令（异步）"
 )
 async def command_execute(
     execute_data: CommandExecute,
     _: User = Depends(get_current_admin)
 ):
-    from src.utils.executor import execute_shell_commands_chain
-    from src.dbs.orm import AuditLog
+    from src.utils.task_executor import submit_task, is_project_locked, get_running_task
     from src.utils.context import current_mcp_token
-    from datetime import datetime, UTC
+    
+    caller_token = current_mcp_token.get()
+    caller_token_id = caller_token.id if caller_token else 0
+    
+    project_name = execute_data.project_name
+    action = execute_data.action
+    params = execute_data.params
+    
+    if is_project_locked(project_name):
+        running_task_id = get_running_task(project_name)
+        return DataResult(
+            status=0,
+            msg=f"项目 '{project_name}' 当前有任务正在执行，请稍后再试",
+            data={"task_id": running_task_id, "status": "running"}
+        )
     
     with get_db_session() as db:
         project = db.query(Project).filter(
-            Project.name == execute_data.project_name,
+            Project.name == project_name,
             Project.is_active == True
         ).first()
         
         if not project:
-            return DataResult(status=0, msg=f"找不到激活的项目: {execute_data.project_name}")
+            return DataResult(status=0, msg=f"找不到激活的项目: {project_name}")
 
         command = db.query(Command).filter(
             Command.project_id == project.id,
-            Command.action_type == execute_data.action
+            Command.action_type == action
         ).first()
         
         if not command:
-            return DataResult(status=0, msg=f"项目 '{execute_data.project_name}' 未配置 '{execute_data.action}' 操作。")
+            return DataResult(status=0, msg=f"项目 '{project_name}' 未配置 '{action}' 操作。")
 
         raw_command_text = command.shell_command
         
-        merged_params = {**(command.default_params or {}), **(execute_data.params or {})}
+        merged_params = {**(command.default_params or {}), **(params or {})}
         
         if merged_params:
             for key, value in merged_params.items():
@@ -362,40 +375,31 @@ async def command_execute(
         command_list = [line.strip() for line in raw_command_text.splitlines() if line.strip()]
 
         if not command_list:
-            return DataResult(status=0, msg=f"'{execute_data.action}' 配置的脚本内容为空。")
+            return DataResult(status=0, msg=f"'{action}' 配置的脚本内容为空。")
 
-        is_success, status, output_log = await execute_shell_commands_chain(
+        command_details = {
+            "script": command.shell_command,
+            "params": params,
+            "default_params": command.default_params
+        }
+
+        task_id = submit_task(
+            project_name=project_name,
+            action=action,
             commands=command_list,
             work_dir=project.work_dir,
-            total_timeout=command.timeout
-        )
-
-        caller_token = current_mcp_token.get()
-        caller_token_id = caller_token.id if caller_token else 0
-
-        audit = AuditLog(
+            timeout=command.timeout,
             actor_type="human",
             actor_id=caller_token_id,
-            action_category="execute_cmd",
-            target_project=project.name,
-            action_details={
-                "action": execute_data.action,
-                "script": command.shell_command,
-                "params": execute_data.params,
-                "default_params": command.default_params
-            },
-            status=status,
-            output_log=output_log
+            command_details=command_details
         )
-        db.add(audit)
-        db.commit()
 
     return DataResult(
         status=1,
         data={
-            "is_success": is_success,
-            "status": status,
-            "output_log": output_log
+            "task_id": task_id,
+            "status": "pending",
+            "message": "任务已提交，正在排队中"
         },
-        msg=f"执行 {status}"
+        msg="任务提交成功"
     )

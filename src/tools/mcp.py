@@ -11,9 +11,10 @@ from pathlib import Path
 from typing import Optional
 
 from src.dbs.db import get_db_session
-from src.dbs.orm import AuditLog, Command, Project
+from src.dbs.orm import AuditLog, Command, Project, Task
 from src.utils.context import check_token, check_project, current_mcp_token
 from src.utils.executor import execute_shell_commands_chain
+from src.utils.task_executor import submit_task, get_task_info, is_project_locked, get_running_task
 
 
 load_dotenv()
@@ -71,18 +72,21 @@ async def get_node_overview() -> list[TextContent]:
 
 
 # =====================================================================
-# Tool 2: 执行具体指令
+# Tool 2: 提交执行任务（异步）
 # =====================================================================
 @mcp.tool()
 async def execute_action(project_name: str, action: str, params: Optional[dict] = None) -> list[TextContent]:
     """
-    执行指定项目的特定运维操作（如 start, restart, deploy）。
+    提交指定项目的特定运维操作（如 start, restart, deploy），任务将异步执行。
     执行前请先确保该项目支持该 action。
     
     参数说明:
     - params: 可选参数，字典类型，用于替换命令脚本中的占位符。
         在命令脚本中使用 ${参数名} 格式定义占位符，执行时会被替换为实际值。
         示例: 若脚本包含 'git checkout ${version}'，调用时传入 {"version": "v0.1.0"}
+    
+    返回:
+    - task_id: 任务ID，用于后续查询任务状态
     """
     caller_token = current_mcp_token.get()
     if not caller_token:
@@ -95,6 +99,10 @@ async def execute_action(project_name: str, action: str, params: Optional[dict] 
 
     if not is_permitted:
         return [TextContent(type="text", text=f"🚫 权限拒绝: 当前 API Key 无权操作项目 {project_name}")]
+
+    if is_project_locked(project_name):
+        running_task_id = get_running_task(project_name)
+        return [TextContent(type="text", text=f"⏳ 项目 '{project_name}' 当前有任务正在执行，请稍后再试。任务ID: {running_task_id}")]
 
     with get_db_session() as db:
         project = db.query(Project).filter(Project.name == project_name, Project.is_active == True).first()
@@ -119,26 +127,77 @@ async def execute_action(project_name: str, action: str, params: Optional[dict] 
         if not command_list:
             return [TextContent(type="text", text=f"❌ '{action}' 配置的脚本内容为空。")]
 
-        is_success, status, output_log = await execute_shell_commands_chain(
+        command_details = {
+            "script": command.shell_command,
+            "params": params,
+            "default_params": command.default_params
+        }
+
+        task_id = submit_task(
+            project_name=project_name,
+            action=action,
             commands=command_list,
             work_dir=project.work_dir,
-            total_timeout=command.timeout
-        )
-
-        audit = AuditLog(
+            timeout=command.timeout,
             actor_type="ai",
             actor_id=caller_token_id,
-            action_category="execute_cmd",
-            target_project=project.name,
-            action_details={"action": action, "script": command.shell_command, "params": params, "default_params": command.default_params},
-            status=status,
-            output_log=output_log
+            command_details=command_details
         )
-        db.add(audit)
-        db.commit()
 
-    icon = "✅" if is_success else "❌"
-    return [TextContent(type="text", text=f"{icon} 执行 {status}。\n详细日志:\n{output_log}")]
+    return [TextContent(type="text", text=f"📋 任务已提交，task_id: {task_id}\n请使用 get_task_status({task_id}) 查询执行状态和输出。")]
+
+
+# =====================================================================
+# Tool 2.1: 查询任务状态
+# =====================================================================
+@mcp.tool()
+async def get_task_status(task_id: str) -> list[TextContent]:
+    """
+    查询指定任务的执行状态和输出日志。
+    
+    参数说明:
+    - task_id: 任务ID，由 execute_action 返回
+    
+    返回:
+    - 任务状态（pending/running/success/failed/timeout/cancelled）
+    - 输出日志
+    - 执行时间等信息
+    """
+    token, _, _ = check_token()
+    if not token:
+        return [TextContent(type="text", text="缺少 API Key")]
+
+    task_info = get_task_info(task_id)
+    if not task_info:
+        return [TextContent(type="text", text=f"❌ 找不到任务: {task_id}")]
+
+    status_map = {
+        "pending": "⏳ 排队中",
+        "running": "🔄 运行中",
+        "success": "✅ 成功",
+        "failed": "❌ 失败",
+        "timeout": "⏰ 超时",
+        "cancelled": "🚫 已取消"
+    }
+
+    status_text = status_map.get(task_info["status"], task_info["status"])
+    
+    result = (
+        f"任务ID: {task_id}\n"
+        f"项目: {task_info['project_name']}\n"
+        f"操作: {task_info['action']}\n"
+        f"状态: {status_text}\n"
+    )
+    
+    if task_info["output_log"]:
+        result += f"\n输出日志:\n{task_info['output_log']}"
+    
+    if task_info["start_time"]:
+        result += f"\n开始时间: {task_info['start_time']}"
+    if task_info["end_time"]:
+        result += f"\n结束时间: {task_info['end_time']}"
+    
+    return [TextContent(type="text", text=result)]
 
 
 # =====================================================================

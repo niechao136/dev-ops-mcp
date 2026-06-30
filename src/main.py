@@ -12,6 +12,7 @@ from src.apis.project import project_router
 from src.apis.audit_log import audit_log_router
 from src.apis.dashboard import dashboard_router
 from src.apis.public_command import public_command_router
+from src.apis.task import task_router
 from src.dbs.db import init_db
 from src.middlewares.mcp_auth import MCPAuthMiddleware
 from src.tools.mcp import mcp_app
@@ -47,6 +48,7 @@ app.include_router(router=project_router)
 app.include_router(router=audit_log_router)
 app.include_router(router=dashboard_router)
 app.include_router(router=public_command_router)
+app.include_router(router=task_router)
 app.mount("/mcp", mcp_app)  # 将 MCP 应用挂载到 /mcp 路径下
 
 

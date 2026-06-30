@@ -131,6 +131,24 @@ export interface CommandExecuteResult {
   output_log: string;
 }
 
+export interface TaskInfo {
+  task_id: string;
+  project_name: string;
+  action: string;
+  status: 'pending' | 'running' | 'success' | 'failed' | 'timeout' | 'cancelled';
+  output_log?: string;
+  start_time?: string;
+  end_time?: string;
+  timeout: number;
+  created_at: string;
+}
+
+export interface TaskSubmitResult {
+  task_id: string;
+  status: string;
+  message: string;
+}
+
 // API Key types
 export interface ApiKeyInfo {
   id: number;

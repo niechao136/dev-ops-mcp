@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import {
   Box,
@@ -27,7 +27,8 @@ import {
   Paper,
   Chip,
   Divider,
-  TablePagination
+  TablePagination,
+  LinearProgress
 } from '@mui/material';
 import {
   PlayArrow,
@@ -37,14 +38,15 @@ import {
   ArrowBack,
   Refresh,
   HelpOutlined,
-  Download
+  Download,
+  Cancel
 } from '@mui/icons-material';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { enqueueSnackbar } from 'notistack';
 import ProtectedRoute from '@/components/protected-route';
 import MainLayout from '@/components/main-layout';
 import { apiService } from '@/services/api';
-import type { ProjectInfo, CommandInfo, CommandAdd, CommandUpdate, CommandExecute, CommandExecuteResult, PublicCommandInfo } from '@/types/api';
+import type { ProjectInfo, CommandInfo, CommandAdd, CommandUpdate, CommandExecute, CommandExecuteResult, PublicCommandInfo, TaskInfo, TaskSubmitResult } from '@/types/api';
 
 
 export default function ProjectDetailPage() {
@@ -62,6 +64,12 @@ export default function ProjectDetailPage() {
   const [commandToDelete, setCommandToDelete] = useState<number | null>(null);
   const [executeParams, setExecuteParams] = useState<Record<string, string>>({});
   const [executeResult, setExecuteResult] = useState<CommandExecuteResult | null>(null);
+  const [taskId, setTaskId] = useState<string | null>(null);
+  const [taskStatus, setTaskStatus] = useState<'pending' | 'running' | 'success' | 'failed' | 'timeout' | 'cancelled' | null>(null);
+  const [taskLog, setTaskLog] = useState<string>('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isTaskRunning, setIsTaskRunning] = useState(false);
+  const logContainerRef = useRef<HTMLDivElement>(null);
   const [formData, setFormData] = useState<CommandAdd | CommandUpdate>({
     project_id: projectId,
     action_type: '',
@@ -189,19 +197,38 @@ export default function ProjectDetailPage() {
 
 
   const executeMutation = useMutation({
-    mutationFn: (data: CommandExecute) => apiService.executeCommand(data),
+    mutationFn: (data: CommandExecute) => apiService.executeTask(data),
     onSuccess: (result) => {
       if (result.status === 1) {
-        setExecuteResult(result.data!);
-        enqueueSnackbar(result.data?.is_success ? '执行成功' : '执行失败', {
-          variant: result.data?.is_success ? 'success' : 'error'
-        });
+        const taskData = result.data!;
+        setTaskId(taskData.task_id);
+        setTaskStatus('pending');
+        setTaskLog('');
+        setIsSubmitting(false);
+        setIsTaskRunning(true);
+        enqueueSnackbar(taskData.message, { variant: 'info' });
       } else {
-        enqueueSnackbar(result.msg || '执行失败', { variant: 'error' });
+        setIsSubmitting(false);
+        enqueueSnackbar(result.msg || '提交失败', { variant: 'error' });
       }
     },
     onError: () => {
-      enqueueSnackbar('执行失败', { variant: 'error' });
+      setIsSubmitting(false);
+      enqueueSnackbar('提交失败', { variant: 'error' });
+    }
+  });
+
+  const cancelTaskMutation = useMutation({
+    mutationFn: (taskId: string) => apiService.cancelTask(taskId),
+    onSuccess: (result) => {
+      if (result.status === 1) {
+        enqueueSnackbar('任务已取消', { variant: 'info' });
+      } else {
+        enqueueSnackbar(result.msg || '取消失败', { variant: 'error' });
+      }
+    },
+    onError: () => {
+      enqueueSnackbar('取消失败', { variant: 'error' });
     }
   });
 
@@ -269,6 +296,11 @@ export default function ProjectDetailPage() {
     });
     setExecuteParams(params);
     setExecuteResult(null);
+    setTaskId(null);
+    setTaskStatus(null);
+    setTaskLog('');
+    setIsTaskRunning(false);
+    setIsSubmitting(false);
     setExecuteDialogOpen(true);
   };
 
@@ -283,12 +315,80 @@ export default function ProjectDetailPage() {
       }
     });
 
+    setIsSubmitting(true);
     executeMutation.mutate({
       project_name: project.name,
       action: currentCommand.action_type,
       params: Object.keys(paramsObj).length > 0 ? paramsObj : undefined
     });
   };
+
+
+  const handleCancelTask = () => {
+    if (!taskId) return;
+    cancelTaskMutation.mutate(taskId);
+    setTaskStatus('cancelled');
+    setIsTaskRunning(false);
+  };
+
+
+  useEffect(() => {
+    let interval: ReturnType<typeof setInterval>;
+
+    const pollTaskStatus = async () => {
+      if (!taskId) return;
+
+      try {
+        const result = await apiService.getTaskStatus(taskId);
+        if (result.status === 1 && result.data) {
+          const task = result.data;
+          setTaskStatus(task.status);
+          if (task.output_log) {
+            setTaskLog(task.output_log);
+          }
+
+          if (task.status === 'success' || task.status === 'failed' || task.status === 'timeout' || task.status === 'cancelled') {
+            setIsTaskRunning(false);
+            if (interval) {
+              clearInterval(interval);
+            }
+
+            const statusMessages = {
+              success: { message: '任务执行成功', variant: 'success' as const },
+              failed: { message: '任务执行失败', variant: 'error' as const },
+              timeout: { message: '任务执行超时', variant: 'warning' as const },
+              cancelled: { message: '任务已取消', variant: 'info' as const }
+            };
+
+            const statusMsg = statusMessages[task.status];
+            if (statusMsg) {
+              enqueueSnackbar(statusMsg.message, { variant: statusMsg.variant });
+            }
+          }
+        }
+      } catch (error) {
+        console.error('Failed to poll task status:', error);
+      }
+    };
+
+    if (isTaskRunning && taskId) {
+      pollTaskStatus();
+      interval = setInterval(pollTaskStatus, 2000);
+    }
+
+    return () => {
+      if (interval) {
+        clearInterval(interval);
+      }
+    };
+  }, [isTaskRunning, taskId]);
+
+
+  useEffect(() => {
+    if (logContainerRef.current) {
+      logContainerRef.current.scrollTop = logContainerRef.current.scrollHeight;
+    }
+  }, [taskLog]);
 
 
   const openEditDialog = (command: CommandInfo) => {
@@ -730,6 +830,13 @@ export default function ProjectDetailPage() {
                   size="small"
                   color="secondary"
                 />
+                {taskId && (
+                  <Chip
+                    label={`任务ID: ${taskId}`}
+                    size="small"
+                    variant="outlined"
+                  />
+                )}
               </Box>
 
               <Typography variant="subtitle2" color="text.secondary">
@@ -752,7 +859,7 @@ export default function ProjectDetailPage() {
                 {currentCommand?.shell_command || ''}
               </Box>
 
-              {Object.keys(executeParams).length > 0 && (
+              {!isTaskRunning && Object.keys(executeParams).length > 0 && (
                 <>
                   <Typography variant="subtitle2" color="text.secondary">
                     参数：
@@ -766,40 +873,79 @@ export default function ProjectDetailPage() {
                         onChange={(e) => setExecuteParams({ ...executeParams, [key]: e.target.value })}
                         placeholder={`请输入 ${key}`}
                         sx={{ width: 200 }}
+                        disabled={isSubmitting || isTaskRunning}
                       />
                     ))}
                   </Box>
                 </>
               )}
 
-              {executeResult && (
+              {(isSubmitting || isTaskRunning || taskStatus) && (
                 <>
                   <Typography variant="subtitle2" color="text.secondary">
-                    执行结果：
+                    任务状态：
+                  </Typography>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                    {isSubmitting && (
+                      <>
+                        <CircularProgress size={20} />
+                        <Typography>提交中...</Typography>
+                      </>
+                    )}
+                    {taskStatus === 'pending' && !isSubmitting && (
+                      <>
+                        <CircularProgress size={20} color="warning" />
+                        <Typography>排队中...</Typography>
+                      </>
+                    )}
+                    {taskStatus === 'running' && (
+                      <>
+                        <CircularProgress size={20} color="info" />
+                        <Typography>运行中...</Typography>
+                        <LinearProgress sx={{ flex: 1 }} />
+                      </>
+                    )}
+                    {taskStatus === 'success' && (
+                      <Chip label="成功" size="small" color="success" />
+                    )}
+                    {taskStatus === 'failed' && (
+                      <Chip label="失败" size="small" color="error" />
+                    )}
+                    {taskStatus === 'timeout' && (
+                      <Chip label="超时" size="small" color="warning" />
+                    )}
+                    {taskStatus === 'cancelled' && (
+                      <Chip label="已取消" size="small" variant="outlined" />
+                    )}
+                  </Box>
+                </>
+              )}
+
+              {(isTaskRunning || taskLog) && (
+                <>
+                  <Typography variant="subtitle2" color="text.secondary">
+                    实时日志：
                   </Typography>
                   <Box
+                    ref={logContainerRef}
                     sx={{
-                      bgcolor: executeResult.is_success ? 'rgba(76, 175, 80, 0.1)' : 'rgba(244, 67, 54, 0.1)',
+                      bgcolor: (theme) =>
+                        theme.palette.mode === 'dark' ? 'rgba(0,0,0,0.4)' : 'rgba(0,0,0,0.05)',
+                      color: (theme) =>
+                        theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.9)' : 'inherit',
                       p: 2,
                       borderRadius: 1,
                       border: 1,
-                      borderColor: executeResult.is_success ? 'rgba(76, 175, 80, 0.3)' : 'rgba(244, 67, 54, 0.3)'
+                      borderColor: (theme) =>
+                        theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.12)' : 'divider',
+                      maxHeight: '300px',
+                      overflowY: 'auto',
+                      fontFamily: 'monospace',
+                      whiteSpace: 'pre-wrap',
+                      fontSize: '0.875rem'
                     }}
                   >
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-                      <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
-                        状态：{executeResult.is_success ? '成功' : '失败'}
-                      </Typography>
-                      <Typography variant="body2" color="text.secondary">
-                        {executeResult.status}
-                      </Typography>
-                    </Box>
-                    <Typography
-                      variant="body2"
-                      sx={{ fontFamily: 'fontFamily', whiteSpace: 'pre-wrap', overflow: 'auto', maxHeight: '300px' }}
-                    >
-                      {executeResult.output_log}
-                    </Typography>
+                    {taskLog || '等待任务开始...'}
                   </Box>
                 </>
               )}
@@ -807,15 +953,27 @@ export default function ProjectDetailPage() {
           </DialogContent>
           <DialogActions>
             <Button onClick={() => setExecuteDialogOpen(false)}>关闭</Button>
-            <Button
-              onClick={handleExecute}
-              variant="contained"
-              color="success"
-              disabled={executeMutation.isPending}
-              startIcon={<PlayArrow />}
-            >
-              {executeMutation.isPending ? <CircularProgress size={20} /> : '执行'}
-            </Button>
+            {!isTaskRunning && !isSubmitting && (
+              <Button
+                onClick={handleExecute}
+                variant="contained"
+                color="success"
+                disabled={isSubmitting || isTaskRunning}
+                startIcon={<PlayArrow />}
+              >
+                {isSubmitting ? <CircularProgress size={20} /> : '执行'}
+              </Button>
+            )}
+            {isTaskRunning && taskStatus === 'running' && (
+              <Button
+                onClick={handleCancelTask}
+                variant="contained"
+                color="error"
+                startIcon={<Cancel />}
+              >
+                取消任务
+              </Button>
+            )}
           </DialogActions>
         </Dialog>
 

@@ -95,6 +95,36 @@ def migrate_database():
         else:
             print("public_commands table already exists")
 
+        # Check and create tasks table
+        cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='tasks'")
+        if not cursor.fetchone():
+            print("Creating tasks table...")
+            cursor.execute("""
+                CREATE TABLE tasks (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    task_id VARCHAR(64) NOT NULL UNIQUE,
+                    project_name VARCHAR(100) NOT NULL,
+                    action VARCHAR(50) NOT NULL,
+                    status VARCHAR(20) DEFAULT 'pending',
+                    output_log TEXT,
+                    start_time DATETIME,
+                    end_time DATETIME,
+                    timeout INTEGER DEFAULT 600,
+                    actor_type VARCHAR(20) NOT NULL,
+                    actor_id INTEGER NOT NULL,
+                    command_details TEXT NOT NULL,
+                    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+                )
+            """)
+            cursor.execute("CREATE INDEX idx_tasks_task_id ON tasks(task_id)")
+            cursor.execute("CREATE INDEX idx_tasks_project_name ON tasks(project_name)")
+            cursor.execute("CREATE INDEX idx_tasks_status ON tasks(status)")
+            cursor.execute("CREATE INDEX idx_tasks_created_at ON tasks(created_at)")
+            conn.commit()
+            print("Successfully created tasks table")
+        else:
+            print("tasks table already exists")
+
         print("\nDatabase migration completed!")
         
     except Exception as e:

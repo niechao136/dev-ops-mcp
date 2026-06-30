@@ -7,7 +7,8 @@ import {
   UserAdd, UserUpdate, UserPassword, UserChangePassword,
   AuditLogInfo, AuditLogQueryParams,
   DashboardStats, SystemMetrics,
-  PublicCommandInfo, PublicCommandAdd, PublicCommandUpdate, PublicCommandImport
+  PublicCommandInfo, PublicCommandAdd, PublicCommandUpdate, PublicCommandImport,
+  TaskInfo, TaskSubmitResult
 } from '@/types/api';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || '/api';
@@ -370,6 +371,72 @@ class ApiService {
 
   async getSystemMetrics(): Promise<DataResult<SystemMetrics>> {
     return this.request<DataResult<SystemMetrics>>('/dashboard/metrics');
+  }
+
+  // Task API
+  async executeTask(data: CommandExecute): Promise<DataResult<TaskSubmitResult>> {
+    return this.request<DataResult<TaskSubmitResult>>('/tasks/execute', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async getTaskStatus(taskId: string): Promise<DataResult<TaskInfo>> {
+    return this.request<DataResult<TaskInfo>>(`/tasks/${taskId}`);
+  }
+
+  async getTasks(params?: {
+    project_name?: string;
+    status?: string;
+    page?: number;
+    size?: number;
+  }): Promise<PageResult<TaskInfo>> {
+    const query = new URLSearchParams();
+    if (params?.project_name) query.set('project_name', params.project_name);
+    if (params?.status) query.set('status', params.status);
+    if (params?.page) query.set('page', params.page.toString());
+    if (params?.size) query.set('size', params.size.toString());
+    const queryString = query.toString();
+    const url = `/tasks${queryString ? '?' + queryString : ''}`;
+    return this.request<PageResult<TaskInfo>>(url);
+  }
+
+  async cancelTask(taskId: string): Promise<DataResult<boolean>> {
+    return this.request<DataResult<boolean>>(`/tasks/${taskId}/cancel`, {
+      method: 'POST',
+    });
+  }
+
+  async subscribeTaskStream(taskId: string, callback: (data: string, status?: string) => void): Promise<() => void> {
+    const token = await getToken();
+    const url = new URL(`${this.baseUrl}/tasks/${taskId}/stream`);
+    if (token) {
+      url.searchParams.set('token', token);
+    }
+    const eventSource = new EventSource(url.toString());
+
+    eventSource.onmessage = (event) => {
+      try {
+        const parsed = JSON.parse(event.data);
+        if (parsed.error) {
+          callback('', 'error');
+          eventSource.close();
+        } else if (parsed.status && parsed.end) {
+          callback('', parsed.status);
+          eventSource.close();
+        } else {
+          callback(event.data);
+        }
+      } catch {
+        callback(event.data);
+      }
+    };
+
+    eventSource.onerror = () => {
+      eventSource.close();
+    };
+
+    return () => eventSource.close();
   }
 }
 

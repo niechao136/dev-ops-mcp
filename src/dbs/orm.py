@@ -126,3 +126,24 @@ class AuditLog(Base):
     # 环境信息
     ip_address: Mapped[Optional[str]] = mapped_column(String(50))
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now(UTC), index=True)
+
+
+# ==========================================
+# 6. 任务表 (Task)
+# ==========================================
+class Task(Base):
+    __tablename__ = "tasks"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    task_id: Mapped[str] = mapped_column(String(64), unique=True, index=True)  # UUID
+    project_name: Mapped[str] = mapped_column(String(100), index=True)
+    action: Mapped[str] = mapped_column(String(50))
+    status: Mapped[str] = mapped_column(String(20), default="pending")  # pending, running, success, failed, timeout, cancelled
+    output_log: Mapped[Optional[str]] = mapped_column(Text)
+    start_time: Mapped[Optional[datetime]] = mapped_column(DateTime)
+    end_time: Mapped[Optional[datetime]] = mapped_column(DateTime)
+    timeout: Mapped[int] = mapped_column(Integer, default=600)
+    actor_type: Mapped[str] = mapped_column(String(20))  # 'human' 或 'ai'
+    actor_id: Mapped[int] = mapped_column(Integer)
+    command_details: Mapped[dict] = mapped_column(JSON)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now(UTC), index=True)

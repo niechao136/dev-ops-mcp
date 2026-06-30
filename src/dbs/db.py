@@ -1,4 +1,5 @@
 import os
+import sys
 from contextlib import contextmanager
 from dotenv import load_dotenv
 from pathlib import Path
@@ -10,6 +11,12 @@ from src.utils.security import encrypt_api_key, generate_api_key, pwd_context
 
 from .orm import ApiToken, Base, User
 
+
+if sys.platform == 'win32':
+    try:
+        os.system('chcp 65001')
+    except:
+        pass
 
 load_dotenv()
 
@@ -48,7 +55,7 @@ def init_db():
         admin_user = db.query(User).filter(User.username == admin_usr).first()
 
         if not admin_user:
-            print("▶️ [DB Init] 未检测到管理员账号，正在创建初始超级管理员...")
+            print("[DB Init] 未检测到管理员账号，正在创建初始超级管理员...")
 
             admin_user = User(
                 username=admin_usr,
@@ -59,16 +66,16 @@ def init_db():
             db.add(admin_user)
             db.flush()
 
-            print(f"📌 [DB Init] 初始管理员创建成功！")
-            print(f"👉 账号: {admin_usr}")
-            print(f"👉 密码: {admin_pwd}")
+            print(f"[DB Init] 初始管理员创建成功！")
+            print(f"账号: {admin_usr}")
+            print(f"密码: {admin_pwd}")
         else:
-            print("ℹ️ [DB Init] 管理员账号已存在，跳过账号创建。")
+            print("[DB Init] 管理员账号已存在，跳过账号创建。")
 
         default_token_exists = db.query(ApiToken).filter(ApiToken.token_name == default_api_key).first()
 
         if not default_token_exists:
-            print("▶️ [DB Init] 未检测到默认 MCP 密钥，正在生成默认 MCP 密钥...")
+            print("[DB Init] 未检测到默认 MCP 密钥，正在生成默认 MCP 密钥...")
 
             plain_key, key_hash, prefix = generate_api_key()
             key_encrypted = encrypt_api_key(plain_key)
@@ -87,8 +94,8 @@ def init_db():
             db.add(default_token)
             db.commit()
 
-            print(f"🎁 [DB Init] 默认 MCP API Key 生成成功！")
-            print(f"🔴 密钥明文: {plain_key}")
+            print(f"[DB Init] 默认 MCP API Key 生成成功！")
+            print(f"密钥明文: {plain_key}")
         else:
             db.commit()  # 确保之前的操作正常结束
-            print("ℹ️ [DB Init] 默认 MCP 密钥已存在，跳过密钥创建。")
+            print("[DB Init] 默认 MCP 密钥已存在，跳过密钥创建。")
