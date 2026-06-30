@@ -217,6 +217,17 @@ export interface DashboardStats {
   audit_log_count: number;
 }
 
+export interface SystemMetrics {
+  cpu_usage: number;
+  mem_usage: number;
+  mem_total_gb: number;
+  mem_used_gb: number;
+  disk_usage: number;
+  disk_total_gb: number;
+  disk_free_gb: number;
+  node_name: string;
+}
+
 // 公共命令类型
 export interface PublicCommandInfo {
   id: number;

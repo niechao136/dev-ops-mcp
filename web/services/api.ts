@@ -6,7 +6,7 @@ import {
   ApiKeyInfo, ApiKeyAdd, ApiKeyUpdate, ApiKeyCreated,
   UserAdd, UserUpdate, UserPassword, UserChangePassword,
   AuditLogInfo, AuditLogQueryParams,
-  DashboardStats,
+  DashboardStats, SystemMetrics,
   PublicCommandInfo, PublicCommandAdd, PublicCommandUpdate, PublicCommandImport
 } from '@/types/api';
 
@@ -366,6 +366,10 @@ class ApiService {
   // Dashboard API
   async getDashboardStats(): Promise<DataResult<DashboardStats>> {
     return this.request<DataResult<DashboardStats>>('/dashboard/stats');
+  }
+
+  async getSystemMetrics(): Promise<DataResult<SystemMetrics>> {
+    return this.request<DataResult<SystemMetrics>>('/dashboard/metrics');
   }
 }
 
