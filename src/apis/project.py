@@ -206,14 +206,20 @@ async def project_delete(
 )
 async def project_commands(
     project_id: int,
+    page: int = 1,
+    size: int = 20,
     _: User = Depends(get_current_user)
 ):
+    offset = (page - 1) * size
+
     with get_db_session() as db:
         project = get_project_by_id(db, project_id)
         if not project:
             return DataResult(status=0, msg="项目不存在")
 
-        commands = db.query(Command).filter(Command.project_id == project_id).all()
+        query = db.query(Command).filter(Command.project_id == project_id)
+        total = query.count()
+        commands = query.offset(offset).limit(size).all()
 
         result_items = [
             CommandInfo(
@@ -229,10 +235,10 @@ async def project_commands(
         ]
 
         return PageResult(
-            total=len(result_items),
+            total=total,
             data=result_items,
-            page=1,
-            size=len(result_items)
+            page=page,
+            size=size
         )
 
 

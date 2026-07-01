@@ -39,6 +39,7 @@ class UserUpdate(BaseModel):
     username: str = Field(..., description="用户名")
     email: Optional[str] = Field(default=None, description="用户邮箱")
     role: UserRole = Field(..., description="用户权限")
+    is_active: Optional[bool] = Field(default=None, description="是否启用")
 
 
 class UserPassword(BaseModel):

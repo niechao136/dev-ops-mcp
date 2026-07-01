@@ -126,9 +126,9 @@ export interface CommandExecute {
 }
 
 export interface CommandExecuteResult {
-  is_success: boolean;
+  task_id: string;
   status: string;
-  output_log: string;
+  message: string;
 }
 
 export interface TaskInfo {
@@ -176,20 +176,6 @@ export interface ApiKeyCreated {
   name: string;
   key: string;
   prefix?: string;
-}
-
-export interface UserAdd {
-  username: string;
-  email?: string;
-  password: string;
-  role: 'admin' | 'user';
-}
-
-export interface UserUpdate {
-  username?: string;
-  email?: string;
-  role?: 'admin' | 'user';
-  is_active?: boolean;
 }
 
 export interface UserPassword {

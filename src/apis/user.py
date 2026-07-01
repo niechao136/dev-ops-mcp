@@ -246,6 +246,8 @@ async def update_user(
         user.username = user_data.username
         user.email = user_data.email
         user.role = user_data.role.value
+        if user_data.is_active is not None:
+            user.is_active = user_data.is_active
         
         db.commit()
         db.refresh(user)

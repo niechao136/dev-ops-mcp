@@ -7,6 +7,7 @@ from src.dbs.db import get_db_session
 from src.dbs.orm import Task, User, Project, Command
 from src.schemas.api import DataResult, PageResult
 from src.schemas.task import TaskInfo, TaskSubmitResult
+from src.schemas.project import CommandExecute
 from src.utils.auth import get_current_user
 from src.utils.task_executor import submit_task, get_task_info, cancel_task, is_project_locked, get_running_task
 from src.utils.context import current_mcp_token
@@ -144,13 +145,15 @@ async def task_stream(
     summary="提交执行任务（异步）"
 )
 async def task_execute(
-    project_name: str,
-    action: str,
-    params: Optional[dict] = None,
+    execute_data: CommandExecute,
     _: User = Depends(get_current_user)
 ):
     caller_token = current_mcp_token.get()
     caller_token_id = caller_token.id if caller_token else 0
+    
+    project_name = execute_data.project_name
+    action = execute_data.action
+    params = execute_data.params
     
     if is_project_locked(project_name):
         running_task_id = get_running_task(project_name)
