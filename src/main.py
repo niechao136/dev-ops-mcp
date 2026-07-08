@@ -3,6 +3,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastmcp.utilities.lifespan import combine_lifespans
+from sqlalchemy import text
 
 
 from src.apis.api_key import api_key_router
@@ -50,6 +51,28 @@ app.include_router(router=dashboard_router)
 app.include_router(router=public_command_router)
 app.include_router(router=task_router)
 app.mount("/mcp", mcp_app)  # 将 MCP 应用挂载到 /mcp 路径下
+
+
+@app.get("/health", summary="服务健康检查")
+async def health_check():
+    try:
+        from src.dbs.db import get_db_session
+        with get_db_session() as db:
+            db.execute(text("SELECT 1"))
+        
+        return {
+            "status": "healthy",
+            "service": "devops-mcp",
+            "version": "1.0.0",
+            "timestamp": __import__('datetime').datetime.now(__import__('datetime').timezone.utc).isoformat()
+        }
+    except Exception as e:
+        return {
+            "status": "unhealthy",
+            "service": "devops-mcp",
+            "error": str(e),
+            "timestamp": __import__('datetime').datetime.now(__import__('datetime').timezone.utc).isoformat()
+        }
 
 
 if __name__ == "__main__":

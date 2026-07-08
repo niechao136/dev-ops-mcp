@@ -70,6 +70,15 @@ def migrate_database():
                 print("Successfully added default_params column")
             except sqlite3.OperationalError as e:
                 print(f"Info: {e}")
+        
+        if "is_health_check" not in commands_columns:
+            print("Adding is_health_check column to commands table...")
+            try:
+                cursor.execute("ALTER TABLE commands ADD COLUMN is_health_check INTEGER DEFAULT 0")
+                conn.commit()
+                print("Successfully added is_health_check column")
+            except sqlite3.OperationalError as e:
+                print(f"Info: {e}")
 
         # Check and create public_commands table
         cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='public_commands'")

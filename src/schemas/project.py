@@ -24,6 +24,7 @@ class ProjectInfo(BaseModel):
     work_dir: str = Field(..., description="工作目录")
     is_active: bool = Field(default=True, description="是否激活")
     command_count: Optional[int] = Field(default=0, description="命令数量")
+    health_status: Optional[str] = Field(default="unknown", description="健康状态: healthy/unhealthy/unknown")
 
 
 class ProjectAdd(BaseModel):
@@ -51,6 +52,7 @@ class CommandInfo(BaseModel):
     shell_command: str = Field(..., description="Shell 命令")
     timeout: int = Field(default=600, description="超时时间(秒)")
     default_params: Optional[dict] = Field(default=None, description="可选参数默认值")
+    is_health_check: bool = Field(default=False, description="是否为健康检查命令")
 
 
 class CommandAdd(BaseModel):

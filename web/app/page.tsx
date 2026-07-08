@@ -8,6 +8,9 @@ import {
   Container,
   CircularProgress,
   LinearProgress,
+  Chip,
+  Tooltip,
+  Alert,
 } from '@mui/material';
 import {
   Dashboard,
@@ -17,12 +20,15 @@ import {
   History,
   Monitor,
   Memory,
+  CheckCircle,
+  Error,
+  Help,
 } from '@mui/icons-material';
 import { useQuery } from '@tanstack/react-query';
 import ProtectedRoute from '@/components/protected-route';
 import MainLayout from '@/components/main-layout';
 import { apiService } from '@/services/api';
-import type { SystemMetrics } from '@/types/api';
+import type { SystemMetrics, ProjectInfo } from '@/types/api';
 
 
 export default function HomePage() {
@@ -35,6 +41,12 @@ export default function HomePage() {
     queryKey: ['system-metrics'],
     queryFn: () => apiService.getSystemMetrics(),
     refetchInterval: 5000,
+  });
+
+  const { data: projectsData, isLoading: projectsLoading } = useQuery({
+    queryKey: ['dashboard-projects'],
+    queryFn: () => apiService.getProjects({ page: 1, size: 20 }),
+    refetchInterval: 30000,
   });
 
   const stats = [
@@ -242,6 +254,64 @@ export default function HomePage() {
                 </Box>
                 <Typography variant="body2" color="text.secondary" sx={{ mt: 2 }}>
                   节点: {metrics?.node_name || '-'} | 数据每 5 秒自动刷新
+                </Typography>
+              </Box>
+
+              <Box sx={{ mt: 4 }}>
+                <Typography variant="h6" gutterBottom>
+                  项目健康状态
+                </Typography>
+                {projectsLoading ? (
+                  <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
+                    <CircularProgress />
+                  </Box>
+                ) : (
+                  <Box sx={{
+                    display: 'grid',
+                    gridTemplateColumns: {
+                      xs: '1fr',
+                      sm: '1fr 1fr',
+                      md: '1fr 1fr 1fr 1fr',
+                    },
+                    gap: 2,
+                  }}>
+                    {(projectsData?.data || []).map((project) => (
+                      <Card key={project.id} sx={{ height: '100%' }}>
+                        <CardContent>
+                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                            <Box sx={{ flexGrow: 1 }}>
+                              <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
+                                {project.name}
+                              </Typography>
+                              {project.description && (
+                                <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+                                  {project.description}
+                                </Typography>
+                              )}
+                            </Box>
+                            <Chip
+                              icon={project.health_status === 'healthy' ? <CheckCircle sx={{ fontSize: 16 }} /> :
+                                project.health_status === 'unhealthy' ? <Error sx={{ fontSize: 16 }} /> :
+                                  <Help sx={{ fontSize: 16 }} />}
+                              label={project.health_status === 'healthy' ? '健康' :
+                                project.health_status === 'unhealthy' ? '异常' : '未知'}
+                              color={project.health_status === 'healthy' ? 'success' :
+                                project.health_status === 'unhealthy' ? 'error' : 'default'}
+                              size="small"
+                            />
+                          </Box>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </Box>
+                )}
+                {!projectsLoading && (projectsData?.data?.length || 0) === 0 && (
+                  <Alert severity="info" sx={{ mt: 2 }}>
+                    暂无项目，请创建项目并配置健康检查命令
+                  </Alert>
+                )}
+                <Typography variant="body2" color="text.secondary" sx={{ mt: 2 }}>
+                  数据每 30 秒自动刷新 | 健康状态基于配置的健康检查命令执行结果
                 </Typography>
               </Box>
             </>

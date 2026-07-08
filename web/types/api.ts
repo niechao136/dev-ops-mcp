@@ -77,6 +77,7 @@ export interface ProjectInfo {
   work_dir: string;
   is_active: boolean;
   command_count: number;
+  health_status?: 'healthy' | 'unhealthy' | 'unknown';
 }
 
 export interface ProjectAdd {
@@ -100,6 +101,7 @@ export interface CommandInfo {
   shell_command: string;
   timeout: number;
   default_params?: Record<string, any>;
+  is_health_check: boolean;
 }
 
 export interface CommandAdd {

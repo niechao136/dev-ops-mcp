@@ -147,6 +147,21 @@ export function useProject(projectId: number) {
     }
   });
 
+  const toggleHealthCheckMutation = useMutation({
+    mutationFn: (commandId: number) => apiService.toggleHealthCheckCommand(commandId),
+    onSuccess: (result) => {
+      if (result.status === 1) {
+        enqueueSnackbar(result.msg || '操作成功', { variant: 'success' });
+        queryClient.invalidateQueries({ queryKey: ['commands', projectId] });
+      } else {
+        enqueueSnackbar(result.msg || '操作失败', { variant: 'error' });
+      }
+    },
+    onError: () => {
+      enqueueSnackbar('操作失败', { variant: 'error' });
+    }
+  });
+
   const handleCreate = useCallback(() => {
     if (!formData.action_type || !formData.shell_command) {
       enqueueSnackbar('请填写必填项', { variant: 'warning' });
@@ -196,6 +211,10 @@ export function useProject(projectId: number) {
     if (commandToDelete === null) return;
     deleteMutation.mutate(commandToDelete);
   }, [commandToDelete, deleteMutation]);
+
+  const handleToggleHealthCheck = useCallback((commandId: number) => {
+    toggleHealthCheckMutation.mutate(commandId);
+  }, [toggleHealthCheckMutation]);
 
   const openEditDialog = useCallback((command: CommandInfo) => {
     setCurrentCommand(command);
@@ -255,12 +274,14 @@ export function useProject(projectId: number) {
     handleCreate,
     handleEdit,
     handleDelete,
+    handleToggleHealthCheck,
     openEditDialog,
     resetForm,
     createMutation,
     updateMutation,
     deleteMutation,
     importMutation,
-    batchImportMutation
+    batchImportMutation,
+    toggleHealthCheckMutation
   };
 }

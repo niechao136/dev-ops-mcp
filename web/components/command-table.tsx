@@ -1,5 +1,5 @@
 import { Box, Button, Card, CardContent, Chip, CircularProgress, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Tooltip, IconButton, Alert, TablePagination, Typography } from '@mui/material';
-import { PlayArrow, Edit, Delete, Refresh, Download, HelpOutlined, Add } from '@mui/icons-material';
+import { PlayArrow, Edit, Delete, Refresh, Download, HelpOutlined, Add, Favorite, HeartBroken } from '@mui/icons-material';
 import type { CommandInfo } from '@/types/api';
 
 interface CommandTableProps {
@@ -15,6 +15,7 @@ interface CommandTableProps {
   onOpenDeleteDialog: (commandId: number) => void;
   onOpenImportDialog: () => void;
   onOpenCreateDialog: () => void;
+  onToggleHealthCheck: (commandId: number) => void;
 }
 
 export function CommandTable({
@@ -29,7 +30,8 @@ export function CommandTable({
   onOpenEditDialog,
   onOpenDeleteDialog,
   onOpenImportDialog,
-  onOpenCreateDialog
+  onOpenCreateDialog,
+  onToggleHealthCheck
 }: CommandTableProps) {
   return (
     <Box>
@@ -78,7 +80,7 @@ export function CommandTable({
                 <br />
                 <code style={{ backgroundColor: 'rgba(0,0,0,0.08)', padding: '2px 4px', borderRadius: 2 }}>git checkout ${'{'}version{'}'}</code>
                 <br />
-                执行时传入 <code style={{ backgroundColor: 'rgba(0,0,0,0.08)', padding: '2px 4px', borderRadius: 2 }}>{'{'}version: "v1.0.0"{'}'}</code>，实际执行：<code style={{ backgroundColor: 'rgba(0,0,0,0.08)', padding: '2px 4px', borderRadius: 2 }}>git checkout v1.0.0</code>
+                执行时传入 <code style={{ backgroundColor: 'rgba(0,0,0,0.08)', padding: '2px 4px', borderRadius: 2 }}>{'{'}version: &quot;v1.0.0&quot;{'}'}</code>，实际执行：<code style={{ backgroundColor: 'rgba(0,0,0,0.08)', padding: '2px 4px', borderRadius: 2 }}>git checkout v1.0.0</code>
               </Typography>
             </Box>
           </Box>
@@ -98,6 +100,7 @@ export function CommandTable({
                 <TableCell>描述</TableCell>
                 <TableCell>超时(秒)</TableCell>
                 <TableCell>命令内容</TableCell>
+                <TableCell>健康检查</TableCell>
                 <TableCell align="right">操作</TableCell>
               </TableRow>
             </TableHead>
@@ -134,6 +137,17 @@ export function CommandTable({
                       >
                         {command.shell_command}
                       </Box>
+                    </Tooltip>
+                  </TableCell>
+                  <TableCell>
+                    <Tooltip title={command.is_health_check ? '点击取消健康检查' : '设为健康检查命令'}>
+                      <IconButton
+                        size="small"
+                        color={command.is_health_check ? 'success' : 'default'}
+                        onClick={() => onToggleHealthCheck(command.id)}
+                      >
+                        {command.is_health_check ? <Favorite /> : <HeartBroken />}
+                      </IconButton>
                     </Tooltip>
                   </TableCell>
                   <TableCell align="right">

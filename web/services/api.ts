@@ -151,6 +151,34 @@ class ApiService {
     });
   }
 
+  async toggleHealthCheckCommand(commandId: number): Promise<DataResult<boolean>> {
+    return this.request<DataResult<boolean>>(`/projects/commands/${commandId}/health_check`, {
+      method: 'PUT',
+    });
+  }
+
+  async executeHealthCheck(projectId: number): Promise<DataResult<{
+    status: 'healthy' | 'unhealthy' | 'unknown';
+    project_name: string;
+    message?: string;
+    results?: Array<{
+      command: string;
+      status: string;
+      output: string;
+    }>;
+  }>> {
+    return this.request<DataResult<{
+      status: 'healthy' | 'unhealthy' | 'unknown';
+      project_name: string;
+      message?: string;
+      results?: Array<{
+        command: string;
+        status: string;
+        output: string;
+      }>;
+    }>>(`/projects/${projectId}/health_check`);
+  }
+
   // API Key API
   async getApiKeys(params?: {
     page?: number,

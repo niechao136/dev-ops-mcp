@@ -1,3 +1,4 @@
+import asyncio
 from fastapi import APIRouter, Depends, HTTPException, status
 from typing import List, Annotated, Optional
 
@@ -11,6 +12,7 @@ from src.schemas.project import (
     CommandInfo, CommandAdd, CommandUpdate, CommandDel, CommandExecute
 )
 from src.utils.auth import get_current_admin, get_current_user
+from src.utils.executor import execute_shell_script
 
 
 project_router = APIRouter(
@@ -21,6 +23,35 @@ project_router = APIRouter(
 
 def get_project_by_id(db, project_id: int) -> Optional[Project]:
     return db.query(Project).filter(Project.id == project_id).first()
+
+
+async def _check_project_health(project: Project) -> str:
+    health_cmd = None
+    for cmd in project.commands:
+        if cmd.is_health_check:
+            health_cmd = cmd
+            break
+
+    if not health_cmd:
+        return "unknown"
+
+    command_list = [line.strip() for line in health_cmd.shell_command.splitlines() if line.strip()]
+    if not command_list:
+        return "unknown"
+
+    try:
+        for cmd in command_list:
+            _, status, _ = await asyncio.wait_for(
+                execute_shell_script(cmd, project.work_dir, min(health_cmd.timeout, 30)),
+                timeout=35
+            )
+            if status != "success":
+                return "unhealthy"
+        return "healthy"
+    except asyncio.TimeoutError:
+        return "unhealthy"
+    except Exception:
+        return "unknown"
 
 
 @project_router.get(
@@ -57,22 +88,42 @@ async def project_list(
         records = query.offset(params.offset).limit(params.size).all()
 
         result_items = []
+        health_tasks = []
+
         for record in records:
             command_count = len(record.commands)
             result_items.append(
-                ProjectInfo(
-                    id=record.id,
-                    name=record.name,
-                    description=record.description,
-                    work_dir=record.work_dir,
-                    is_active=record.is_active,
-                    command_count=command_count
-                )
+                {
+                    "record": record,
+                    "command_count": command_count
+                }
             )
+            health_tasks.append(_check_project_health(record))
+
+        if health_tasks:
+            health_results = await asyncio.gather(*health_tasks, return_exceptions=True)
+            for i, result in enumerate(health_results):
+                if isinstance(result, Exception):
+                    result_items[i]["health_status"] = "unknown"
+                else:
+                    result_items[i]["health_status"] = result
+
+        final_items = [
+            ProjectInfo(
+                id=item["record"].id,
+                name=item["record"].name,
+                description=item["record"].description,
+                work_dir=item["record"].work_dir,
+                is_active=item["record"].is_active,
+                command_count=item["command_count"],
+                health_status=item.get("health_status", "unknown")
+            )
+            for item in result_items
+        ]
 
         return PageResult(
             total=total,
-            data=result_items,
+            data=final_items,
             page=params.page,
             size=params.size
         )
@@ -105,6 +156,7 @@ async def project_detail(
             return DataResult(status=0, msg="项目不存在")
 
         command_count = len(project.commands)
+        health_status = await _check_project_health(project)
 
         return DataResult(
             status=1,
@@ -114,7 +166,8 @@ async def project_detail(
                 description=project.description,
                 work_dir=project.work_dir,
                 is_active=project.is_active,
-                command_count=command_count
+                command_count=command_count,
+                health_status=health_status
             )
         )
 
@@ -229,7 +282,8 @@ async def project_commands(
                 description=cmd.description,
                 shell_command=cmd.shell_command,
                 timeout=cmd.timeout,
-                default_params=cmd.default_params
+                default_params=cmd.default_params,
+                is_health_check=cmd.is_health_check
             )
             for cmd in commands
         ]
@@ -323,6 +377,102 @@ async def command_delete(
         db.commit()
 
         return DataResult(status=1, data=True, msg=f"删除了 {deleted_count} 个命令")
+
+
+@project_router.put(
+    path="/commands/{command_id}/health_check",
+    response_model=DataResult[bool],
+    summary="设置/取消健康检查命令"
+)
+async def set_health_check_command(
+    command_id: int,
+    _: User = Depends(get_current_admin)
+):
+    with get_db_session() as db:
+        command = db.query(Command).filter(Command.id == command_id).first()
+        if not command:
+            return DataResult(status=0, msg="命令不存在")
+
+        project_id = command.project_id
+
+        if command.is_health_check:
+            command.is_health_check = False
+            db.commit()
+            return DataResult(status=1, data=False, msg="已取消健康检查命令")
+
+        db.query(Command).filter(
+            Command.project_id == project_id,
+            Command.is_health_check == True
+        ).update({"is_health_check": False})
+
+        command.is_health_check = True
+        db.commit()
+
+        return DataResult(status=1, data=True, msg="已设置为健康检查命令")
+
+
+@project_router.get(
+    path="/{project_id}/health_check",
+    response_model=DataResult[dict],
+    summary="执行健康检查"
+)
+async def execute_health_check(
+    project_id: int,
+    _: User = Depends(get_current_user)
+):
+    with get_db_session() as db:
+        project = get_project_by_id(db, project_id)
+        if not project:
+            return DataResult(status=0, msg="项目不存在")
+
+        health_cmd = db.query(Command).filter(
+            Command.project_id == project_id,
+            Command.is_health_check == True
+        ).first()
+
+        if not health_cmd:
+            return DataResult(
+                status=1,
+                data={"status": "unknown", "message": "该项目未配置健康检查命令"},
+                msg="未配置健康检查命令"
+            )
+
+        import asyncio
+        from src.utils.executor import execute_shell_script
+
+        command_list = [line.strip() for line in health_cmd.shell_command.splitlines() if line.strip()]
+        if not command_list:
+            return DataResult(
+                status=1,
+                data={"status": "unknown", "message": "健康检查脚本内容为空"},
+                msg="健康检查脚本内容为空"
+            )
+
+        results = []
+        for cmd in command_list:
+            exit_code, status, log = await execute_shell_script(
+                cmd, project.work_dir, health_cmd.timeout
+            )
+            results.append({
+                "command": cmd,
+                "status": status,
+                "exit_code": exit_code,
+                "output": log
+            })
+            if status != "success":
+                break
+
+        overall_status = "healthy" if all(r["status"] == "success" for r in results) else "unhealthy"
+
+        return DataResult(
+            status=1,
+            data={
+                "status": overall_status,
+                "project_name": project.name,
+                "results": results
+            },
+            msg=f"健康检查{'通过' if overall_status == 'healthy' else '失败'}"
+        )
 
 
 @project_router.post(

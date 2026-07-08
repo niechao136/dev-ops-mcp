@@ -3,7 +3,7 @@ import os
 import signal
 import time
 from dotenv import load_dotenv
-from typing import List, Tuple
+from typing import List, Tuple, Optional
 
 
 load_dotenv()
@@ -34,12 +34,14 @@ async def execute_shell_script(
         command: str,
         work_dir: str,
         timeout: int = 600
-) -> Tuple[bool, str, str]:
+) -> Tuple[Optional[int], str, str]:
     """
     异步执行 Shell 脚本，支持超时控制、工作目录切换和日志捕获。
 
     返回:
-        (是否成功: bool, 状态码: str, 组合日志: str)
+        (exit_code: int, status: str, 组合日志: str)
+        exit_code: 命令的退出码，0 表示成功，非 0 表示失败，-1 表示超时或异常
+        status: "success"/"failed"/"timeout"
     """
 
     # 将命令包装为 SSH 调用，在容器本地执行 ssh 客户端
@@ -71,10 +73,10 @@ async def execute_shell_script(
             # 合并日志，优先展示 stderr，没有则展示 stdout
             full_log = f"[STDOUT]\n{stdout}\n\n[STDERR]\n{stderr}".strip()
 
-            is_success = process.returncode == 0
-            status = "success" if is_success else "failed"
+            exit_code = process.returncode
+            status = "success" if exit_code == 0 else "failed"
 
-            return is_success, status, full_log
+            return exit_code, status, full_log
 
         except asyncio.TimeoutError:
             # 核心 3：触发超时，进行进程组级别的“满门抄斩”
@@ -85,10 +87,10 @@ async def execute_shell_script(
                 process.kill()
 
             timeout_msg = f"执行超时: 脚本运行超过 {timeout} 秒被系统强制终止。\n命令: {ssh_cmd}"
-            return False, "timeout", timeout_msg
+            return -1, "timeout", timeout_msg
 
     except Exception as e:
-        return False, "failed", f"系统内部异常: {str(e)}"
+        return -1, "failed", f"系统内部异常: {str(e)}"
 
 
 async def execute_shell_commands_chain(

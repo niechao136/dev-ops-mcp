@@ -1,3 +1,4 @@
+import asyncio
 import os
 import json
 import psutil
@@ -29,6 +30,38 @@ mcp_app = mcp.http_app(path="/")
 # =====================================================================
 # Tool 1: 节点全貌探测 (聚合了项目与可用操作)
 # =====================================================================
+async def _run_health_check(project: Project) -> str:
+    health_cmd = None
+    for cmd in project.commands:
+        if cmd.is_health_check:
+            health_cmd = cmd
+            break
+
+    if not health_cmd:
+        return "unknown"
+
+    from src.utils.executor import execute_shell_script
+    import asyncio
+
+    command_list = [line.strip() for line in health_cmd.shell_command.splitlines() if line.strip()]
+    if not command_list:
+        return "unknown"
+
+    try:
+        for cmd in command_list:
+            _, status, _ = await asyncio.wait_for(
+                execute_shell_script(cmd, project.work_dir, min(health_cmd.timeout, 30)),
+                timeout=35
+            )
+            if status != "success":
+                return "unhealthy"
+        return "healthy"
+    except asyncio.TimeoutError:
+        return "unhealthy"
+    except Exception:
+        return "unhealthy"
+
+
 @mcp.tool()
 async def get_node_overview() -> list[TextContent]:
     """
@@ -40,14 +73,17 @@ async def get_node_overview() -> list[TextContent]:
         return [TextContent(type="text", text="缺少 API Key")]
 
     overview = []
+    health_check_tasks = []
+    project_list = []
+
     with get_db_session() as db:
         projects = db.query(Project).filter(Project.is_active == True).all()
         for p in projects:
-
             if not is_all_permitted and p.name not in allowed_list:
                 continue
 
             project_actions = []
+            health_cmd_type = None
             for cmd in p.commands:
                 placeholders = re.findall(r'\$\{(\w+)\}', cmd.shell_command)
                 action_info = {
@@ -56,13 +92,28 @@ async def get_node_overview() -> list[TextContent]:
                     "required_params": placeholders
                 }
                 project_actions.append(action_info)
+                if cmd.is_health_check:
+                    health_cmd_type = cmd.action_type
 
-            overview.append({
+            project_data = {
                 "project_name": p.name,
                 "description": p.description,
                 "work_dir": p.work_dir,
-                "available_actions": project_actions
-            })
+                "available_actions": project_actions,
+                "health_check_action": health_cmd_type,
+                "health_status": "unknown"
+            }
+            overview.append(project_data)
+            project_list.append(p)
+            health_check_tasks.append(_run_health_check(p))
+
+    if health_check_tasks:
+        results = await asyncio.gather(*health_check_tasks, return_exceptions=True)
+        for i, result in enumerate(results):
+            if isinstance(result, Exception):
+                overview[i]["health_status"] = "unknown"
+            else:
+                overview[i]["health_status"] = result
 
     if not overview:
         return [TextContent(type="text", text="当前节点尚未配置任何处于激活状态的项目。")]

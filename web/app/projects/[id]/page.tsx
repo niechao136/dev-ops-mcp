@@ -50,6 +50,7 @@ export default function ProjectDetailPage() {
     handleCreate,
     handleEdit,
     handleDelete,
+    handleToggleHealthCheck,
     openEditDialog,
     resetForm,
     createMutation,
@@ -137,6 +138,7 @@ export default function ProjectDetailPage() {
               onOpenDeleteDialog={handleOpenDeleteDialog}
               onOpenImportDialog={handleOpenImportDialog}
               onOpenCreateDialog={handleOpenCreateDialog}
+              onToggleHealthCheck={handleToggleHealthCheck}
             />
           </Box>
         </Container>
