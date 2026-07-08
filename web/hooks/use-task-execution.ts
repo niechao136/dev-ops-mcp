@@ -13,6 +13,7 @@ export function useTaskExecution() {
   const [taskId, setTaskId] = useState<string | null>(null);
   const [taskStatus, setTaskStatus] = useState<TaskStatus>(null);
   const [taskLog, setTaskLog] = useState<string>('');
+  const logOffsetRef = useRef(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isTaskRunning, setIsTaskRunning] = useState(false);
   const logContainerRef = useRef<HTMLDivElement>(null);
@@ -25,6 +26,7 @@ export function useTaskExecution() {
         setTaskId(taskData.task_id);
         setTaskStatus('pending');
         setTaskLog('');
+        logOffsetRef.current = 0;
         setIsSubmitting(false);
         setIsTaskRunning(true);
         enqueueSnackbar(taskData.message, { variant: 'info' });
@@ -65,6 +67,7 @@ export function useTaskExecution() {
     setTaskId(null);
     setTaskStatus(null);
     setTaskLog('');
+    logOffsetRef.current = 0;
     setIsTaskRunning(false);
     setIsSubmitting(false);
     setExecuteDialogOpen(true);
@@ -102,12 +105,17 @@ export function useTaskExecution() {
       if (!taskId) return;
 
       try {
-        const result = await apiService.getTaskStatus(taskId);
+        const result = await apiService.getTaskStatus(taskId, logOffsetRef.current);
         if (result.status === 1 && result.data) {
           const task = result.data;
           setTaskStatus(task.status);
+
           if (task.output_log) {
-            setTaskLog(task.output_log);
+            setTaskLog(prev => prev + task.output_log);
+          }
+
+          if (task.next_offset !== undefined) {
+            logOffsetRef.current = task.next_offset;
           }
 
           if (task.status === 'success' || task.status === 'failed' || task.status === 'timeout' || task.status === 'cancelled') {

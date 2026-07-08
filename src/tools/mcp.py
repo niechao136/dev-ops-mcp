@@ -144,23 +144,25 @@ async def execute_action(project_name: str, action: str, params: Optional[dict] 
             command_details=command_details
         )
 
-    return [TextContent(type="text", text=f"📋 任务已提交，task_id: {task_id}\n请使用 get_task_status({task_id}) 查询执行状态和输出。")]
+    return [TextContent(type="text", text=f"📋 任务已提交，task_id: {task_id}\n请使用 get_task_status('{task_id}', log_offset=0) 查询执行状态和输出。后续轮询时请传入上次返回的 next_offset 值以获取增量日志。")]
 
 
 # =====================================================================
 # Tool 2.1: 查询任务状态
 # =====================================================================
 @mcp.tool()
-async def get_task_status(task_id: str) -> list[TextContent]:
+async def get_task_status(task_id: str, log_offset: int = 0) -> list[TextContent]:
     """
     查询指定任务的执行状态和输出日志。
     
     参数说明:
     - task_id: 任务ID，由 execute_action 返回
+    - log_offset: 日志偏移量，用于增量获取日志，默认从0开始。传入上次返回的 next_offset 可只获取新增日志。
     
     返回:
     - 任务状态（pending/running/success/failed/timeout/cancelled）
-    - 输出日志
+    - 输出日志（增量内容）
+    - next_offset: 下次调用时应传入的 log_offset 值
     - 执行时间等信息
     """
     token, _, _ = check_token()
@@ -182,15 +184,22 @@ async def get_task_status(task_id: str) -> list[TextContent]:
 
     status_text = status_map.get(task_info["status"], task_info["status"])
     
+    full_log = task_info.get("output_log", "")
+    incremental_log = full_log[log_offset:]
+    next_offset = len(full_log)
+    
     result = (
         f"任务ID: {task_id}\n"
         f"项目: {task_info['project_name']}\n"
         f"操作: {task_info['action']}\n"
         f"状态: {status_text}\n"
+        f"next_offset: {next_offset}\n"
     )
     
-    if task_info["output_log"]:
-        result += f"\n输出日志:\n{task_info['output_log']}"
+    if incremental_log:
+        result += f"\n输出日志:\n{incremental_log}"
+    elif log_offset > 0:
+        result += "\n输出日志: 暂无新增内容"
     
     if task_info["start_time"]:
         result += f"\n开始时间: {task_info['start_time']}"

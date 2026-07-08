@@ -26,11 +26,17 @@ task_router = APIRouter(
 )
 async def task_status(
     task_id: str,
+    log_offset: int = 0,
     _: User = Depends(get_current_user)
 ):
     task_info = get_task_info(task_id)
     if not task_info:
         return DataResult(status=0, msg="任务不存在")
+    
+    full_log = task_info.get("output_log", "")
+    if log_offset > 0:
+        task_info["output_log"] = full_log[log_offset:]
+    task_info["next_offset"] = len(full_log)
     
     return DataResult(status=1, data=task_info)
 
@@ -63,12 +69,14 @@ async def task_list(
     
     result_items = []
     for record in records:
+        output_log = record.output_log or ""
         result_items.append(TaskInfo(
             task_id=record.task_id,
             project_name=record.project_name,
             action=record.action,
             status=record.status,
-            output_log=record.output_log,
+            output_log=output_log,
+            next_offset=len(output_log),
             start_time=record.start_time.isoformat() if record.start_time else None,
             end_time=record.end_time.isoformat() if record.end_time else None,
             timeout=record.timeout,

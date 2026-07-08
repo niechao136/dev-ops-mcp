@@ -137,6 +137,7 @@ export interface TaskInfo {
   action: string;
   status: 'pending' | 'running' | 'success' | 'failed' | 'timeout' | 'cancelled';
   output_log?: string;
+  next_offset: number;
   start_time?: string;
   end_time?: string;
   timeout: number;

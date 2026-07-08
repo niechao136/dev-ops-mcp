@@ -388,8 +388,11 @@ class ApiService {
     });
   }
 
-  async getTaskStatus(taskId: string): Promise<DataResult<TaskInfo>> {
-    return this.request<DataResult<TaskInfo>>(`/tasks/${taskId}`);
+  async getTaskStatus(taskId: string, logOffset?: number): Promise<DataResult<TaskInfo>> {
+    const url = logOffset !== undefined && logOffset > 0
+      ? `/tasks/${taskId}?log_offset=${logOffset}`
+      : `/tasks/${taskId}`;
+    return this.request<DataResult<TaskInfo>>(url);
   }
 
   async getTasks(params?: {
