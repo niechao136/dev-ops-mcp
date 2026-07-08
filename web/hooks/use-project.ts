@@ -68,6 +68,25 @@ export function useProject(projectId: number) {
     }
   });
 
+  const batchImportMutation = useMutation({
+    mutationFn: (publicCommandIds: number[]) => apiService.batchImportPublicCommands({
+      public_command_ids: publicCommandIds,
+      project_id: projectId
+    }),
+    onSuccess: (result) => {
+      if (result.status === 1) {
+        enqueueSnackbar(`成功导入 ${result.data?.length || 0} 条命令`, { variant: 'success' });
+        setImportDialogOpen(false);
+        queryClient.invalidateQueries({ queryKey: ['commands', projectId] });
+      } else {
+        enqueueSnackbar(result.msg || '批量导入失败', { variant: 'error' });
+      }
+    },
+    onError: () => {
+      enqueueSnackbar('批量导入失败', { variant: 'error' });
+    }
+  });
+
   const createMutation = useMutation({
     mutationFn: (data: CommandAdd) => apiService.createCommand(data),
     onSuccess: (result) => {
@@ -241,6 +260,7 @@ export function useProject(projectId: number) {
     createMutation,
     updateMutation,
     deleteMutation,
-    importMutation
+    importMutation,
+    batchImportMutation
   };
 }

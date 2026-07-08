@@ -55,7 +55,8 @@ export default function ProjectDetailPage() {
     createMutation,
     updateMutation,
     deleteMutation,
-    importMutation
+    importMutation,
+    batchImportMutation
   } = useProject(projectId);
 
   const {
@@ -200,7 +201,8 @@ export default function ProjectDetailPage() {
           onSearchChange={setImportSearch}
           publicCommands={publicCommands}
           onImport={(id) => importMutation.mutate(id)}
-          isImporting={importMutation.isPending}
+          onBatchImport={(ids) => batchImportMutation.mutate(ids)}
+          isImporting={importMutation.isPending || batchImportMutation.isPending}
         />
       </MainLayout>
     </ProtectedRoute>

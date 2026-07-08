@@ -9,7 +9,7 @@ from src.dbs.orm import PublicCommand, Command, User
 from src.schemas.api import DataResult, PageResult
 from src.schemas.public_command import (
     PublicCommandPageParams, PublicCommandInfo, PublicCommandAdd,
-    PublicCommandUpdate, PublicCommandDel, PublicCommandImport
+    PublicCommandUpdate, PublicCommandDel, PublicCommandImport, PublicCommandBatchImport
 )
 from src.utils.auth import get_current_admin, get_current_user
 
@@ -231,7 +231,6 @@ async def import_public_command(
     _: User = Depends(get_current_user)
 ):
     with get_db_session() as db:
-        # 获取公共命令
         public_cmd = db.query(PublicCommand).filter(
             PublicCommand.id == data.public_command_id,
             PublicCommand.is_active == True
@@ -240,7 +239,6 @@ async def import_public_command(
         if not public_cmd:
             return DataResult(status=0, msg="公共命令不存在或已禁用")
 
-        # 创建项目命令副本
         now = datetime.now(UTC)
         project_cmd = Command(
             project_id=data.project_id,
@@ -259,4 +257,50 @@ async def import_public_command(
             status=1,
             data=project_cmd.id,
             msg=f"成功导入到项目，命令 ID: {project_cmd.id}"
+        )
+
+
+@public_command_router.post(
+    path="/batch_import",
+    response_model=DataResult[List[int]],
+    summary="批量导入公共命令到项目",
+    description="将多个公共命令批量复制到指定项目"
+)
+async def batch_import_public_command(
+    data: PublicCommandBatchImport,
+    _: User = Depends(get_current_user)
+):
+    with get_db_session() as db:
+        public_cmds = db.query(PublicCommand).filter(
+            PublicCommand.id.in_(data.public_command_ids),
+            PublicCommand.is_active == True
+        ).all()
+
+        if not public_cmds:
+            return DataResult(status=0, msg="未找到有效的公共命令")
+
+        now = datetime.now(UTC)
+        project_cmds = []
+
+        for public_cmd in public_cmds:
+            project_cmd = Command(
+                project_id=data.project_id,
+                action_type=public_cmd.action_type,
+                description=public_cmd.description,
+                shell_command=public_cmd.shell_command,
+                timeout=public_cmd.timeout,
+                default_params=public_cmd.default_params,
+                created_at=now
+            )
+            db.add(project_cmd)
+            project_cmds.append(project_cmd)
+
+        db.flush()
+        imported_ids = [cmd.id for cmd in project_cmds]
+        db.commit()
+
+        return DataResult(
+            status=1,
+            data=imported_ids,
+            msg=f"成功导入 {len(imported_ids)} 条命令"
         )

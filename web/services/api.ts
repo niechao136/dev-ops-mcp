@@ -7,7 +7,7 @@ import {
   UserAdd, UserUpdate, UserPassword, UserChangePassword,
   AuditLogInfo, AuditLogQueryParams,
   DashboardStats, SystemMetrics,
-  PublicCommandInfo, PublicCommandAdd, PublicCommandUpdate, PublicCommandImport,
+  PublicCommandInfo, PublicCommandAdd, PublicCommandUpdate, PublicCommandImport, PublicCommandBatchImport,
   TaskInfo, TaskSubmitResult
 } from '@/types/api';
 
@@ -327,6 +327,13 @@ class ApiService {
 
   async importPublicCommand(data: PublicCommandImport): Promise<DataResult<number>> {
     return this.request<DataResult<number>>('/public_commands/import', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async batchImportPublicCommands(data: PublicCommandBatchImport): Promise<DataResult<number[]>> {
+    return this.request<DataResult<number[]>>('/public_commands/batch_import', {
       method: 'POST',
       body: JSON.stringify(data),
     });

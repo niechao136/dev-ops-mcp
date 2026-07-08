@@ -272,3 +272,8 @@ export interface PublicCommandImport {
   public_command_id: number;
   project_id: number;
 }
+
+export interface PublicCommandBatchImport {
+  public_command_ids: number[];
+  project_id: number;
+}

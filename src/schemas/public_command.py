@@ -61,3 +61,9 @@ class PublicCommandImport(BaseModel):
     """导入公共命令到项目"""
     public_command_id: int = Field(..., description="公共命令 ID")
     project_id: int = Field(..., description="目标项目 ID")
+
+
+class PublicCommandBatchImport(BaseModel):
+    """批量导入公共命令到项目"""
+    public_command_ids: List[int] = Field(..., description="公共命令 ID 列表")
+    project_id: int = Field(..., description="目标项目 ID")
