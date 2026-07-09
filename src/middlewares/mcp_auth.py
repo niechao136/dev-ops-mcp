@@ -12,7 +12,7 @@ class MCPAuthMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request, call_next):
         path = request.url.path
         
-        if path.startswith("/mcp/sse"):
+        if path.startswith("/mcp") or path.startswith("/api/mcp"):
             # 1. 尝试从自定义 Header "X-API-Key" 中获取
             api_key = request.headers.get("X-API-Key")
             # 2. 如果没拿到，尝试从标准的 "Authorization: Bearer XX" 中获取
