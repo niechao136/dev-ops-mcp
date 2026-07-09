@@ -8,7 +8,8 @@ ARG NEXT_PUBLIC_API_URL=/api
 ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
 COPY . .
 # 注意：此时 next.config.js 中不要有 output: 'export'
-RUN npm run build
+RUN --mount=type=cache,target=/app/.next/cache \
+  npm run build
 
 # 阶段 2: 运行
 FROM node:20-alpine AS runner
