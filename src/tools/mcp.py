@@ -8,14 +8,12 @@ from datetime import datetime, timedelta, UTC
 from dotenv import load_dotenv
 from fastmcp import FastMCP
 from mcp.types import TextContent
-from pathlib import Path
 from typing import Optional
 
 from src.dbs.db import get_db_session
-from src.dbs.orm import AuditLog, Command, Project, Task
+from src.dbs.orm import AuditLog, Command, Project
 from src.utils.context import check_token, check_project, current_mcp_token
-from src.utils.executor import execute_shell_commands_chain
-from src.utils.task_executor import submit_task, get_task_info, is_project_locked, get_running_task
+from src.utils.task_executor import submit_task, get_task_info, is_project_locked, get_running_task, cancel_task
 
 
 load_dotenv()
@@ -261,12 +259,49 @@ async def get_task_status(task_id: str, log_offset: int = 0) -> list[TextContent
 
 
 # =====================================================================
+# Tool 2.2: 取消任务
+# =====================================================================
+@mcp.tool()
+async def cancel_task_action(task_id: str) -> list[TextContent]:
+    """
+    取消指定的运行中任务，防止流程一直卡住。
+    
+    参数说明:
+    - task_id: 任务ID，由 execute_action 返回，或通过 get_task_status 查询获取
+    
+    返回:
+    - 取消结果
+    """
+    token, _, _ = check_token()
+    if not token:
+        return [TextContent(type="text", text="缺少 API Key")]
+
+    task_info = get_task_info(task_id)
+    if not task_info:
+        return [TextContent(type="text", text=f"❌ 找不到任务: {task_id}")]
+
+    if task_info["status"] in ("success", "failed", "timeout", "cancelled"):
+        return [TextContent(type="text", text=f"❌ 任务 '{task_id}' 当前状态为 '{task_info['status']}'，无法取消。")]
+
+    try:
+        cancelled = await cancel_task(task_id)
+        
+        if cancelled:
+            return [TextContent(type="text", text=f"✅ 任务 '{task_id}' 已成功取消。")]
+        else:
+            return [TextContent(type="text", text=f"❌ 取消任务失败，请检查任务状态。")]
+    except Exception as e:
+        return [TextContent(type="text", text=f"❌ 取消任务时发生错误: {str(e)}")]
+
+
+# =====================================================================
 # Tool 3: 审查底层脚本
 # =====================================================================
 @mcp.tool()
 async def inspect_script_content(project_name: str, action: str) -> list[TextContent]:
     """
     在排查故障或执行前，查看某个项目的 action 对应到底运行的是什么 Shell 脚本。
+    返回命令的完整配置信息，包括默认参数、占位符等。
     """
     token, is_permitted = check_project(project_name)
     if not token:
@@ -285,61 +320,28 @@ async def inspect_script_content(project_name: str, action: str) -> list[TextCon
     if not command:
         return [TextContent(type="text", text=f"❌ 未找到对应指令配置。")]
 
-    result = f"项目: {project_name}\n操作: {action}\n超时设置: {command.timeout}秒\n---\n[底层脚本原文]:\n{command.shell_command}"
+    placeholders = re.findall(r'\$\{(\w+)\}', command.shell_command)
+    
+    result = f"项目: {project_name}\n"
+    result += f"操作: {action}\n"
+    result += f"描述: {command.description or '无'}\n"
+    result += f"超时设置: {command.timeout}秒\n"
+    result += f"健康检查命令: {'是' if command.is_health_check else '否'}\n"
+    
+    if placeholders:
+        result += f"参数占位符: {', '.join(placeholders)}\n"
+    
+    if command.default_params:
+        import json
+        result += f"默认参数: {json.dumps(command.default_params, ensure_ascii=False)}\n"
+    
+    result += f"---\n[底层脚本原文]:\n{command.shell_command}"
+    
     return [TextContent(type="text", text=result)]
 
 
 # =====================================================================
-# Tool 4: 安全读取项目文件 (配置/日志等)
-# =====================================================================
-@mcp.tool()
-async def read_project_file(project_name: str, relative_file_path: str, max_lines: int = 200) -> list[TextContent]:
-    """
-    读取项目目录下的指定文件内容（如 .env, nginx.conf, app.log）。
-    relative_file_path 必须是相对于项目根目录的相对路径。
-    """
-    token, is_permitted = check_project(project_name)
-    if not token:
-        return [TextContent(type="text", text="缺少 API Key")]
-
-    if not is_permitted:
-        return [TextContent(type="text", text=f"🚫 权限拒绝: 当前 API Key 无权操作项目 {project_name}")]
-
-    with get_db_session() as db:
-        project = db.query(Project).filter(Project.name == project_name).first()
-        if not project:
-            return [TextContent(type="text", text=f"❌ 找不到项目: {project_name}")]
-
-    base_dir = Path(project.work_dir).resolve()
-    # 组合路径，并获取其绝对路径
-    target_path = (base_dir / relative_file_path).resolve()
-
-    # 检查 target_path 是否真的在 base_dir 内部 (防止 ../../../etc/passwd)
-    if not target_path.is_relative_to(base_dir):
-        return [TextContent(type="text", text="🚫 安全拦截: 非法路径逃逸尝试！只允许读取项目工作目录内的文件。")]
-
-    if not target_path.is_file():
-        return [TextContent(type="text", text=f"❌ 文件不存在: {relative_file_path}")]
-
-    try:
-        # 限制读取大小，防止读取几十GB的文件导致大模型崩溃
-        file_size_mb = target_path.stat().st_size / (1024 * 1024)
-        if file_size_mb > 10:
-            return [TextContent(type="text", text=f"❌ 文件过大 ({file_size_mb:.1f}MB)，拒绝读取。请使用具体的 grep 脚本。")]
-
-        with open(target_path, 'r', encoding='utf-8') as f:
-            # 只读取最后 N 行 (类似 tail -n)
-            lines = f.readlines()
-            snippet = "".join(lines[-max_lines:])
-
-        return [TextContent(type="text", text=f"文件 {relative_file_path} 内容 (尾部 {max_lines} 行):\n\n{snippet}")]
-
-    except Exception as e:
-        return [TextContent(type="text", text=f"❌ 读取文件失败: {str(e)}")]
-
-
-# =====================================================================
-# Tool 5: 获取节点服务器系统状态
+# Tool 4: 获取节点服务器系统状态
 # =====================================================================
 @mcp.tool()
 async def get_system_metrics() -> list[TextContent]:
@@ -371,7 +373,7 @@ async def get_system_metrics() -> list[TextContent]:
 
 
 # =====================================================================
-# Tool 6: 查阅操作审计日志
+# Tool 5: 查阅操作审计日志
 # =====================================================================
 @mcp.tool()
 async def query_audit_logs(project_name: str, hours_ago: int = 24) -> list[TextContent]:

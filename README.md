@@ -18,10 +18,11 @@
 
 | 工具名称 | 功能描述 |
 |---------|---------|
-| `get_node_overview` | 获取当前服务器节点上所有项目列表及支持的操作 |
-| `execute_action` | 执行指定项目的特定运维操作，支持参数占位符替换 |
+| `get_node_overview` | 获取当前服务器节点上所有项目列表及支持的操作（含健康状态） |
+| `execute_action` | 执行指定项目的特定运维操作，支持参数占位符替换（异步） |
+| `get_task_status` | 查询任务执行状态和输出日志（支持增量日志） |
+| `cancel_task_action` | 取消运行中的任务，防止流程卡住 |
 | `inspect_script_content` | 查看项目操作对应的底层 Shell 脚本 |
-| `read_project_file` | 安全读取项目目录下的配置文件和日志 |
 | `get_system_metrics` | 获取服务器 CPU、内存、磁盘使用情况 |
 | `query_audit_logs` | 查询项目操作历史日志 |
 
@@ -336,14 +337,32 @@ result = await client.call_tool(
 print(result)
 ```
 
-### 读取项目文件
+### 查询任务状态（增量日志）
+
+```python
+# 首次查询，log_offset=0
+result = await client.call_tool(
+    "get_task_status",
+    task_id="task-uuid-123",
+    log_offset=0
+)
+print(result)
+
+# 后续轮询，传入上次返回的 next_offset
+result = await client.call_tool(
+    "get_task_status",
+    task_id="task-uuid-123",
+    log_offset=1000
+)
+print(result)
+```
+
+### 取消任务
 
 ```python
 result = await client.call_tool(
-    "read_project_file",
-    project_name="my-project",
-    relative_file_path="logs/app.log",
-    max_lines=100
+    "cancel_task_action",
+    task_id="task-uuid-123"
 )
 print(result)
 ```
@@ -407,6 +426,7 @@ print(result)
 | shell_command | text | Shell 脚本内容 |
 | timeout | int | 超时时间（秒） |
 | default_params | json | 可选参数默认值（JSON 格式） |
+| is_health_check | bool | 是否为健康检查命令 |
 
 ### 公共命令表 (public_commands)
 | 字段 | 类型 | 描述 |
