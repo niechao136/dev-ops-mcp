@@ -24,7 +24,7 @@ load_dotenv()
 node_suffix = os.getenv("MCP_NODE_NAME") or socket.gethostname()
 mcp_name = f"devops-node-{node_suffix}"
 mcp = FastMCP(mcp_name)
-mcp_app = mcp.http_app(path="/")
+mcp_app = mcp.http_app(path="/sse")
 
 
 # =====================================================================

@@ -27,7 +27,7 @@ async def lifespan(_: FastAPI):
     yield
 
 
-app = FastAPI(root_path="/api", lifespan=combine_lifespans(lifespan, mcp_app.lifespan))
+app = FastAPI(lifespan=combine_lifespans(lifespan, mcp_app.lifespan))
 
 
 app.add_middleware(
@@ -42,14 +42,14 @@ app.add_middleware(
 app.add_middleware(MCPAuthMiddleware)
 
 
-app.include_router(router=api_key_router)
-app.include_router(router=auth_router)
-app.include_router(router=user_router)
-app.include_router(router=project_router)
-app.include_router(router=audit_log_router)
-app.include_router(router=dashboard_router)
-app.include_router(router=public_command_router)
-app.include_router(router=task_router)
+app.include_router(router=api_key_router, prefix="/api")
+app.include_router(router=auth_router, prefix="/api")
+app.include_router(router=user_router, prefix="/api")
+app.include_router(router=project_router, prefix="/api")
+app.include_router(router=audit_log_router, prefix="/api")
+app.include_router(router=dashboard_router, prefix="/api")
+app.include_router(router=public_command_router, prefix="/api")
+app.include_router(router=task_router, prefix="/api")
 app.mount("/mcp", mcp_app)  # 将 MCP 应用挂载到 /mcp 路径下
 
 

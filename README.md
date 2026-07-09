@@ -159,7 +159,7 @@ docker compose up -d
 
 - Web 界面: `http://localhost:10096`
 - API 文档: `http://localhost:10096/api/docs`
-- MCP 端点: `http://localhost:10096/api/mcp`
+- MCP 端点: `http://localhost:10096/mcp/sse`
 
 ### 默认账号
 
@@ -300,7 +300,7 @@ dev-ops-mcp/
 ```python
 from mcp import Client
 
-client = Client("http://localhost:10096/api/mcp")
+client = Client("http://localhost:10096/mcp/sse")
 client.set_api_key("your-api-key-here")
 ```
 
