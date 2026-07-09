@@ -7,6 +7,7 @@ ENV PATH="/usr/local/bin:${PATH}"
 # Python 环境变量优化
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
+ENV UV_PROJECT_ENVIRONMENT="/usr/local"
 
 # 3. 安装必要工具
 RUN apt-get update && apt-get install -y --no-install-recommends \
