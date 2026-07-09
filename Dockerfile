@@ -23,15 +23,17 @@ WORKDIR /app
 # 创建一个空目录作为挂载点
 RUN mkdir -p /app/data
 
-# 5. 复制依赖文件和源码
+# 5. 先只复制依赖描述文件
 COPY pyproject.toml uv.lock ./
-COPY src ./src
 
-# 6. 安装依赖
-# --system 参数可以让 uv 直接把包装在容器的 Python 环境里，
-# 这样就不需要额外的虚拟环境层，容器更轻量
-RUN uv pip install --system --no-cache -r pyproject.toml || \
-    uv sync --system --no-cache
+# 6. 安装依赖（只要 pyproject.toml / uv.lock 不变，这层就一直命中缓存）
+RUN --mount=type=cache,target=/root/.cache/uv \
+    uv sync --frozen --no-install-project
+
+# 7. 最后才复制源码，改代码只影响这一层
+COPY src ./src
+RUN --mount=type=cache,target=/root/.cache/uv \
+    uv sync --frozen
 
 # 7. 启动命令：先执行数据库迁移，再启动服务
 CMD ["sh", "-c", "python -m src.dbs.migrate && uvicorn src.main:app --host 0.0.0.0 --port 8000"]
