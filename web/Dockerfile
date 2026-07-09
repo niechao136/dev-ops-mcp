@@ -16,12 +16,11 @@ FROM node:20-alpine AS runner
 WORKDIR /app
 ENV NODE_ENV production
 
-# 只复制必要文件以减小镜像体积
+# standalone 模式下只需要这三样，不再需要完整 node_modules
 COPY --from=builder /app/public ./public
-COPY --from=builder /app/.next ./.next
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/package*.json ./
+COPY --from=builder /app/.next/standalone ./
+COPY --from=builder /app/.next/static ./.next/static
 
 EXPOSE 3000
-# 使用 next start 运行 Node.js 服务
-CMD ["npm", "start"]
+# 注意：启动方式变了，不再用 npm start
+CMD ["node", "server.js"]
