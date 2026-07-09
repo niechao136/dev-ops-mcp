@@ -79,6 +79,15 @@ def migrate_database():
                 print("Successfully added is_health_check column")
             except sqlite3.OperationalError as e:
                 print(f"Info: {e}")
+        
+        if "work_dir" not in commands_columns:
+            print("Adding work_dir column to commands table...")
+            try:
+                cursor.execute("ALTER TABLE commands ADD COLUMN work_dir VARCHAR(255)")
+                conn.commit()
+                print("Successfully added work_dir column")
+            except sqlite3.OperationalError as e:
+                print(f"Info: {e}")
 
         # Check and create public_commands table
         cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='public_commands'")

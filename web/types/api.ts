@@ -101,6 +101,7 @@ export interface CommandInfo {
   shell_command: string;
   timeout: number;
   default_params?: Record<string, any>;
+  work_dir?: string;
   is_health_check: boolean;
 }
 
@@ -111,6 +112,7 @@ export interface CommandAdd {
   shell_command: string;
   timeout: number;
   default_params?: Record<string, any>;
+  work_dir?: string;
 }
 
 export interface CommandUpdate {
@@ -119,6 +121,7 @@ export interface CommandUpdate {
   shell_command?: string;
   timeout?: number;
   default_params?: Record<string, any>;
+  work_dir?: string;
 }
 
 export interface CommandExecute {

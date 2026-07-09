@@ -186,7 +186,7 @@ async def execute_action(project_name: str, action: str, params: Optional[dict] 
             project_name=project_name,
             action=action,
             commands=command_list,
-            work_dir=project.work_dir,
+            work_dir=command.work_dir or project.work_dir,
             timeout=command.timeout,
             actor_type="ai",
             actor_id=caller_token_id,

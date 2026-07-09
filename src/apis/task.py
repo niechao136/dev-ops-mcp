@@ -211,7 +211,7 @@ async def task_execute(
             project_name=project_name,
             action=action,
             commands=command_list,
-            work_dir=project.work_dir,
+            work_dir=command.work_dir or project.work_dir,
             timeout=command.timeout,
             actor_type="human",
             actor_id=caller_token_id,

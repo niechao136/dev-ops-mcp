@@ -317,7 +317,8 @@ async def command_create(
             description=command_data.description,
             shell_command=command_data.shell_command,
             timeout=command_data.timeout,
-            default_params=command_data.default_params
+            default_params=command_data.default_params,
+            work_dir=command_data.work_dir
         )
         db.add(new_command)
         db.commit()
@@ -355,6 +356,9 @@ async def command_update(
 
         if command_data.default_params is not None:
             command.default_params = command_data.default_params
+
+        if command_data.work_dir is not None:
+            command.work_dir = command_data.work_dir
 
         db.commit()
 
@@ -543,7 +547,7 @@ async def command_execute(
             project_name=project_name,
             action=action,
             commands=command_list,
-            work_dir=project.work_dir,
+            work_dir=command.work_dir or project.work_dir,
             timeout=command.timeout,
             actor_type="human",
             actor_id=caller_token_id,

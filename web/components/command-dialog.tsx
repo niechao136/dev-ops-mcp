@@ -52,6 +52,14 @@ export function CommandDialog({
             onChange={(e) => onFormDataChange({ ...formData, timeout: parseInt(e.target.value) || 600 })}
           />
           <TextField
+            label="工作目录 (可选)"
+            fullWidth
+            value={formData.work_dir || ''}
+            onChange={(e) => onFormDataChange({ ...formData, work_dir: e.target.value || undefined })}
+            placeholder="/path/to/command/work/dir"
+            helperText="留空则使用项目的工作目录"
+          />
+          <TextField
             label="默认参数 (JSON格式)"
             fullWidth
             multiline

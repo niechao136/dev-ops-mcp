@@ -76,6 +76,7 @@ class Command(Base):
     shell_command: Mapped[str] = mapped_column(Text) # 真实的 Linux 脚本
     timeout: Mapped[int] = mapped_column(Integer, default=600) # 超时时间(秒)
     default_params: Mapped[Optional[dict]] = mapped_column(JSON, default=None) # 可选参数默认值
+    work_dir: Mapped[Optional[str]] = mapped_column(String(255)) # 命令级工作目录，为空则使用项目的 work_dir
     is_health_check: Mapped[bool] = mapped_column(Boolean, default=False) # 是否为健康检查命令
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now(UTC))
 
