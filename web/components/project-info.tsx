@@ -1,13 +1,15 @@
-import { Box, Card, CardContent, Chip, IconButton, Typography } from '@mui/material';
-import { ArrowBack } from '@mui/icons-material';
+import { Box, Card, CardContent, Chip, IconButton, Typography, Button, CircularProgress } from '@mui/material';
+import { ArrowBack, Stop, NotificationImportant } from '@mui/icons-material';
 import type { ProjectInfo } from '@/types/api';
 
 interface ProjectInfoProps {
   project: ProjectInfo;
   onBack: () => void;
+  onCancelRunningTask?: (taskId: string) => void;
+  isCancelling?: boolean;
 }
 
-export function ProjectInfo({ project, onBack }: ProjectInfoProps) {
+export function ProjectInfo({ project, onBack, onCancelRunningTask, isCancelling }: ProjectInfoProps) {
   return (
     <Box sx={{ mb: 4 }}>
       <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
@@ -24,6 +26,35 @@ export function ProjectInfo({ project, onBack }: ProjectInfoProps) {
           sx={{ ml: 2 }}
         />
       </Box>
+
+      {project.running_task && (
+        <Card sx={{ mb: 4, bgcolor: 'warning.light' }}>
+          <CardContent>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
+              <NotificationImportant sx={{ color: 'warning.main' }} />
+              <Typography sx={{ fontWeight: 'bold' }} variant="subtitle1" color="warning.main">
+                正在执行命令: {project.running_task.action}
+              </Typography>
+              <CircularProgress size={20} color="warning" />
+              <Button
+                variant="contained"
+                color="error"
+                startIcon={<Stop />}
+                onClick={() => onCancelRunningTask?.(project?.running_task?.task_id ?? '')}
+                disabled={isCancelling}
+                size="small"
+              >
+                {isCancelling ? <CircularProgress size={16} /> : '停止'}
+              </Button>
+            </Box>
+            <Box sx={{ bgcolor: 'black', color: 'white', p: 2, borderRadius: 1, maxHeight: 150, overflowY: 'auto', fontFamily: 'monospace', fontSize: '0.875rem' }}>
+              <Typography sx={{ whiteSpace: 'pre-wrap'}} variant="body2" component="pre">
+                {project.running_task.output_log || '等待输出...'}
+              </Typography>
+            </Box>
+          </CardContent>
+        </Card>
+      )}
 
       <Card>
         <CardContent>

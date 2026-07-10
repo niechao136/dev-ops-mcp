@@ -17,6 +17,13 @@ class ProjectPageParams(PageParams):
         return v
 
 
+class ProjectRunningTask(BaseModel):
+    task_id: str = Field(..., description="任务ID")
+    action: str = Field(..., description="操作类型")
+    output_log: str = Field(default="", description="输出日志")
+    start_time: Optional[str] = Field(default=None, description="开始时间")
+
+
 class ProjectInfo(BaseModel):
     id: int = Field(..., description="项目 ID")
     name: str = Field(..., description="项目名称")
@@ -25,6 +32,7 @@ class ProjectInfo(BaseModel):
     is_active: bool = Field(default=True, description="是否激活")
     command_count: Optional[int] = Field(default=0, description="命令数量")
     health_status: Optional[str] = Field(default="unknown", description="健康状态: healthy/unhealthy/unknown")
+    running_task: Optional[ProjectRunningTask] = Field(default=None, description="正在运行的任务")
 
 
 class ProjectAdd(BaseModel):

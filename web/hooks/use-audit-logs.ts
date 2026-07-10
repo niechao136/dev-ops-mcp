@@ -28,6 +28,11 @@ export function useAuditLogs() {
     }),
   });
 
+  const { data: projectsData } = useQuery({
+    queryKey: ['auditLogProjects'],
+    queryFn: () => apiService.getAuditLogProjects(),
+  });
+
   const deleteMutation = useMutation({
     mutationFn: (ids: number[]) => apiService.deleteAuditLogs(ids),
     onSuccess: (result) => {
@@ -87,7 +92,8 @@ export function useAuditLogs() {
     const colors: Record<string, 'success' | 'error' | 'warning' | 'default'> = {
       'success': 'success',
       'failed': 'error',
-      'warning': 'warning'
+      'timeout': 'warning',
+      'cancelled': 'default'
     };
     return colors[status] || 'default';
   }, []);
@@ -96,7 +102,8 @@ export function useAuditLogs() {
     const labels: Record<string, string> = {
       'success': '成功',
       'failed': '失败',
-      'warning': '警告'
+      'timeout': '超时',
+      'cancelled': '已取消'
     };
     return labels[status] || status;
   }, []);
@@ -120,6 +127,7 @@ export function useAuditLogs() {
     pageSize,
     filters,
     updateFilters,
+    projects: projectsData?.data || [],
     deleteDialogOpen,
     setDeleteDialogOpen,
     detailDialogOpen,

@@ -1,7 +1,9 @@
 'use client';
 
+import { useEffect, useState, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { Box, Container, CircularProgress, Alert, Divider } from '@mui/material';
+import { enqueueSnackbar } from 'notistack';
 import ProtectedRoute from '@/components/protected-route';
 import MainLayout from '@/components/main-layout';
 import { useProject } from '@/hooks/use-project';
@@ -12,11 +14,13 @@ import { CommandDialog } from '@/components/command-dialog';
 import { DeleteDialog } from '@/components/delete-dialog';
 import { ExecuteDialog } from '@/components/execute-dialog';
 import { ImportDialog } from '@/components/import-dialog';
+import { apiService } from '@/services/api';
 
 export default function ProjectDetailPage() {
   const params = useParams();
   const router = useRouter();
   const projectId = parseInt(params.id as string);
+  const [isCancelling, setIsCancelling] = useState(false);
 
   const {
     project,
@@ -77,6 +81,34 @@ export default function ProjectDetailPage() {
     handleCancelTask
   } = useTaskExecution();
 
+  useEffect(() => {
+    if (!project?.running_task) return;
+
+    const interval = setInterval(() => {
+      refetch();
+    }, 3000);
+
+    return () => clearInterval(interval);
+  }, [project?.running_task, refetch]);
+
+  const handleCancelRunningTask = useCallback(async (taskId: string) => {
+    if (!taskId) return;
+    setIsCancelling(true);
+    try {
+      const result = await apiService.cancelTask(taskId);
+      if (result.status === 1) {
+        enqueueSnackbar('任务已停止', { variant: 'success' });
+        refetch();
+      } else {
+        enqueueSnackbar(result.msg || '停止失败', { variant: 'error' });
+      }
+    } catch (error) {
+      enqueueSnackbar('停止失败', { variant: 'error' });
+    } finally {
+      setIsCancelling(false);
+    }
+  }, [refetch]);
+
   const handleOpenCreateDialog = () => {
     resetForm();
     setCreateDialogOpen(true);
@@ -121,7 +153,12 @@ export default function ProjectDetailPage() {
       <MainLayout>
         <Container maxWidth="lg">
           <Box sx={{ mb: 4 }}>
-            <ProjectInfo project={project} onBack={() => router.back()} />
+            <ProjectInfo 
+              project={project} 
+              onBack={() => router.back()}
+              onCancelRunningTask={handleCancelRunningTask}
+              isCancelling={isCancelling}
+            />
 
             <Divider sx={{ mb: 4 }} />
 

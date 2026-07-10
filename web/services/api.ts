@@ -399,6 +399,10 @@ class ApiService {
     return this.request<DataResult<number>>('/audit_log/count');
   }
 
+  async getAuditLogProjects(): Promise<DataResult<string[]>> {
+    return this.request<DataResult<string[]>>('/audit_log/projects/list');
+  }
+
   // Dashboard API
   async getDashboardStats(): Promise<DataResult<DashboardStats>> {
     return this.request<DataResult<DashboardStats>>('/dashboard/stats');

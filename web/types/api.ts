@@ -70,6 +70,13 @@ export interface AuthState {
 }
 
 // Project types
+export interface ProjectRunningTask {
+  task_id: string;
+  action: string;
+  output_log: string;
+  start_time?: string;
+}
+
 export interface ProjectInfo {
   id: number;
   name: string;
@@ -78,6 +85,7 @@ export interface ProjectInfo {
   is_active: boolean;
   command_count: number;
   health_status?: 'healthy' | 'unhealthy' | 'unknown';
+  running_task?: ProjectRunningTask;
 }
 
 export interface ProjectAdd {

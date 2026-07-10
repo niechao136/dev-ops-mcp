@@ -30,6 +30,7 @@ export default function AuditLogsPage() {
     pageSize,
     filters,
     updateFilters,
+    projects,
     deleteDialogOpen,
     setDeleteDialogOpen,
     detailDialogOpen,
@@ -83,6 +84,7 @@ export default function AuditLogsPage() {
               selectedIds={selectedIds}
               search={search}
               filters={filters}
+              projects={projects}
               onDelete={handleDelete}
               onCloseDelete={() => setDeleteDialogOpen(false)}
               onCloseDetail={() => setDetailDialogOpen(false)}

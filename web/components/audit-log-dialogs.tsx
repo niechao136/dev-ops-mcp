@@ -30,6 +30,7 @@ interface AuditLogDialogsProps {
   selectedIds: number[];
   search: string;
   filters: AuditLogQueryParams;
+  projects: string[];
   onDelete: () => void;
   onCloseDelete: () => void;
   onCloseDetail: () => void;
@@ -49,6 +50,7 @@ export default function AuditLogDialogs({
   selectedIds,
   search,
   filters,
+  projects,
   onDelete,
   onCloseDelete,
   onCloseDetail,
@@ -94,7 +96,6 @@ export default function AuditLogDialogs({
                   <MenuItem value="">全部</MenuItem>
                   <MenuItem value="user">用户</MenuItem>
                   <MenuItem value="api_key">API Key</MenuItem>
-                  <MenuItem value="system">系统</MenuItem>
                 </Select>
               </FormControl>
               <FormControl sx={{ minWidth: 200 }}>
@@ -107,7 +108,8 @@ export default function AuditLogDialogs({
                   <MenuItem value="">全部</MenuItem>
                   <MenuItem value="success">成功</MenuItem>
                   <MenuItem value="failed">失败</MenuItem>
-                  <MenuItem value="warning">警告</MenuItem>
+                  <MenuItem value="timeout">超时</MenuItem>
+                  <MenuItem value="cancelled">已取消</MenuItem>
                 </Select>
               </FormControl>
               <FormControl sx={{ minWidth: 200 }}>
@@ -118,6 +120,9 @@ export default function AuditLogDialogs({
                   onChange={(e) => onUpdateFilters({ target_project: e.target.value || undefined })}
                 >
                   <MenuItem value="">全部</MenuItem>
+                  {projects.map(project => (
+                    <MenuItem key={project} value={project}>{project}</MenuItem>
+                  ))}
                 </Select>
               </FormControl>
             </Box>

@@ -5,11 +5,12 @@ from typing import List, Annotated, Optional
 from sqlalchemy import asc, desc, or_
 
 from src.dbs.db import get_db_session
-from src.dbs.orm import Project, Command, User
+from src.dbs.orm import Project, Command, User, Task
 from src.schemas.api import DataResult, PageResult
 from src.schemas.project import (
     ProjectPageParams, ProjectInfo, ProjectAdd, ProjectUpdate, ProjectDel,
-    CommandInfo, CommandAdd, CommandUpdate, CommandDel, CommandExecute
+    CommandInfo, CommandAdd, CommandUpdate, CommandDel, CommandExecute,
+    ProjectRunningTask
 )
 from src.utils.auth import get_current_admin, get_current_user
 from src.utils.executor import execute_shell_script
@@ -158,6 +159,20 @@ async def project_detail(
         command_count = len(project.commands)
         health_status = await _check_project_health(project)
 
+        running_task = db.query(Task).filter(
+            Task.project_name == project.name,
+            Task.status == "running"
+        ).first()
+
+        running_task_info = None
+        if running_task:
+            running_task_info = ProjectRunningTask(
+                task_id=running_task.task_id,
+                action=running_task.action,
+                output_log=running_task.output_log or "",
+                start_time=running_task.start_time.isoformat() if running_task.start_time else None
+            )
+
         return DataResult(
             status=1,
             data=ProjectInfo(
@@ -167,7 +182,8 @@ async def project_detail(
                 work_dir=project.work_dir,
                 is_active=project.is_active,
                 command_count=command_count,
-                health_status=health_status
+                health_status=health_status,
+                running_task=running_task_info
             )
         )
 
