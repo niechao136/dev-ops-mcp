@@ -1,7 +1,7 @@
 import os
-import paramiko
+import asyncio
 from dotenv import load_dotenv
-from typing import Optional, Callable
+from typing import Optional
 import logging
 
 load_dotenv()
@@ -16,96 +16,94 @@ logger = logging.getLogger(__name__)
 
 class SSHClient:
     def __init__(self):
-        self.client = None
-        self.channel = None
-        self.sftp = None
+        self.process = None
+        self.stdin = None
+        self.stdout = None
+        self.stderr = None
+        self.active = False
 
     async def connect(self, work_dir: str = "/") -> bool:
         try:
-            self.client = paramiko.SSHClient()
-            self.client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+            logger.info("初始化SSH客户端...")
             
-            from paramiko import RSAKey, Ed25519Key, ECDSAKey
-            private_key = None
-            
-            for key_class in [RSAKey, Ed25519Key, ECDSAKey]:
-                try:
-                    private_key = key_class.from_private_key_file(SSH_KEY)
-                    logger.info(f"成功加载密钥，类型: {key_class.__name__}")
-                    break
-                except Exception:
-                    continue
-            
-            if not private_key:
-                raise Exception("无法加载私钥文件，不支持的密钥格式")
-            
-            self.client.connect(
-                hostname=SSH_HOST,
-                port=SSH_PORT,
-                username=SSH_USER,
-                pkey=private_key,
-                timeout=10,
-                banner_timeout=10,
-                auth_timeout=10
+            ssh_cmd = (
+                f"ssh -i {SSH_KEY} "
+                f"-o StrictHostKeyChecking=no "
+                f"-o ConnectTimeout=10 "
+                f"-p {SSH_PORT} "
+                f"{SSH_USER}@{SSH_HOST} "
+                f"'cd {work_dir} && exec /bin/bash -i'"
             )
             
-            self.channel = self.client.invoke_shell()
-            self.channel.get_pty(width=80, height=24)
-            self.channel.setblocking(0)
+            logger.info(f"执行SSH命令: {ssh_cmd}")
             
-            if work_dir and work_dir != "/":
-                self.channel.send(f"cd {work_dir}\n".encode('utf-8'))
+            self.process = await asyncio.create_subprocess_shell(
+                ssh_cmd,
+                stdin=asyncio.subprocess.PIPE,
+                stdout=asyncio.subprocess.PIPE,
+                stderr=asyncio.subprocess.PIPE,
+                preexec_fn=os.setsid if os.name != 'nt' else None
+            )
             
+            self.stdin = self.process.stdin
+            self.stdout = self.process.stdout
+            self.stderr = self.process.stderr
+            self.active = True
+            
+            logger.info("SSH进程创建成功")
             return True
         except Exception as e:
             logger.error(f"SSH连接失败: {e}")
+            import traceback
+            logger.error(f"堆栈信息:\n{traceback.format_exc()}")
             self.close()
             return False
 
     def send(self, data: str) -> bool:
-        if self.channel and self.channel.active:
+        if self.stdin and self.active:
             try:
-                self.channel.send(data.encode('utf-8'))
+                self.stdin.write(data.encode('utf-8'))
+                asyncio.create_task(self.stdin.drain())
                 return True
             except Exception as e:
                 logger.error(f"发送数据失败: {e}")
                 return False
         return False
 
-    def recv(self, buffer_size: int = 4096) -> Optional[str]:
-        if self.channel and self.channel.active:
+    async def recv(self, buffer_size: int = 4096) -> Optional[str]:
+        if self.stdout and self.active:
             try:
-                data = self.channel.recv(buffer_size)
+                data = await asyncio.wait_for(
+                    self.stdout.read(buffer_size),
+                    timeout=0.1
+                )
                 if data:
                     return data.decode('utf-8', errors='replace')
+            except asyncio.TimeoutError:
+                pass
             except Exception as e:
                 logger.error(f"接收数据失败: {e}")
         return None
 
     def resize_pty(self, width: int, height: int) -> bool:
-        if self.channel and self.channel.active:
-            try:
-                self.channel.resize_pty(width=width, height=height)
-                return True
-            except Exception as e:
-                logger.error(f"调整终端大小失败: {e}")
-                return False
+        logger.info(f"调整终端大小: {width}x{height}")
         return False
 
     def close(self):
-        if self.channel:
+        self.active = False
+        if self.process:
             try:
-                self.channel.close()
+                if os.name != 'nt':
+                    os.killpg(os.getpgid(self.process.pid), 9)
+                else:
+                    self.process.kill()
             except Exception:
                 pass
-        if self.client:
-            try:
-                self.client.close()
-            except Exception:
-                pass
-        self.channel = None
-        self.client = None
+            self.process = None
+        self.stdin = None
+        self.stdout = None
+        self.stderr = None
 
     @property
     def is_active(self) -> bool:
-        return self.channel is not None and self.channel.active
+        return self.active and self.process is not None and self.process.returncode is None

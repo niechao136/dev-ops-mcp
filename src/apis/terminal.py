@@ -86,7 +86,7 @@ async def terminal_websocket(
         async def ssh_reader():
             while ssh_client.is_active:
                 try:
-                    data = ssh_client.recv(4096)
+                    data = await ssh_client.recv(4096)
                     if data:
                         await websocket.send_text(data)
                     else:
