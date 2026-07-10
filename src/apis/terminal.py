@@ -86,7 +86,7 @@ async def terminal_websocket(
         async def ssh_reader():
             while ssh_client.is_active:
                 try:
-                    data = await ssh_client.recv(4096)
+                    data = ssh_client.recv(4096)
                     if data:
                         await websocket.send_text(data)
                     else:
@@ -108,7 +108,7 @@ async def terminal_websocket(
                             height = int(parts[2])
                             ssh_client.resize_pty(width, height)
                     else:
-                        await ssh_client.send(data)
+                        ssh_client.send(data)
                 except WebSocketDisconnect:
                     break
                 except Exception as e:
