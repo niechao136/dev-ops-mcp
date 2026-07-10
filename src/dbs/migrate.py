@@ -152,6 +152,36 @@ def migrate_database():
         else:
             print("tasks table already exists")
 
+        # Check and create automations table
+        cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='automations'")
+        if not cursor.fetchone():
+            print("Creating automations table...")
+            cursor.execute("""
+                CREATE TABLE automations (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    project_id INTEGER NOT NULL,
+                    name VARCHAR(100) NOT NULL,
+                    trigger_type VARCHAR(20) NOT NULL,
+                    cron_expression VARCHAR(100),
+                    condition_script TEXT,
+                    condition_interval INTEGER DEFAULT 60,
+                    command_id INTEGER NOT NULL,
+                    is_enabled INTEGER DEFAULT 1,
+                    last_run_time DATETIME,
+                    last_run_status VARCHAR(20),
+                    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                    FOREIGN KEY (project_id) REFERENCES projects(id),
+                    FOREIGN KEY (command_id) REFERENCES commands(id)
+                )
+            """)
+            cursor.execute("CREATE INDEX idx_automations_project_id ON automations(project_id)")
+            cursor.execute("CREATE INDEX idx_automations_command_id ON automations(command_id)")
+            conn.commit()
+            print("Successfully created automations table")
+        else:
+            print("automations table already exists")
+
         print("\nDatabase migration completed!")
         
     except Exception as e:

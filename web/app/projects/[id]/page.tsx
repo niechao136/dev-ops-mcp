@@ -2,8 +2,9 @@
 
 import { useEffect, useState, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { Box, Container, CircularProgress, Alert, Divider } from '@mui/material';
+import { Box, Container, CircularProgress, Alert, Divider, Tabs, Tab } from '@mui/material';
 import { enqueueSnackbar } from 'notistack';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import ProtectedRoute from '@/components/protected-route';
 import MainLayout from '@/components/main-layout';
 import { useProject } from '@/hooks/use-project';
@@ -15,7 +16,10 @@ import { DeleteDialog } from '@/components/delete-dialog';
 import { ExecuteDialog } from '@/components/execute-dialog';
 import { ImportDialog } from '@/components/import-dialog';
 import { TerminalPanel } from '@/components/terminal-panel';
+import { AutomationTable } from '@/components/automation-table';
+import { AutomationDialog } from '@/components/automation-dialog';
 import { apiService } from '@/services/api';
+import type { AutomationInfo, AutomationAdd, AutomationUpdate } from '@/types/api';
 
 export default function ProjectDetailPage() {
   const params = useParams();
@@ -23,6 +27,15 @@ export default function ProjectDetailPage() {
   const projectId = parseInt(params.id as string);
   const [isCancelling, setIsCancelling] = useState(false);
   const [terminalOpen, setTerminalOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState(0);
+  const [automationPage, setAutomationPage] = useState(1);
+  const [automationPageSize, setAutomationPageSize] = useState(10);
+  const [automationCreateDialogOpen, setAutomationCreateDialogOpen] = useState(false);
+  const [automationEditDialogOpen, setAutomationEditDialogOpen] = useState(false);
+  const [automationDeleteDialogOpen, setAutomationDeleteDialogOpen] = useState(false);
+  const [currentAutomation, setCurrentAutomation] = useState<AutomationInfo | null>(null);
+  const [automationToDelete, setAutomationToDelete] = useState<number | null>(null);
+  const queryClient = useQueryClient();
 
   const {
     project,
@@ -67,6 +80,99 @@ export default function ProjectDetailPage() {
     importMutation,
     batchImportMutation
   } = useProject(projectId);
+
+  const {
+    data: automationData,
+    isLoading: automationLoading,
+    refetch: refetchAutomations
+  } = useQuery({
+    queryKey: ['automations', projectId, automationPage, automationPageSize],
+    queryFn: () => apiService.getProjectAutomations(projectId, {
+      page: automationPage,
+      size: automationPageSize
+    })
+  });
+
+  const automations = automationData?.data || [];
+  const totalAutomations = automationData?.total || 0;
+
+  const createAutomationMutation = useMutation({
+    mutationFn: (data: AutomationAdd) => apiService.createAutomation(data),
+    onSuccess: () => {
+      enqueueSnackbar('自动化规则创建成功', { variant: 'success' });
+      queryClient.invalidateQueries({ queryKey: ['automations', projectId] });
+    },
+    onError: () => {
+      enqueueSnackbar('创建失败', { variant: 'error' });
+    }
+  });
+
+  const updateAutomationMutation = useMutation({
+    mutationFn: ({ id, data }: { id: number; data: AutomationUpdate }) => apiService.updateAutomation(id, data),
+    onSuccess: () => {
+      enqueueSnackbar('自动化规则更新成功', { variant: 'success' });
+      queryClient.invalidateQueries({ queryKey: ['automations', projectId] });
+    },
+    onError: () => {
+      enqueueSnackbar('更新失败', { variant: 'error' });
+    }
+  });
+
+  const deleteAutomationMutation = useMutation({
+    mutationFn: (id: number) => apiService.deleteAutomation(id),
+    onSuccess: () => {
+      enqueueSnackbar('自动化规则删除成功', { variant: 'success' });
+      queryClient.invalidateQueries({ queryKey: ['automations', projectId] });
+    },
+    onError: () => {
+      enqueueSnackbar('删除失败', { variant: 'error' });
+    }
+  });
+
+  const toggleAutomationMutation = useMutation({
+    mutationFn: (id: number) => apiService.toggleAutomation(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['automations', projectId] });
+    },
+    onError: () => {
+      enqueueSnackbar('操作失败', { variant: 'error' });
+    }
+  });
+
+  const handleCreateAutomation = (data: AutomationAdd | AutomationUpdate) => {
+    createAutomationMutation.mutate(data as AutomationAdd);
+  };
+
+  const handleEditAutomation = (data: AutomationAdd | AutomationUpdate) => {
+    if (currentAutomation) {
+      updateAutomationMutation.mutate({ id: currentAutomation.id, data: data as AutomationUpdate });
+    }
+  };
+
+  const handleDeleteAutomation = () => {
+    if (automationToDelete) {
+      deleteAutomationMutation.mutate(automationToDelete);
+    }
+  };
+
+  const handleToggleAutomationEnabled = (id: number) => {
+    toggleAutomationMutation.mutate(id);
+  };
+
+  const handleOpenAutomationCreateDialog = () => {
+    setCurrentAutomation(null);
+    setAutomationCreateDialogOpen(true);
+  };
+
+  const handleOpenAutomationEditDialog = (automation: AutomationInfo) => {
+    setCurrentAutomation(automation);
+    setAutomationEditDialogOpen(true);
+  };
+
+  const handleOpenAutomationDeleteDialog = (id: number) => {
+    setAutomationToDelete(id);
+    setAutomationDeleteDialogOpen(true);
+  };
 
   const {
     executeDialogOpen,
@@ -167,22 +273,50 @@ export default function ProjectDetailPage() {
 
             <Divider sx={{ mb: 4 }} />
 
-            <CommandTable
-              commands={commands}
-              isLoading={commandsLoading}
-              total={totalCommands}
-              page={page}
-              pageSize={pageSize}
-              onPageChange={setPage}
-              onPageSizeChange={setPageSize}
-              onRefresh={refetch}
-              onOpenExecuteDialog={openExecuteDialog}
-              onOpenEditDialog={openEditDialog}
-              onOpenDeleteDialog={handleOpenDeleteDialog}
-              onOpenImportDialog={handleOpenImportDialog}
-              onOpenCreateDialog={handleOpenCreateDialog}
-              onToggleHealthCheck={handleToggleHealthCheck}
-            />
+            <Tabs
+              value={activeTab}
+              onChange={(_, newValue) => setActiveTab(newValue)}
+              sx={{ mb: 4 }}
+            >
+              <Tab label="命令管理" />
+              <Tab label="自动化规则" />
+            </Tabs>
+
+            {activeTab === 0 && (
+              <CommandTable
+                commands={commands}
+                isLoading={commandsLoading}
+                total={totalCommands}
+                page={page}
+                pageSize={pageSize}
+                onPageChange={setPage}
+                onPageSizeChange={setPageSize}
+                onRefresh={refetch}
+                onOpenExecuteDialog={openExecuteDialog}
+                onOpenEditDialog={openEditDialog}
+                onOpenDeleteDialog={handleOpenDeleteDialog}
+                onOpenImportDialog={handleOpenImportDialog}
+                onOpenCreateDialog={handleOpenCreateDialog}
+                onToggleHealthCheck={handleToggleHealthCheck}
+              />
+            )}
+
+            {activeTab === 1 && (
+              <AutomationTable
+                automations={automations}
+                isLoading={automationLoading}
+                total={totalAutomations}
+                page={automationPage}
+                pageSize={automationPageSize}
+                onPageChange={setAutomationPage}
+                onPageSizeChange={setAutomationPageSize}
+                onRefresh={refetchAutomations}
+                onOpenCreateDialog={handleOpenAutomationCreateDialog}
+                onOpenEditDialog={handleOpenAutomationEditDialog}
+                onOpenDeleteDialog={handleOpenAutomationDeleteDialog}
+                onToggleEnabled={handleToggleAutomationEnabled}
+              />
+            )}
           </Box>
         </Container>
 
@@ -255,6 +389,33 @@ export default function ProjectDetailPage() {
           workDir={project?.work_dir || '/'}
           open={terminalOpen}
           onClose={() => setTerminalOpen(false)}
+        />
+
+        <AutomationDialog
+          open={automationCreateDialogOpen}
+          onClose={() => setAutomationCreateDialogOpen(false)}
+          onSave={handleCreateAutomation}
+          projectId={projectId}
+          commands={commands}
+        />
+
+        <AutomationDialog
+          open={automationEditDialogOpen}
+          onClose={() => {
+            setAutomationEditDialogOpen(false);
+            setCurrentAutomation(null);
+          }}
+          onSave={handleEditAutomation}
+          projectId={projectId}
+          commands={commands}
+          automation={currentAutomation}
+        />
+
+        <DeleteDialog
+          open={automationDeleteDialogOpen}
+          onClose={() => setAutomationDeleteDialogOpen(false)}
+          onDelete={handleDeleteAutomation}
+          isDeleting={deleteAutomationMutation.isPending}
         />
       </MainLayout>
     </ProtectedRoute>

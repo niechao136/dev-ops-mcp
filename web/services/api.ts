@@ -8,7 +8,8 @@ import {
   AuditLogInfo, AuditLogQueryParams,
   DashboardStats, SystemMetrics,
   PublicCommandInfo, PublicCommandAdd, PublicCommandUpdate, PublicCommandImport, PublicCommandBatchImport,
-  TaskInfo, TaskSubmitResult
+  TaskInfo, TaskSubmitResult,
+  AutomationInfo, AutomationAdd, AutomationUpdate
 } from '@/types/api';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || '/api';
@@ -479,6 +480,45 @@ class ApiService {
     };
 
     return () => eventSource.close();
+  }
+
+  // Automation API
+  async getProjectAutomations(projectId: number, params?: {
+    page?: number;
+    size?: number;
+  }): Promise<PageResult<AutomationInfo>> {
+    const query = new URLSearchParams();
+    if (params?.page) query.set('page', params.page.toString());
+    if (params?.size) query.set('size', params.size.toString());
+    const queryString = query.toString();
+    const url = queryString ? `/automations/${projectId}?${queryString}` : `/automations/${projectId}`;
+    return this.request<PageResult<AutomationInfo>>(url);
+  }
+
+  async createAutomation(data: AutomationAdd): Promise<DataResult<number>> {
+    return this.request<DataResult<number>>('/automations', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async updateAutomation(id: number, data: AutomationUpdate): Promise<DataResult<boolean>> {
+    return this.request<DataResult<boolean>>(`/automations/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async deleteAutomation(id: number): Promise<DataResult<boolean>> {
+    return this.request<DataResult<boolean>>(`/automations/${id}`, {
+      method: 'DELETE',
+    });
+  }
+
+  async toggleAutomation(id: number): Promise<DataResult<boolean>> {
+    return this.request<DataResult<boolean>>(`/automations/${id}/toggle`, {
+      method: 'PUT',
+    });
   }
 }
 

@@ -15,17 +15,22 @@ from src.apis.dashboard import dashboard_router
 from src.apis.public_command import public_command_router
 from src.apis.task import task_router
 from src.apis.terminal import terminal_router
+from src.apis.automation import automation_router
 from src.dbs.db import init_db
 from src.middlewares.mcp_auth import MCPAuthMiddleware
 from src.tools.mcp import mcp_app
+from src.utils.scheduler import start_scheduler, stop_scheduler
 
 
 @asynccontextmanager
 async def lifespan(_: FastAPI):
 
     init_db()
+    start_scheduler()
 
     yield
+
+    stop_scheduler()
 
 
 app = FastAPI(root_path="/api", lifespan=combine_lifespans(lifespan, mcp_app.lifespan))
@@ -52,6 +57,7 @@ app.include_router(router=dashboard_router)
 app.include_router(router=public_command_router)
 app.include_router(router=task_router)
 app.include_router(router=terminal_router)
+app.include_router(router=automation_router)
 app.mount("/mcp", mcp_app)  # 将 MCP 应用挂载到 /mcp 路径下
 
 

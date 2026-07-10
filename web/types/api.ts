@@ -294,3 +294,44 @@ export interface PublicCommandBatchImport {
   public_command_ids: number[];
   project_id: number;
 }
+
+// 自动化规则类型
+export interface AutomationInfo {
+  id: number;
+  project_id: number;
+  project_name: string;
+  name: string;
+  trigger_type: 'cron' | 'condition';
+  cron_expression?: string;
+  condition_script?: string;
+  condition_interval?: number;
+  command_id: number;
+  command_action: string;
+  command_description?: string;
+  is_enabled: boolean;
+  last_run_time?: string;
+  last_run_status?: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface AutomationAdd {
+  project_id: number;
+  name: string;
+  trigger_type: 'cron' | 'condition';
+  cron_expression?: string;
+  condition_script?: string;
+  condition_interval?: number;
+  command_id: number;
+  is_enabled?: boolean;
+}
+
+export interface AutomationUpdate {
+  name?: string;
+  trigger_type?: 'cron' | 'condition';
+  cron_expression?: string;
+  condition_script?: string;
+  condition_interval?: number;
+  command_id?: number;
+  is_enabled?: boolean;
+}

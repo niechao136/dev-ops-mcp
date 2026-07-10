@@ -150,3 +150,27 @@ class Task(Base):
     actor_id: Mapped[int] = mapped_column(Integer)
     command_details: Mapped[dict] = mapped_column(JSON)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now(UTC), index=True)
+
+
+# ==========================================
+# 7. 自动化规则表 (Automation)
+# ==========================================
+class Automation(Base):
+    __tablename__ = "automations"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    project_id: Mapped[int] = mapped_column(ForeignKey("projects.id"))
+    name: Mapped[str] = mapped_column(String(100))
+    trigger_type: Mapped[str] = mapped_column(String(20))  # cron / condition
+    cron_expression: Mapped[Optional[str]] = mapped_column(String(100))
+    condition_script: Mapped[Optional[str]] = mapped_column(Text)
+    condition_interval: Mapped[Optional[int]] = mapped_column(Integer, default=60)
+    command_id: Mapped[int] = mapped_column(ForeignKey("commands.id"))
+    is_enabled: Mapped[bool] = mapped_column(Boolean, default=True)
+    last_run_time: Mapped[Optional[datetime]] = mapped_column(DateTime)
+    last_run_status: Mapped[Optional[str]] = mapped_column(String(20))
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now(UTC))
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now(UTC), onupdate=datetime.now(UTC))
+
+    project: Mapped["Project"] = relationship("Project")
+    command: Mapped["Command"] = relationship("Command")
