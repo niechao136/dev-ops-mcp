@@ -3,7 +3,7 @@ import { Terminal } from '@xterm/xterm';
 import { FitAddon } from '@xterm/addon-fit';
 import '@xterm/xterm/css/xterm.css';
 import { Box, IconButton, Typography, Divider, Alert, AlertTitle, Dialog, DialogContent } from '@mui/material';
-import { Terminal as TerminalIcon, Close, Maximize, Minimize } from '@mui/icons-material';
+import { Terminal as TerminalIcon, Close, Maximize, Minimize, Refresh } from '@mui/icons-material';
 import { getToken } from '@/utils/cookie';
 
 interface TerminalPanelProps {
@@ -22,19 +22,8 @@ export function TerminalPanel({ projectId, workDir, open, onClose }: TerminalPan
   const [isMaximized, setIsMaximized] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const connect = useCallback(async () => {
-    console.log('terminal-panel: connect called');
-    console.log('terminal-panel: terminalRef.current exists:', !!terminalRef.current);
-    
-    if (!terminalRef.current) {
-      console.log('terminal-panel: terminalRef.current is null, retrying...');
-      const retryTimer = setTimeout(() => {
-        if (terminalRef.current) {
-          connect();
-        }
-      }, 100);
-      return;
-    }
+  const initTerminal = useCallback(() => {
+    if (!terminalRef.current || terminalInstanceRef.current) return;
 
     console.log('terminal-panel: creating terminal instance');
     terminalInstanceRef.current = new Terminal({
@@ -74,7 +63,6 @@ export function TerminalPanel({ projectId, workDir, open, onClose }: TerminalPan
     fitAddonRef.current = new FitAddon();
     terminalInstanceRef.current.loadAddon(fitAddonRef.current);
     terminalInstanceRef.current.open(terminalRef.current);
-
     fitAddonRef.current.fit();
 
     terminalInstanceRef.current.onData((data) => {
@@ -88,6 +76,27 @@ export function TerminalPanel({ projectId, workDir, open, onClose }: TerminalPan
         websocketRef.current.send(`\x00resize:${size.cols}:${size.rows}`);
       }
     });
+  }, []);
+
+  const connect = useCallback(async () => {
+    console.log('terminal-panel: connect called');
+    
+    if (!terminalRef.current) {
+      console.log('terminal-panel: terminalRef.current is null, retrying...');
+      const retryTimer = setTimeout(() => {
+        if (terminalRef.current) {
+          connect();
+        }
+      }, 100);
+      return;
+    }
+
+    initTerminal();
+
+    if (websocketRef.current) {
+      websocketRef.current.close();
+      websocketRef.current = null;
+    }
 
     const token = await getToken();
     console.log('terminal-panel: got token:', token ? 'token exists' : 'no token');
@@ -105,7 +114,6 @@ export function TerminalPanel({ projectId, workDir, open, onClose }: TerminalPan
     };
 
     websocketRef.current.onmessage = (event) => {
-      console.log('terminal-panel: received data:', event.data.length, 'bytes');
       terminalInstanceRef.current?.write(event.data);
     };
 
@@ -118,11 +126,11 @@ export function TerminalPanel({ projectId, workDir, open, onClose }: TerminalPan
     websocketRef.current.onclose = (event) => {
       console.log('terminal-panel: WebSocket closed, code:', event.code, 'reason:', event.reason);
       setIsConnected(false);
-      if (terminalInstanceRef.current) {
+      if (terminalInstanceRef.current && event.code !== 1000) {
         terminalInstanceRef.current.write('\r\n连接已断开\r\n');
       }
     };
-  }, [projectId]);
+  }, [projectId, initTerminal]);
 
   const disconnect = useCallback(() => {
     if (websocketRef.current) {
@@ -209,6 +217,16 @@ export function TerminalPanel({ projectId, workDir, open, onClose }: TerminalPan
             )}
           </Box>
           <Box sx={{ display: 'flex', gap: 1 }}>
+            {!isConnected && (
+              <IconButton
+                size="small"
+                onClick={connect}
+                sx={{ color: '#0dbc79' }}
+                title="重新连接"
+              >
+                <Refresh />
+              </IconButton>
+            )}
             <IconButton
               size="small"
               onClick={() => setIsMaximized(!isMaximized)}
