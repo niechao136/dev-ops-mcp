@@ -25,7 +25,19 @@ class SSHClient:
             self.client = paramiko.SSHClient()
             self.client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
             
-            private_key = paramiko.RSAKey.from_private_key_file(SSH_KEY)
+            from paramiko import RSAKey, Ed25519Key, ECDSAKey
+            private_key = None
+            
+            for key_class in [RSAKey, Ed25519Key, ECDSAKey]:
+                try:
+                    private_key = key_class.from_private_key_file(SSH_KEY)
+                    logger.info(f"成功加载密钥，类型: {key_class.__name__}")
+                    break
+                except Exception:
+                    continue
+            
+            if not private_key:
+                raise Exception("无法加载私钥文件，不支持的密钥格式")
             
             self.client.connect(
                 hostname=SSH_HOST,

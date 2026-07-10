@@ -8,7 +8,7 @@ from src.dbs.db import get_db_session
 from src.dbs.orm import Project
 from src.utils.auth import get_current_user
 from src.utils.jwt import verify_access_token
-from src.utils.ssh_client import SSHClient
+from src.utils.ssh_client import SSHClient, SSH_HOST, SSH_PORT, SSH_USER
 
 logger = logging.getLogger(__name__)
 
@@ -34,40 +34,54 @@ async def terminal_websocket(
     project_id: int,
     token: Optional[str] = None
 ):
+    logger.info(f"WebSocket终端连接请求: project_id={project_id}, token_provided={token is not None}")
+    
     if not token:
         auth_header = websocket.headers.get("Authorization")
+        logger.info(f"Authorization header: {auth_header}")
         if auth_header and auth_header.startswith("Bearer "):
             token = auth_header[7:]
+            logger.info("从Authorization header获取token")
 
     if not token:
+        logger.warning("未提供token，拒绝连接")
         await websocket.close(code=1008, reason="Unauthorized: No token provided")
         return
 
     try:
         payload = verify_access_token(token)
+        logger.info(f"Token验证结果: {payload}")
         if not payload:
+            logger.warning("Token无效，拒绝连接")
             await websocket.close(code=1008, reason="Unauthorized: Invalid token")
             return
     except Exception as e:
+        logger.error(f"Token验证异常: {e}")
         await websocket.close(code=1008, reason=f"Unauthorized: {str(e)}")
         return
 
     with get_db_session() as db:
         project = db.query(Project).filter(Project.id == project_id).first()
         if not project:
+            logger.warning(f"项目不存在: {project_id}")
             await websocket.close(code=1008, reason="Project not found")
             return
 
+    await websocket.accept()
+    logger.info("WebSocket连接已接受")
+
     ssh_client = SSHClient()
     work_dir = project.work_dir or "/"
+    logger.info(f"准备连接SSH: host={SSH_HOST}, port={SSH_PORT}, user={SSH_USER}, work_dir={work_dir}")
 
     try:
         connected = await ssh_client.connect(work_dir)
         if not connected:
+            logger.error("SSH连接失败")
             await websocket.close(code=1011, reason="Failed to connect to SSH server")
             return
 
-        await websocket.accept()
+        logger.info("SSH连接成功")
 
         async def ssh_reader():
             while ssh_client.is_active:
