@@ -12,6 +12,7 @@ dependencies = [
     "fastmcp",
     "mcp",
     "passlib[bcrypt]",
+    "paramiko",
     "psutil",
     "pydantic",
     "python-dotenv",

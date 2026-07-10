@@ -1,5 +1,5 @@
 import { Box, Card, CardContent, Chip, IconButton, Typography, Button, CircularProgress } from '@mui/material';
-import { ArrowBack, Stop, NotificationImportant } from '@mui/icons-material';
+import { ArrowBack, Stop, NotificationImportant, Terminal } from '@mui/icons-material';
 import type { ProjectInfo } from '@/types/api';
 
 interface ProjectInfoProps {
@@ -7,9 +7,10 @@ interface ProjectInfoProps {
   onBack: () => void;
   onCancelRunningTask?: (taskId: string) => void;
   isCancelling?: boolean;
+  onOpenTerminal?: () => void;
 }
 
-export function ProjectInfo({ project, onBack, onCancelRunningTask, isCancelling }: ProjectInfoProps) {
+export function ProjectInfo({ project, onBack, onCancelRunningTask, isCancelling, onOpenTerminal }: ProjectInfoProps) {
   return (
     <Box sx={{ mb: 4 }}>
       <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
@@ -25,6 +26,13 @@ export function ProjectInfo({ project, onBack, onCancelRunningTask, isCancelling
           size="small"
           sx={{ ml: 2 }}
         />
+        <IconButton
+          onClick={onOpenTerminal}
+          sx={{ ml: 2, color: '#0dbc79' }}
+          title="打开终端"
+        >
+          <Terminal />
+        </IconButton>
       </Box>
 
       {project.running_task && (
@@ -48,7 +56,7 @@ export function ProjectInfo({ project, onBack, onCancelRunningTask, isCancelling
               </Button>
             </Box>
             <Box sx={{ bgcolor: 'black', color: 'white', p: 2, borderRadius: 1, maxHeight: 150, overflowY: 'auto', fontFamily: 'monospace', fontSize: '0.875rem' }}>
-              <Typography sx={{ whiteSpace: 'pre-wrap'}} variant="body2" component="pre">
+              <Typography sx={{ whiteSpace: 'pre-wrap' }} variant="body2" component="pre">
                 {project.running_task.output_log || '等待输出...'}
               </Typography>
             </Box>

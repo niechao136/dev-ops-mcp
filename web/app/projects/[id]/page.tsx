@@ -14,6 +14,7 @@ import { CommandDialog } from '@/components/command-dialog';
 import { DeleteDialog } from '@/components/delete-dialog';
 import { ExecuteDialog } from '@/components/execute-dialog';
 import { ImportDialog } from '@/components/import-dialog';
+import { TerminalPanel } from '@/components/terminal-panel';
 import { apiService } from '@/services/api';
 
 export default function ProjectDetailPage() {
@@ -21,6 +22,7 @@ export default function ProjectDetailPage() {
   const router = useRouter();
   const projectId = parseInt(params.id as string);
   const [isCancelling, setIsCancelling] = useState(false);
+  const [terminalOpen, setTerminalOpen] = useState(false);
 
   const {
     project,
@@ -159,6 +161,7 @@ export default function ProjectDetailPage() {
               onBack={() => router.back()}
               onCancelRunningTask={handleCancelRunningTask}
               isCancelling={isCancelling}
+              onOpenTerminal={() => setTerminalOpen(true)}
             />
 
             <Divider sx={{ mb: 4 }} />
@@ -243,6 +246,13 @@ export default function ProjectDetailPage() {
           onImport={(id) => importMutation.mutate(id)}
           onBatchImport={(ids) => batchImportMutation.mutate(ids)}
           isImporting={importMutation.isPending || batchImportMutation.isPending}
+        />
+
+        <TerminalPanel
+          projectId={projectId}
+          workDir={project?.work_dir || '/'}
+          open={terminalOpen}
+          onClose={() => setTerminalOpen(false)}
         />
       </MainLayout>
     </ProtectedRoute>
