@@ -24,7 +24,7 @@ export function useProject(projectId: number) {
   });
   const [defaultParamsText, setDefaultParamsText] = useState('');
   const [page, setPage] = useState(1);
-  const [pageSize] = useState(10);
+  const [pageSize, setPageSize] = useState(10);
   const [importSearch, setImportSearch] = useState('');
 
   const { data: projectData, isLoading: projectLoading, refetch: refetchProject } = useQuery({
@@ -33,7 +33,7 @@ export function useProject(projectId: number) {
   });
 
   const { data: commandsData, isLoading: commandsLoading, refetch: refetchCommands } = useQuery({
-    queryKey: ['commands', projectId, page],
+    queryKey: ['commands', projectId, page, pageSize],
     queryFn: () => apiService.getProjectCommands(projectId, {
       page,
       size: pageSize
@@ -255,6 +255,7 @@ export function useProject(projectId: number) {
     refetchProject,
     page,
     pageSize,
+    setPageSize,
     setPage,
     importSearch,
     setImportSearch,

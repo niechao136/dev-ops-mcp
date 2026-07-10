@@ -30,6 +30,7 @@ export default function UsersPage() {
     page,
     setPage,
     pageSize,
+    setPageSize,
     createDialogOpen,
     setCreateDialogOpen,
     editDialogOpen,
@@ -122,6 +123,7 @@ export default function UsersPage() {
               page={page}
               pageSize={pageSize}
               onPageChange={setPage}
+              onPageSizeChange={setPageSize}
               onToggleSelect={toggleSelect}
               onToggleSelectAll={toggleSelectAll}
               onToggleStatus={(id) => toggleStatusMutation.mutate(id)}

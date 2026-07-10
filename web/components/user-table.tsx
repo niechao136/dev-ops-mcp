@@ -15,7 +15,8 @@ import {
   Tooltip,
   CircularProgress,
   Alert,
-  TablePagination
+  TablePagination,
+  Typography
 } from '@mui/material';
 import {
   Edit,
@@ -34,6 +35,7 @@ interface UserTableProps {
   page: number;
   pageSize: number;
   onPageChange: (page: number) => void;
+  onPageSizeChange: (pageSize: number) => void;
   onToggleSelect: (id: number) => void;
   onToggleSelectAll: () => void;
   onToggleStatus: (id: number) => void;
@@ -52,11 +54,13 @@ export default function UserTable({
   page,
   pageSize,
   onPageChange,
+  onPageSizeChange,
   onToggleSelect,
   onToggleSelectAll,
   onToggleStatus,
   onPassword,
   onEdit,
+  onDelete,
   formatDate,
   toggleStatusMutation
 }: UserTableProps) {
@@ -160,16 +164,49 @@ export default function UserTable({
       )}
 
       {total > 0 && (
-        <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
+        <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2, alignItems: 'center', gap: 2 }}>
+          <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+            共 {total} 条
+          </Typography>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <Typography variant="body2" sx={{ color: 'text.secondary' }}>第</Typography>
+            <input
+              type="number"
+              min="1"
+              max={Math.ceil(total / pageSize)}
+              value={page}
+              onChange={(e) => {
+                const newPage = parseInt(e.target.value) || 1;
+                const maxPage = Math.ceil(total / pageSize) || 1;
+                onPageChange(Math.min(Math.max(newPage, 1), maxPage));
+              }}
+              style={{
+                width: 60,
+                padding: '4px 8px',
+                border: '1px solid rgba(0,0,0,0.23)',
+                borderRadius: 4,
+                textAlign: 'center',
+                fontSize: 14,
+                backgroundColor: 'transparent',
+                color: 'inherit'
+              }}
+            />
+            <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+              页 / {Math.ceil(total / pageSize)} 页
+            </Typography>
+          </Box>
           <TablePagination
             component="div"
             count={total}
             page={page - 1}
             onPageChange={(event, newPage) => onPageChange(newPage + 1)}
             rowsPerPage={pageSize}
-            rowsPerPageOptions={[10, 25, 50]}
-            labelRowsPerPage="每页行数"
-            labelDisplayedRows={({ from, to, count }) => `${from}-${to} 共 ${count}`}
+            onRowsPerPageChange={(event) => {
+              onPageSizeChange(parseInt(event.target.value));
+              onPageChange(1);
+            }}
+            rowsPerPageOptions={[10, 25, 50, 100]}
+            labelRowsPerPage="每页"
           />
         </Box>
       )}

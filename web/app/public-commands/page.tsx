@@ -28,6 +28,7 @@ export default function PublicCommandsPage() {
     page,
     setPage,
     pageSize,
+    setPageSize,
     createDialogOpen,
     setCreateDialogOpen,
     editDialogOpen,
@@ -106,6 +107,7 @@ export default function PublicCommandsPage() {
               page={page}
               pageSize={pageSize}
               onPageChange={setPage}
+              onPageSizeChange={setPageSize}
               onCopy={handleCopyCommand}
               onEdit={openEditDialog}
               onDelete={handleDeleteClick}

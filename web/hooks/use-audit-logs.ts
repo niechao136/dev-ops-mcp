@@ -9,7 +9,7 @@ export function useAuditLogs() {
   const [search, setSearch] = useState('');
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
   const [page, setPage] = useState(1);
-  const [pageSize] = useState(10);
+  const [pageSize, setPageSize] = useState(10);
   const [filters, setFilters] = useState<AuditLogQueryParams>({});
 
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -17,7 +17,7 @@ export function useAuditLogs() {
   const [currentLog, setCurrentLog] = useState<AuditLogInfo | null>(null);
 
   const { data, isLoading, refetch } = useQuery({
-    queryKey: ['auditLogs', page, search, filters],
+    queryKey: ['auditLogs', page, pageSize, search, filters],
     queryFn: () => apiService.getAuditLogs({
       page,
       size: pageSize,
@@ -125,6 +125,7 @@ export function useAuditLogs() {
     page,
     setPage,
     pageSize,
+    setPageSize,
     filters,
     updateFilters,
     projects: projectsData?.data || [],

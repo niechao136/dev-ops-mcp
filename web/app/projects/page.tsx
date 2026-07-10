@@ -32,6 +32,7 @@ export default function ProjectsPage() {
     page,
     setPage,
     pageSize,
+    setPageSize,
     createDialogOpen,
     setCreateDialogOpen,
     editDialogOpen,
@@ -116,6 +117,7 @@ export default function ProjectsPage() {
               page={page}
               pageSize={pageSize}
               onPageChange={setPage}
+              onPageSizeChange={setPageSize}
               onToggleSelect={toggleSelect}
               onToggleSelectAll={toggleSelectAll}
               onToggleActive={(id, isActive) => toggleActiveMutation.mutate({ id, isActive })}

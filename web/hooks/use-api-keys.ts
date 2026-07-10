@@ -9,7 +9,7 @@ export function useApiKeys() {
   const [search, setSearch] = useState('');
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
   const [page, setPage] = useState(1);
-  const [pageSize] = useState(10);
+  const [pageSize, setPageSize] = useState(10);
 
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
@@ -28,7 +28,7 @@ export function useApiKeys() {
   });
 
   const { data, isLoading, refetch } = useQuery({
-    queryKey: ['apiKeys', page, search],
+    queryKey: ['apiKeys', page, pageSize, search],
     queryFn: () => apiService.getApiKeys({
       page,
       size: pageSize,
@@ -207,6 +207,7 @@ export function useApiKeys() {
     page,
     setPage,
     pageSize,
+    setPageSize,
     projects: projectsData?.data as ApiKeyInfo[] | undefined,
     createDialogOpen,
     setCreateDialogOpen,

@@ -28,6 +28,7 @@ export default function AuditLogsPage() {
     page,
     setPage,
     pageSize,
+    setPageSize,
     filters,
     updateFilters,
     projects,
@@ -105,6 +106,7 @@ export default function AuditLogsPage() {
               page={page}
               pageSize={pageSize}
               onPageChange={setPage}
+              onPageSizeChange={setPageSize}
               onToggleSelect={toggleSelect}
               onToggleSelectAll={toggleSelectAll}
               onViewDetail={openDetailDialog}

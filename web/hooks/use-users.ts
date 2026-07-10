@@ -9,7 +9,7 @@ export function useUsers() {
   const [search, setSearch] = useState('');
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
   const [page, setPage] = useState(1);
-  const [pageSize] = useState(10);
+  const [pageSize, setPageSize] = useState(10);
 
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
@@ -26,7 +26,7 @@ export function useUsers() {
   });
 
   const { data, isLoading, refetch } = useQuery({
-    queryKey: ['users', page, search],
+    queryKey: ['users', page, pageSize, search],
     queryFn: () => apiService.getUsers({
       page,
       size: pageSize,
@@ -202,6 +202,7 @@ export function useUsers() {
     page,
     setPage,
     pageSize,
+    setPageSize,
     createDialogOpen,
     setCreateDialogOpen,
     editDialogOpen,

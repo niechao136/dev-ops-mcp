@@ -8,7 +8,7 @@ export function usePublicCommands() {
   const queryClient = useQueryClient();
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
-  const [pageSize] = useState(10);
+  const [pageSize, setPageSize] = useState(10);
 
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
@@ -26,7 +26,7 @@ export function usePublicCommands() {
   const [defaultParamsText, setDefaultParamsText] = useState('');
 
   const { data, isLoading, refetch } = useQuery({
-    queryKey: ['publicCommands', page, search],
+    queryKey: ['publicCommands', page, pageSize, search],
     queryFn: () => apiService.getPublicCommands({
       page,
       size: pageSize,
@@ -189,6 +189,7 @@ export function usePublicCommands() {
     page,
     setPage,
     pageSize,
+    setPageSize,
     createDialogOpen,
     setCreateDialogOpen,
     editDialogOpen,

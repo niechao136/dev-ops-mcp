@@ -36,6 +36,7 @@ export default function ProjectDetailPage() {
     page,
     pageSize,
     setPage,
+    setPageSize,
     importSearch,
     setImportSearch,
     createDialogOpen,
@@ -173,6 +174,7 @@ export default function ProjectDetailPage() {
               page={page}
               pageSize={pageSize}
               onPageChange={setPage}
+              onPageSizeChange={setPageSize}
               onRefresh={refetch}
               onOpenExecuteDialog={openExecuteDialog}
               onOpenEditDialog={openEditDialog}

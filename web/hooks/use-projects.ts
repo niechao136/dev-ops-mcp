@@ -9,7 +9,7 @@ export function useProjects() {
   const [search, setSearch] = useState('');
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
   const [page, setPage] = useState(1);
-  const [pageSize] = useState(10);
+  const [pageSize, setPageSize] = useState(10);
 
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
@@ -22,7 +22,7 @@ export function useProjects() {
   });
 
   const { data, isLoading, refetch } = useQuery({
-    queryKey: ['projects', page, search],
+    queryKey: ['projects', page, pageSize, search],
     queryFn: () => apiService.getProjects({
       page,
       size: pageSize,
@@ -159,6 +159,7 @@ export function useProjects() {
     page,
     setPage,
     pageSize,
+    setPageSize,
     createDialogOpen,
     setCreateDialogOpen,
     editDialogOpen,
