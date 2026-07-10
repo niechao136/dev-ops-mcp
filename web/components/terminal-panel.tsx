@@ -23,8 +23,20 @@ export function TerminalPanel({ projectId, workDir, open, onClose }: TerminalPan
   const [error, setError] = useState<string | null>(null);
 
   const connect = useCallback(async () => {
-    if (!terminalRef.current) return;
+    console.log('terminal-panel: connect called');
+    console.log('terminal-panel: terminalRef.current exists:', !!terminalRef.current);
+    
+    if (!terminalRef.current) {
+      console.log('terminal-panel: terminalRef.current is null, retrying...');
+      const retryTimer = setTimeout(() => {
+        if (terminalRef.current) {
+          connect();
+        }
+      }, 100);
+      return;
+    }
 
+    console.log('terminal-panel: creating terminal instance');
     terminalInstanceRef.current = new Terminal({
       cursorBlink: true,
       cursorStyle: 'block',
@@ -75,26 +87,33 @@ export function TerminalPanel({ projectId, workDir, open, onClose }: TerminalPan
     });
 
     const token = await getToken();
+    console.log('terminal-panel: got token:', token ? 'token exists' : 'no token');
+    
     const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
     const wsUrl = `${protocol}//${window.location.host}/api/projects/${projectId}/terminal?token=${token}`;
+    console.log('terminal-panel: connecting to:', wsUrl);
 
     websocketRef.current = new WebSocket(wsUrl);
 
     websocketRef.current.onopen = () => {
+      console.log('terminal-panel: WebSocket opened');
       setIsConnected(true);
       setError(null);
     };
 
     websocketRef.current.onmessage = (event) => {
+      console.log('terminal-panel: received data:', event.data.length, 'bytes');
       terminalInstanceRef.current?.write(event.data);
     };
 
     websocketRef.current.onerror = (event) => {
+      console.error('terminal-panel: WebSocket error:', event);
       setError('WebSocket连接错误');
       setIsConnected(false);
     };
 
-    websocketRef.current.onclose = () => {
+    websocketRef.current.onclose = (event) => {
+      console.log('terminal-panel: WebSocket closed, code:', event.code, 'reason:', event.reason);
       setIsConnected(false);
       if (terminalInstanceRef.current) {
         terminalInstanceRef.current.write('\r\n连接已断开\r\n');
@@ -116,7 +135,10 @@ export function TerminalPanel({ projectId, workDir, open, onClose }: TerminalPan
 
   useEffect(() => {
     if (open) {
-      connect();
+      const timer = setTimeout(() => {
+        connect();
+      }, 100);
+      return () => clearTimeout(timer);
     } else {
       disconnect();
     }
