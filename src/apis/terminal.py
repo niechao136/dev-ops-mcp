@@ -108,7 +108,7 @@ async def terminal_websocket(
                             height = int(parts[2])
                             ssh_client.resize_pty(width, height)
                     else:
-                        ssh_client.send(data)
+                        await ssh_client.send(data)
                 except WebSocketDisconnect:
                     break
                 except Exception as e:

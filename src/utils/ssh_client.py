@@ -1,5 +1,6 @@
 import os
 import asyncio
+import shlex
 from dotenv import load_dotenv
 from typing import Optional
 import logging
@@ -26,13 +27,14 @@ class SSHClient:
         try:
             logger.info("初始化SSH客户端...")
             
+            quoted_work_dir = shlex.quote(work_dir)
             ssh_cmd = (
-                f"ssh -i {SSH_KEY} "
+                f"ssh -t -t -i {SSH_KEY} "
                 f"-o StrictHostKeyChecking=no "
                 f"-o ConnectTimeout=10 "
                 f"-p {SSH_PORT} "
                 f"{SSH_USER}@{SSH_HOST} "
-                f"'cd {work_dir} && exec /bin/bash -i'"
+                f"cd {quoted_work_dir} && exec /bin/bash -i"
             )
             
             logger.info(f"执行SSH命令: {ssh_cmd}")
@@ -41,7 +43,7 @@ class SSHClient:
                 ssh_cmd,
                 stdin=asyncio.subprocess.PIPE,
                 stdout=asyncio.subprocess.PIPE,
-                stderr=asyncio.subprocess.PIPE,
+                stderr=asyncio.subprocess.STDOUT,
                 preexec_fn=os.setsid if os.name != 'nt' else None
             )
             
@@ -59,11 +61,11 @@ class SSHClient:
             self.close()
             return False
 
-    def send(self, data: str) -> bool:
+    async def send(self, data: str) -> bool:
         if self.stdin and self.active:
             try:
                 self.stdin.write(data.encode('utf-8'))
-                asyncio.create_task(self.stdin.drain())
+                await self.stdin.drain()
                 return True
             except Exception as e:
                 logger.error(f"发送数据失败: {e}")
