@@ -2,7 +2,7 @@ import { useEffect, useRef, useState, useCallback } from 'react';
 import { Terminal } from '@xterm/xterm';
 import { FitAddon } from '@xterm/addon-fit';
 import '@xterm/xterm/css/xterm.css';
-import { Box, IconButton, Typography, Divider, Alert, AlertTitle } from '@mui/material';
+import { Box, IconButton, Typography, Divider, Alert, AlertTitle, Dialog, DialogContent } from '@mui/material';
 import { Terminal as TerminalIcon, Close, Maximize, Minimize } from '@mui/icons-material';
 import { getToken } from '@/utils/cookie';
 
@@ -146,77 +146,79 @@ export function TerminalPanel({ projectId, workDir, open, onClose }: TerminalPan
     };
   }, [open]);
 
-  if (!open) return null;
-
   return (
-    <Box
+    <Dialog
+      open={open}
+      onClose={onClose}
+      fullScreen={isMaximized}
+      maxWidth="lg"
+      fullWidth
       sx={{
-        height: isMaximized ? 'calc(100vh - 64px)' : 400,
-        width: '100%',
-        backgroundColor: '#1e1e1e',
-        borderRadius: 1,
-        overflow: 'hidden',
-        display: 'flex',
-        flexDirection: 'column',
-        boxShadow: 3
+        '& .MuiDialog-paper': {
+          borderRadius: 1,
+          overflow: 'hidden',
+          backgroundColor: '#1e1e1e'
+        }
       }}
     >
-      <Box
-        sx={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          padding: '8px 16px',
-          backgroundColor: '#2d2d2d',
-          borderBottom: '1px solid #3d3d3d'
-        }}
-      >
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-          <TerminalIcon sx={{ color: '#0dbc79' }} />
-          <Typography variant="subtitle1" sx={{ color: '#d4d4d4' }}>
-            Terminal - {workDir}
+      <DialogContent sx={{ padding: 0, display: 'flex', flexDirection: 'column', height: '100%' }}>
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            padding: '8px 16px',
+            backgroundColor: '#2d2d2d',
+            borderBottom: '1px solid #3d3d3d'
+          }}
+        >
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+            <TerminalIcon sx={{ color: '#0dbc79' }} />
+            <Typography variant="subtitle1" sx={{ color: '#d4d4d4' }}>
+              Terminal - {workDir}
+            </Typography>
+            {isConnected ? (
+              <Typography variant="caption" sx={{ color: '#0dbc79' }}>已连接</Typography>
+            ) : (
+              <Typography variant="caption" sx={{ color: '#cd3131' }}>未连接</Typography>
+            )}
+          </Box>
+          <Box sx={{ display: 'flex', gap: 1 }}>
+            <IconButton
+              size="small"
+              onClick={() => setIsMaximized(!isMaximized)}
+              sx={{ color: '#d4d4d4' }}
+            >
+              {isMaximized ? <Minimize /> : <Maximize />}
+            </IconButton>
+            <IconButton
+              size="small"
+              onClick={onClose}
+              sx={{ color: '#cd3131' }}
+            >
+              <Close />
+            </IconButton>
+          </Box>
+        </Box>
+
+        {error && (
+          <Alert severity="error" sx={{ m: 2 }}>
+            <AlertTitle>连接错误</AlertTitle>
+            {error}
+          </Alert>
+        )}
+
+        <Box sx={{ flex: 1, position: 'relative', minHeight: 400 }}>
+          <div ref={terminalRef} style={{ width: '100%', height: '100%' }} />
+        </Box>
+
+        <Divider sx={{ backgroundColor: '#3d3d3d' }} />
+        <Box sx={{ padding: '4px 16px', backgroundColor: '#2d2d2d' }}>
+          <Typography variant="caption" sx={{ color: '#666666' }}>
+            按 Ctrl+C 中断命令 | 支持自动补全 | 工作目录: {workDir}
           </Typography>
-          {isConnected ? (
-            <Typography variant="caption" sx={{ color: '#0dbc79' }}>已连接</Typography>
-          ) : (
-            <Typography variant="caption" sx={{ color: '#cd3131' }}>未连接</Typography>
-          )}
         </Box>
-        <Box sx={{ display: 'flex', gap: 1 }}>
-          <IconButton
-            size="small"
-            onClick={() => setIsMaximized(!isMaximized)}
-            sx={{ color: '#d4d4d4' }}
-          >
-            {isMaximized ? <Minimize /> : <Maximize />}
-          </IconButton>
-          <IconButton
-            size="small"
-            onClick={onClose}
-            sx={{ color: '#cd3131' }}
-          >
-            <Close />
-          </IconButton>
-        </Box>
-      </Box>
-
-      {error && (
-        <Alert severity="error" sx={{ m: 2 }}>
-          <AlertTitle>连接错误</AlertTitle>
-          {error}
-        </Alert>
-      )}
-
-      <Box sx={{ flex: 1, position: 'relative' }}>
-        <div ref={terminalRef} style={{ width: '100%', height: '100%' }} />
-      </Box>
-
-      <Divider sx={{ backgroundColor: '#3d3d3d' }} />
-      <Box sx={{ padding: '4px 16px', backgroundColor: '#2d2d2d' }}>
-        <Typography variant="caption" sx={{ color: '#666666' }}>
-          按 Ctrl+C 中断命令 | 支持自动补全 | 工作目录: {workDir}
-        </Typography>
-      </Box>
-    </Box>
+      </DialogContent>
+    </Dialog>
   );
 }
