@@ -26,12 +26,12 @@ export function useProject(projectId: number) {
   const [pageSize] = useState(10);
   const [importSearch, setImportSearch] = useState('');
 
-  const { data: projectData, isLoading: projectLoading } = useQuery({
+  const { data: projectData, isLoading: projectLoading, refetch: refetchProject } = useQuery({
     queryKey: ['project', projectId],
     queryFn: () => apiService.getProject(projectId),
   });
 
-  const { data: commandsData, isLoading: commandsLoading, refetch } = useQuery({
+  const { data: commandsData, isLoading: commandsLoading, refetch: refetchCommands } = useQuery({
     queryKey: ['commands', projectId, page],
     queryFn: () => apiService.getProjectCommands(projectId, {
       page,
@@ -249,7 +249,8 @@ export function useProject(projectId: number) {
     commandsLoading,
     totalCommands: commandsData?.total || 0,
     publicCommands: publicCommandsData?.data as PublicCommandInfo[] | undefined,
-    refetch,
+    refetch: refetchCommands,
+    refetchProject,
     page,
     pageSize,
     setPage,

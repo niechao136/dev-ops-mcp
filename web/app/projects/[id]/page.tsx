@@ -30,6 +30,7 @@ export default function ProjectDetailPage() {
     totalCommands,
     publicCommands = [],
     refetch,
+    refetchProject,
     page,
     pageSize,
     setPage,
@@ -85,11 +86,11 @@ export default function ProjectDetailPage() {
     if (!project?.running_task) return;
 
     const interval = setInterval(() => {
-      refetch();
+      refetchProject();
     }, 3000);
 
     return () => clearInterval(interval);
-  }, [project?.running_task, refetch]);
+  }, [project?.running_task, refetchProject]);
 
   const handleCancelRunningTask = useCallback(async (taskId: string) => {
     if (!taskId) return;
@@ -153,8 +154,8 @@ export default function ProjectDetailPage() {
       <MainLayout>
         <Container maxWidth="lg">
           <Box sx={{ mb: 4 }}>
-            <ProjectInfo 
-              project={project} 
+            <ProjectInfo
+              project={project}
               onBack={() => router.back()}
               onCancelRunningTask={handleCancelRunningTask}
               isCancelling={isCancelling}

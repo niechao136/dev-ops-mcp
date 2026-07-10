@@ -278,13 +278,15 @@ async def cancel_task(task_id: str) -> bool:
     
     with get_db_session() as db:
         task = db.query(Task).filter(Task.task_id == task_id).first()
-        if task and task.status == "pending":
+        if task and task.status in ("pending", "running"):
             task.status = "cancelled"
             task.end_time = datetime.now(UTC)
             db.commit()
             return True
+        elif task and task.status in ("success", "failed", "timeout", "cancelled"):
+            return True
     
-    return False
+    return True
 
 
 def is_project_locked(project_name: str) -> bool:
