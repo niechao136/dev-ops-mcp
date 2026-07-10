@@ -7,51 +7,13 @@ from sqlalchemy import asc, desc
 from src.dbs.db import get_db_session
 from src.dbs.orm import Automation, Project, Command, User
 from src.schemas.api import DataResult, PageResult
+from src.schemas.automation import AutomationAdd, AutomationUpdate, AutomationInfo
 from src.utils.auth import get_current_admin, get_current_user
 
 automation_router = APIRouter(
     prefix="/automations",
     tags=["自动化规则"]
 )
-
-
-class AutomationAdd:
-    project_id: int
-    name: str
-    trigger_type: str
-    cron_expression: Optional[str] = None
-    condition_script: Optional[str] = None
-    condition_interval: Optional[int] = 60
-    command_id: int
-
-
-class AutomationUpdate:
-    name: Optional[str] = None
-    trigger_type: Optional[str] = None
-    cron_expression: Optional[str] = None
-    condition_script: Optional[str] = None
-    condition_interval: Optional[int] = None
-    command_id: Optional[int] = None
-    is_enabled: Optional[bool] = None
-
-
-class AutomationInfo:
-    id: int
-    project_id: int
-    project_name: str
-    name: str
-    trigger_type: str
-    cron_expression: Optional[str]
-    condition_script: Optional[str]
-    condition_interval: Optional[int]
-    command_id: int
-    command_action: str
-    command_description: Optional[str]
-    is_enabled: bool
-    last_run_time: Optional[str]
-    last_run_status: Optional[str]
-    created_at: str
-    updated_at: str
 
 
 @automation_router.get(
@@ -115,37 +77,37 @@ async def get_project_automations(
     summary="创建自动化规则"
 )
 async def create_automation(
-    data: dict,
+    data: AutomationAdd,
     _: User = Depends(get_current_admin)
 ):
     with get_db_session() as db:
-        project = db.query(Project).filter(Project.id == data.get("project_id")).first()
+        project = db.query(Project).filter(Project.id == data.project_id).first()
         if not project:
             return DataResult(status=0, msg="项目不存在")
 
-        command = db.query(Command).filter(Command.id == data.get("command_id")).first()
+        command = db.query(Command).filter(Command.id == data.command_id).first()
         if not command:
             return DataResult(status=0, msg="命令不存在")
 
-        trigger_type = data.get("trigger_type")
+        trigger_type = data.trigger_type
         if trigger_type not in ["cron", "condition"]:
             return DataResult(status=0, msg="触发类型必须是 cron 或 condition")
 
-        if trigger_type == "cron" and not data.get("cron_expression"):
+        if trigger_type == "cron" and not data.cron_expression:
             return DataResult(status=0, msg="定时触发需要配置 cron 表达式")
 
-        if trigger_type == "condition" and not data.get("condition_script"):
+        if trigger_type == "condition" and not data.condition_script:
             return DataResult(status=0, msg="条件触发需要配置检查脚本")
 
         new_automation = Automation(
-            project_id=data["project_id"],
-            name=data["name"],
+            project_id=data.project_id,
+            name=data.name,
             trigger_type=trigger_type,
-            cron_expression=data.get("cron_expression"),
-            condition_script=data.get("condition_script"),
-            condition_interval=data.get("condition_interval", 60),
-            command_id=data["command_id"],
-            is_enabled=data.get("is_enabled", True),
+            cron_expression=data.cron_expression,
+            condition_script=data.condition_script,
+            condition_interval=data.condition_interval or 60,
+            command_id=data.command_id,
+            is_enabled=data.is_enabled if data.is_enabled is not None else True,
             created_at=datetime.now(UTC),
             updated_at=datetime.now(UTC)
         )
@@ -164,7 +126,7 @@ async def create_automation(
 )
 async def update_automation(
     automation_id: int,
-    data: dict,
+    data: AutomationUpdate,
     _: User = Depends(get_current_admin)
 ):
     with get_db_session() as db:
@@ -172,32 +134,32 @@ async def update_automation(
         if not automation:
             return DataResult(status=0, msg="自动化规则不存在")
 
-        if "name" in data:
-            automation.name = data["name"]
+        if data.name is not None:
+            automation.name = data.name
 
-        if "trigger_type" in data:
-            trigger_type = data["trigger_type"]
+        if data.trigger_type is not None:
+            trigger_type = data.trigger_type
             if trigger_type not in ["cron", "condition"]:
                 return DataResult(status=0, msg="触发类型必须是 cron 或 condition")
             automation.trigger_type = trigger_type
 
-        if "cron_expression" in data:
-            automation.cron_expression = data["cron_expression"]
+        if data.cron_expression is not None:
+            automation.cron_expression = data.cron_expression
 
-        if "condition_script" in data:
-            automation.condition_script = data["condition_script"]
+        if data.condition_script is not None:
+            automation.condition_script = data.condition_script
 
-        if "condition_interval" in data:
-            automation.condition_interval = data["condition_interval"]
+        if data.condition_interval is not None:
+            automation.condition_interval = data.condition_interval
 
-        if "command_id" in data:
-            command = db.query(Command).filter(Command.id == data["command_id"]).first()
+        if data.command_id is not None:
+            command = db.query(Command).filter(Command.id == data.command_id).first()
             if not command:
                 return DataResult(status=0, msg="命令不存在")
-            automation.command_id = data["command_id"]
+            automation.command_id = data.command_id
 
-        if "is_enabled" in data:
-            automation.is_enabled = data["is_enabled"]
+        if data.is_enabled is not None:
+            automation.is_enabled = data.is_enabled
 
         automation.updated_at = datetime.now(UTC)
         db.commit()
