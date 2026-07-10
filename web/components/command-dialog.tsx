@@ -1,4 +1,4 @@
-import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField, CircularProgress } from '@mui/material';
+import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField, CircularProgress, Switch, FormControlLabel } from '@mui/material';
 import type { CommandAdd, CommandUpdate } from '@/types/api';
 
 interface CommandDialogProps {
@@ -58,6 +58,17 @@ export function CommandDialog({
             onChange={(e) => onFormDataChange({ ...formData, work_dir: e.target.value || undefined })}
             placeholder="/path/to/command/work/dir"
             helperText="留空则使用项目的工作目录"
+          />
+          <FormControlLabel
+            control={
+              <Switch
+                checked={(formData as CommandAdd | CommandUpdate).requires_confirm || false}
+                onChange={(e) => onFormDataChange({ ...formData, requires_confirm: e.target.checked })}
+                color="warning"
+              />
+            }
+            label="高危命令"
+            labelPlacement="end"
           />
           <TextField
             label="默认参数 (JSON格式)"

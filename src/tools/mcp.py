@@ -124,7 +124,7 @@ async def get_node_overview() -> list[TextContent]:
 # Tool 2: 提交执行任务（异步）
 # =====================================================================
 @mcp.tool()
-async def execute_action(project_name: str, action: str, params: Optional[dict] = None) -> list[TextContent]:
+async def execute_action(project_name: str, action: str, params: Optional[dict] = None, confirm: bool = False) -> list[TextContent]:
     """
     提交指定项目的特定运维操作（如 start, restart, deploy），任务将异步执行。
     执行前请先确保该项目支持该 action。
@@ -133,6 +133,7 @@ async def execute_action(project_name: str, action: str, params: Optional[dict] 
     - params: 可选参数，字典类型，用于替换命令脚本中的占位符。
         在命令脚本中使用 ${参数名} 格式定义占位符，执行时会被替换为实际值。
         示例: 若脚本包含 'git checkout ${version}'，调用时传入 {"version": "v0.1.0"}
+    - confirm: 是否确认执行。如果命令被标记为高危命令（requires_confirm=true），必须传入 confirm=true 才能执行。
     
     返回:
     - task_id: 任务ID，用于后续查询任务状态
@@ -161,6 +162,15 @@ async def execute_action(project_name: str, action: str, params: Optional[dict] 
         command = db.query(Command).filter(Command.project_id == project.id, Command.action_type == action).first()
         if not command:
             return [TextContent(type="text", text=f"❌ 项目 '{project_name}' 未配置 '{action}' 操作。")]
+
+        if command.requires_confirm and not confirm:
+            return [TextContent(type="text", text=f"""
+{{
+  "status": "requires_confirm",
+  "message": "⚠️ 该操作（{action}）被标记为高危命令，需要确认后才能执行。",
+  "hint": "如确认执行，请在下一次调用时传入 confirm=true"
+}}
+""")]
 
         raw_command_text = command.shell_command
         

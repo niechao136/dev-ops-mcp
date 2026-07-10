@@ -1,5 +1,5 @@
 import { Box, Button, Card, CardContent, Chip, CircularProgress, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Tooltip, IconButton, Alert, TablePagination, Typography } from '@mui/material';
-import { PlayArrow, Edit, Delete, Refresh, Download, HelpOutlined, Add, Favorite, HeartBroken } from '@mui/icons-material';
+import { PlayArrow, Edit, Delete, Refresh, Download, HelpOutlined, Add, Favorite, HeartBroken, Warning } from '@mui/icons-material';
 import type { CommandInfo } from '@/types/api';
 
 interface CommandTableProps {
@@ -101,6 +101,7 @@ export function CommandTable({
                 <TableCell>超时(秒)</TableCell>
                 <TableCell>命令内容</TableCell>
                 <TableCell>健康检查</TableCell>
+                <TableCell>高危命令</TableCell>
                 <TableCell align="right">操作</TableCell>
               </TableRow>
             </TableHead>
@@ -149,6 +150,18 @@ export function CommandTable({
                         {command.is_health_check ? <Favorite /> : <HeartBroken />}
                       </IconButton>
                     </Tooltip>
+                  </TableCell>
+                  <TableCell>
+                    {command.requires_confirm && (
+                      <Tooltip title="高危命令，执行前需要确认">
+                        <Chip
+                          icon={<Warning />}
+                          label="高危"
+                          color="error"
+                          size="small"
+                        />
+                      </Tooltip>
+                    )}
                   </TableCell>
                   <TableCell align="right">
                     <Tooltip title="执行">

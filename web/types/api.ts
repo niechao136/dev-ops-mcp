@@ -111,6 +111,7 @@ export interface CommandInfo {
   default_params?: Record<string, any>;
   work_dir?: string;
   is_health_check: boolean;
+  requires_confirm: boolean;
 }
 
 export interface CommandAdd {
@@ -121,6 +122,7 @@ export interface CommandAdd {
   timeout: number;
   default_params?: Record<string, any>;
   work_dir?: string;
+  requires_confirm?: boolean;
 }
 
 export interface CommandUpdate {
@@ -130,6 +132,7 @@ export interface CommandUpdate {
   timeout?: number;
   default_params?: Record<string, any>;
   work_dir?: string;
+  requires_confirm?: boolean;
 }
 
 export interface CommandExecute {

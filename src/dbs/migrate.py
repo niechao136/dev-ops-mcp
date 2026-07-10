@@ -88,6 +88,15 @@ def migrate_database():
                 print("Successfully added work_dir column")
             except sqlite3.OperationalError as e:
                 print(f"Info: {e}")
+        
+        if "requires_confirm" not in commands_columns:
+            print("Adding requires_confirm column to commands table...")
+            try:
+                cursor.execute("ALTER TABLE commands ADD COLUMN requires_confirm INTEGER DEFAULT 0")
+                conn.commit()
+                print("Successfully added requires_confirm column")
+            except sqlite3.OperationalError as e:
+                print(f"Info: {e}")
 
         # Check and create public_commands table
         cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='public_commands'")

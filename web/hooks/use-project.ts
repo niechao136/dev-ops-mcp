@@ -19,7 +19,8 @@ export function useProject(projectId: number) {
     description: '',
     shell_command: '',
     timeout: 600,
-    default_params: undefined
+    default_params: undefined,
+    requires_confirm: false
   });
   const [defaultParamsText, setDefaultParamsText] = useState('');
   const [page, setPage] = useState(1);
@@ -237,7 +238,8 @@ export function useProject(projectId: number) {
       description: '',
       shell_command: '',
       timeout: 600,
-      default_params: undefined
+      default_params: undefined,
+      requires_confirm: false
     });
     setDefaultParamsText('');
   }, [projectId]);
