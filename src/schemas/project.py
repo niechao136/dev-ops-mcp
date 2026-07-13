@@ -61,6 +61,7 @@ class CommandInfo(BaseModel):
     timeout: int = Field(default=600, description="超时时间(秒)")
     default_params: Optional[dict] = Field(default=None, description="可选参数默认值")
     is_health_check: bool = Field(default=False, description="是否为健康检查命令")
+    work_dir: Optional[str] = Field(default=None, description="命令级工作目录，留空则使用项目的 work_dir")
     requires_confirm: bool = Field(default=False, description="是否为高危命令，需要确认")
 
 

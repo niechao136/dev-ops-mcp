@@ -299,7 +299,9 @@ async def project_commands(
                 shell_command=cmd.shell_command,
                 timeout=cmd.timeout,
                 default_params=cmd.default_params,
-                is_health_check=cmd.is_health_check
+                work_dir=cmd.work_dir,
+                is_health_check=cmd.is_health_check,
+                requires_confirm=cmd.requires_confirm
             )
             for cmd in commands
         ]

@@ -225,7 +225,9 @@ export function useProject(projectId: number) {
       description: command.description,
       shell_command: command.shell_command,
       timeout: command.timeout,
-      default_params: defaultParams
+      default_params: defaultParams,
+      work_dir: command.work_dir,
+      requires_confirm: command.requires_confirm
     });
     setDefaultParamsText(defaultParams ? JSON.stringify(defaultParams, null, 2) : '');
     setEditDialogOpen(true);
@@ -239,6 +241,7 @@ export function useProject(projectId: number) {
       shell_command: '',
       timeout: 600,
       default_params: undefined,
+      work_dir: '',
       requires_confirm: false
     });
     setDefaultParamsText('');
