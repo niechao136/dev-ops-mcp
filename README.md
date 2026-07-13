@@ -13,6 +13,9 @@
 - **用户管理**: 管理员和普通用户角色管理，支持修改密码
 - **审计日志**: 完整记录所有操作，区分人类和 AI 操作
 - **分页支持**: 所有列表页面均支持分页浏览
+- **自动化规则**: 支持定时触发（cron）和条件触发（脚本检查），自动执行运维命令
+- **Web 终端**: 通过 WebSocket 实现的交互式 SSH 终端，支持实时命令执行和目录导航
+- **任务管理**: 异步任务执行、状态查询、增量日志获取、任务取消，支持 SSE 实时日志流
 
 ### 🤖 MCP 工具集
 
@@ -34,13 +37,14 @@
 - 路径安全检查（防止目录遍历攻击）
 - 操作审计追踪
 - 专用运维用户（devops）和 sudo 白名单
+- 高危命令确认机制（requires_confirm），标记为高危的命令需要确认后才能执行
 
 ## 技术架构
 
 ```
-┌─────────────────────────────────────────────────────────────────┐
-│                        Nginx Gateway (端口 10096)                │
-└──────────────────────┬──────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────────────┐
+│                        Nginx Gateway (端口 10096)                    │
+└──────────────────────┬──────────────────────────────────────────────┘
                        │
         ┌──────────────┴──────────────┐
         ▼                             ▼
@@ -49,13 +53,16 @@
 │   (端口 3000)  │           │    (端口 8000)    │
 └───────┬───────┘           └─────────┬─────────┘
         │                             │
+        ├───────── WebSocket ─────────┤
+        │                             │
         └─────────────────────────────┘
                        │
-                       ▼
-             ┌─────────────────┐
-             │  SQLite Database │
-             │   (data/devops.db)│
-             └─────────────────┘
+        ┌──────────────┴──────────────┐
+        ▼                             ▼
+┌─────────────────┐         ┌─────────────────┐
+│  SQLite Database │         │   APScheduler   │
+│   (data/devops.db)│         │   (定时调度)    │
+└─────────────────┘         └─────────────────┘
                        │
                        ▼
              ┌─────────────────┐
@@ -75,6 +82,9 @@
 - **python-jose** - JWT 认证
 - **passlib + bcrypt** - 密码加密
 - **cryptography** - Fernet 加密（API Key）
+- **APScheduler** - 定时任务调度
+- **paramiko** - SSH 客户端（支持 RSA、Ed25519、ECDSA 密钥）
+- **psutil** - 系统指标监控
 
 ### 前端
 - **Next.js 16** - React 框架
@@ -181,7 +191,10 @@ dev-ops-mcp/
 │   │   ├── user.py         # 用户管理接口
 │   │   ├── audit_log.py    # 审计日志接口
 │   │   ├── dashboard.py    # 仪表盘接口
-│   │   └── public_command.py # 公共命令接口
+│   │   ├── public_command.py # 公共命令接口
+│   │   ├── task.py         # 任务管理接口（异步执行、状态查询、取消）
+│   │   ├── terminal.py     # WebSocket 终端接口
+│   │   └── automation.py   # 自动化规则接口
 │   ├── dbs/                # 数据库层
 │   │   ├── db.py           # 数据库连接与初始化
 │   │   ├── orm.py          # ORM 模型定义
@@ -196,6 +209,9 @@ dev-ops-mcp/
 │   │   ├── jwt.py          # JWT 工具
 │   │   ├── security.py     # 安全工具
 │   │   ├── executor.py     # 命令执行器（含自动创建目录）
+│   │   ├── task_executor.py # 异步任务执行器
+│   │   ├── ssh_client.py   # SSH 客户端（支持多密钥类型）
+│   │   ├── scheduler.py    # APScheduler 定时调度
 │   │   ├── path.py         # 路径安全检查
 │   │   └── context.py      # 上下文管理
 │   └── main.py             # FastAPI 入口
@@ -203,16 +219,30 @@ dev-ops-mcp/
 │   ├── app/                # 应用页面
 │   │   ├── login/          # 登录页
 │   │   ├── projects/       # 项目管理页
-│   │   │   └── [id]/       # 项目详情页（含命令管理和导入）
+│   │   │   └── [id]/       # 项目详情页（含命令管理、自动化规则）
 │   │   ├── public-commands/ # 公共命令管理页
 │   │   ├── api-keys/       # API Key 管理页
 │   │   ├── users/          # 用户管理页
 │   │   └── audit-logs/     # 审计日志页
 │   ├── components/         # 组件
+│   │   ├── base/           # 基础组件
 │   │   ├── main-layout.tsx # 主布局（侧边栏导航）
-│   │   └── protected-route.tsx # 路由保护
+│   │   ├── protected-route.tsx # 路由保护
+│   │   ├── terminal-panel.tsx # Web 终端面板（含重连按钮）
+│   │   ├── automation-table.tsx # 自动化规则表格
+│   │   ├── automation-dialog.tsx # 自动化规则对话框
+│   │   ├── execute-dialog.tsx # 命令执行对话框
+│   │   └── ...             # 其他业务组件
+│   ├── hooks/              # React Hooks
+│   │   ├── auth-query.ts   # 认证相关查询
+│   │   ├── use-project.ts  # 项目相关查询
+│   │   ├── use-task-execution.ts # 任务执行状态管理
+│   │   └── ...             # 其他自定义 hooks
+│   ├── providers/          # 全局 Provider
+│   │   ├── query-provider.tsx # React Query Provider
+│   │   └── root-provider.tsx # 根 Provider
 │   ├── services/           # API 服务
-│   ├── stores/             # 状态管理
+│   ├── stores/             # 状态管理（Zustand）
 │   ├── types/              # 类型定义
 │   └── utils/              # 工具函数
 ├── data/                   # SQLite 数据库存储目录
@@ -293,6 +323,32 @@ dev-ops-mcp/
 | 方法 | 路径 | 描述 |
 |-----|------|------|
 | GET | `/api/dashboard/stats` | 获取统计数据 |
+
+### 任务管理
+
+| 方法 | 路径 | 描述 |
+|-----|------|------|
+| GET | `/api/tasks/{task_id}` | 查询任务状态（支持增量日志） |
+| GET | `/api/tasks` | 获取任务列表（分页、项目/状态筛选） |
+| POST | `/api/tasks/{task_id}/cancel` | 取消任务 |
+| GET | `/api/tasks/{task_id}/stream` | SSE 实时日志流 |
+| POST | `/api/tasks/execute` | 提交执行任务（异步） |
+
+### 自动化规则
+
+| 方法 | 路径 | 描述 |
+|-----|------|------|
+| GET | `/api/automations/{project_id}` | 获取项目的自动化规则列表（分页） |
+| POST | `/api/automations` | 创建自动化规则 |
+| PUT | `/api/automations/{automation_id}` | 更新自动化规则 |
+| DELETE | `/api/automations/{automation_id}` | 删除自动化规则 |
+| PUT | `/api/automations/{automation_id}/toggle` | 启用/禁用自动化规则 |
+
+### Web 终端
+
+| 方法 | 路径 | 描述 |
+|-----|------|------|
+| WebSocket | `/api/projects/{project_id}/terminal` | 建立交互式终端连接 |
 
 ## MCP 使用示例
 
@@ -404,8 +460,11 @@ print(result)
 | token_name | varchar(100) | 密钥名称 |
 | encrypted_token | blob | 加密后的密钥 |
 | token_hash | varchar(255) | 密钥哈希 |
+| token_prefix | varchar(20) | 密钥前缀（用于快速识别） |
 | allowed_projects | text | 允许访问的项目列表 (JSON) |
 | is_active | bool | 是否激活 |
+| created_by | int | 创建者用户 ID |
+| created_at | datetime | 创建时间 |
 
 ### 项目表 (projects)
 | 字段 | 类型 | 描述 |
@@ -426,7 +485,10 @@ print(result)
 | shell_command | text | Shell 脚本内容 |
 | timeout | int | 超时时间（秒） |
 | default_params | json | 可选参数默认值（JSON 格式） |
+| work_dir | varchar(255) | 命令级工作目录（为空则使用项目 work_dir） |
 | is_health_check | bool | 是否为健康检查命令 |
+| requires_confirm | bool | 是否为高危命令，需要确认 |
+| created_at | datetime | 创建时间 |
 
 ### 公共命令表 (public_commands)
 | 字段 | 类型 | 描述 |
@@ -453,6 +515,42 @@ print(result)
 | action_details | json | 操作详情 |
 | status | varchar(20) | 状态 (success/failed/timeout) |
 | output_log | text | 输出日志 |
+| ip_address | varchar(50) | 操作者 IP 地址 |
+| created_at | datetime | 创建时间 |
+
+### 任务表 (tasks)
+| 字段 | 类型 | 描述 |
+|-----|------|------|
+| id | int | 主键 |
+| task_id | varchar(64) | 任务 UUID |
+| project_name | varchar(100) | 项目名称 |
+| action | varchar(50) | 操作类型 |
+| status | varchar(20) | 状态 (pending/running/success/failed/timeout/cancelled) |
+| output_log | text | 输出日志 |
+| start_time | datetime | 开始时间 |
+| end_time | datetime | 结束时间 |
+| timeout | int | 超时时间（秒） |
+| actor_type | varchar(20) | 操作者类型 (human/ai) |
+| actor_id | int | 操作者 ID |
+| command_details | json | 命令详情 |
+| created_at | datetime | 创建时间 |
+
+### 自动化规则表 (automations)
+| 字段 | 类型 | 描述 |
+|-----|------|------|
+| id | int | 主键 |
+| project_id | int | 所属项目 ID |
+| name | varchar(100) | 规则名称 |
+| trigger_type | varchar(20) | 触发类型 (cron/condition) |
+| cron_expression | varchar(100) | Cron 表达式（定时触发） |
+| condition_script | text | 条件检查脚本（条件触发） |
+| condition_interval | int | 条件检查间隔（秒） |
+| command_id | int | 关联命令 ID |
+| is_enabled | bool | 是否启用 |
+| last_run_time | datetime | 上次执行时间 |
+| last_run_status | varchar(20) | 上次执行状态 |
+| created_at | datetime | 创建时间 |
+| updated_at | datetime | 更新时间 |
 
 ## 开发指南
 
