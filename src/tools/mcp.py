@@ -133,7 +133,11 @@ async def execute_action(project_name: str, action: str, params: Optional[dict] 
     - params: 可选参数，字典类型，用于替换命令脚本中的占位符。
         在命令脚本中使用 ${参数名} 格式定义占位符，执行时会被替换为实际值。
         示例: 若脚本包含 'git checkout ${version}'，调用时传入 {"version": "v0.1.0"}
-    - confirm: 是否确认执行。如果命令被标记为高危命令（requires_confirm=true），必须传入 confirm=true 才能执行。
+    - confirm: 高危命令确认标志，默认为 false。
+        当命令被标记为高危（requires_confirm=true）时，工具会返回 requires_confirm 状态而不执行。
+        此时必须向用户明确说明操作风险并征得用户同意，在用户明确回复确认后，
+        才可在下一次调用时传入 confirm=true 执行。
+        严禁在未经用户确认的情况下自行将 confirm 设为 true。
     
     返回:
     - task_id: 任务ID，用于后续查询任务状态
@@ -166,9 +170,9 @@ async def execute_action(project_name: str, action: str, params: Optional[dict] 
         if command.requires_confirm and not confirm:
             return [TextContent(type="text", text=f"""
 {{
-  "status": "requires_confirm",
-  "message": "⚠️ 该操作（{action}）被标记为高危命令，需要确认后才能执行。",
-  "hint": "如确认执行，请在下一次调用时传入 confirm=true"
+"status": "requires_confirm",
+"message": "⚠️ 该操作（{action}）被标记为高危命令，需要确认后才能执行。",
+"hint": "如确认执行，请在下一次调用时传入 confirm=true"
 }}
 """)]
 
