@@ -3,6 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { enqueueSnackbar } from 'notistack';
 import { apiService } from '@/services/api';
 import type { ApiKeyInfo, ApiKeyAdd, ApiKeyUpdate, ApiKeyCreated } from '@/types/api';
+import { copyToClipboard } from '@/utils/string';
 
 export function useApiKeys() {
   const queryClient = useQueryClient();
@@ -124,10 +125,10 @@ export function useApiKeys() {
   });
 
   const handleCopyKey = useCallback(async (key: string) => {
-    try {
-      await navigator.clipboard.writeText(key);
+    const success = await copyToClipboard(key);
+    if (success) {
       enqueueSnackbar('已复制到剪贴板', { variant: 'success' });
-    } catch (err) {
+    } else {
       enqueueSnackbar('复制失败，请手动复制', { variant: 'error' });
     }
   }, []);
