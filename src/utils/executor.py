@@ -26,7 +26,7 @@ def _build_ssh_command(remote_cmd: str, work_dir: str) -> str:
         f"-o ConnectTimeout=10 "
         f"-p {SSH_PORT} "
         f"{SSH_USER}@{SSH_HOST} "
-        f"'mkdir -p {work_dir} && cd {work_dir} && {escaped}'"
+        f"'sudo mkdir -p {work_dir} && cd {work_dir} && {escaped}'"
     )
 
 
