@@ -1,5 +1,8 @@
-.idea
-.venv
+.idea/
+.venv/
 .env
 __pycache__
 *.egg-info/
+.opencode/
+.trae/
+openspec/

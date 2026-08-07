@@ -1,5 +1,6 @@
 import os
 import asyncio
+import errno
 import paramiko
 from dotenv import load_dotenv
 from typing import Optional
@@ -112,6 +113,13 @@ class SSHClient:
                 data = self.channel.recv(buffer_size)
                 if data:
                     return data.decode('utf-8', errors='replace')
+                # recv 返回空表示 channel 已关闭，属正常情况，不当错误
+                return None
+            except OSError as e:
+                # 非阻塞模式下 EAGAIN/EWOULDBLOCK 表示暂无数据可读，属正常现象，静默返回
+                if e.errno in (errno.EAGAIN, errno.EWOULDBLOCK):
+                    return None
+                logger.error(f"接收数据失败: {e}")
             except Exception as e:
                 logger.error(f"接收数据失败: {e}")
         return None

@@ -1,6 +1,7 @@
 import asyncio
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect, HTTPException, status, Depends
 from fastapi.security import HTTPBearer
+from starlette.websockets import WebSocketState
 from typing import Annotated, Optional
 import logging
 
@@ -84,7 +85,7 @@ async def terminal_websocket(
         logger.info("SSH连接成功")
 
         async def ssh_reader():
-            while ssh_client.is_active:
+            while ssh_client.is_active and websocket.client_state == WebSocketState.CONNECTED:
                 try:
                     data = ssh_client.recv(4096)
                     if data:
@@ -115,7 +116,20 @@ async def terminal_websocket(
                     logger.error(f"WebSocket读取错误: {e}")
                     break
 
-        await asyncio.gather(ssh_reader(), ws_reader())
+        # 任一协程退出（WebSocket 断开 / SSH 异常）时立即取消另一个，
+        # 避免 ssh_reader 在 WebSocket 断开后仍持续轮询成为僵尸协程。
+        ssh_task = asyncio.ensure_future(ssh_reader())
+        ws_task = asyncio.ensure_future(ws_reader())
+        done, pending = await asyncio.wait(
+            {ssh_task, ws_task},
+            return_when=asyncio.FIRST_COMPLETED,
+        )
+        for task in pending:
+            task.cancel()
+            try:
+                await task
+            except (asyncio.CancelledError, Exception):
+                pass
 
     except WebSocketDisconnect:
         logger.info("WebSocket连接断开")
