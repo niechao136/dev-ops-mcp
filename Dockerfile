@@ -15,13 +15,16 @@ COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /usr/local/bin/
 #     gcc g++ make python3-dev
 
 WORKDIR /app
-COPY pyproject.toml uv.lock ./
+COPY pyproject.toml ./
+# 构建服务器在海外(新加坡)，不复制 uv.lock(其记录的清华源海外访问超时)，
+# 改用官方 PyPI 源，由 uv 现场解析依赖
+ENV UV_INDEX_URL=https://pypi.org/simple
 RUN --mount=type=cache,target=/root/.cache/uv \
-    uv sync --frozen --no-dev --no-install-project
+    uv sync --no-dev --no-install-project
 
 COPY src ./src
 RUN --mount=type=cache,target=/root/.cache/uv \
-    uv sync --frozen --no-dev
+    uv sync --no-dev
 
 # ---------- Stage 2: 精简运行时镜像 ----------
 FROM python:3.11-slim-bookworm
