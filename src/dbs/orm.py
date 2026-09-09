@@ -20,7 +20,7 @@ class User(Base):
     role: Mapped[str] = mapped_column(String(20), default="admin") # admin, user
     email: Mapped[Optional[str]] = mapped_column(String(100))
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now(UTC))
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(UTC))
 
     # 关联：该用户签发了哪些 API Token
     tokens: Mapped[List["ApiToken"]] = relationship(back_populates="creator")
@@ -39,7 +39,7 @@ class ApiToken(Base):
     token_prefix: Mapped[Optional[str]] = mapped_column(String(20))
     allowed_projects: Mapped[Optional[str]] = mapped_column(Text)  # JSON数组字符串，空代表全部权限
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now(UTC))
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(UTC))
 
     # 外键：是谁在 Web 界面上创建了这个 Token
     created_by: Mapped[int] = mapped_column(ForeignKey("users.id"))
@@ -57,7 +57,7 @@ class Project(Base):
     description: Mapped[Optional[str]] = mapped_column(Text)
     work_dir: Mapped[str] = mapped_column(String(255))
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now(UTC))
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(UTC))
 
     # 关联：这个项目下有哪些指令
     commands: Mapped[List["Command"]] = relationship(back_populates="project", cascade="all, delete-orphan")
@@ -79,7 +79,7 @@ class Command(Base):
     work_dir: Mapped[Optional[str]] = mapped_column(String(255)) # 命令级工作目录，为空则使用项目的 work_dir
     is_health_check: Mapped[bool] = mapped_column(Boolean, default=False) # 是否为健康检查命令
     requires_confirm: Mapped[bool] = mapped_column(Boolean, default=False) # 是否为高危命令，需要确认
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now(UTC))
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(UTC))
 
     project: Mapped["Project"] = relationship(back_populates="commands")
 
@@ -99,8 +99,8 @@ class PublicCommand(Base):
     default_params: Mapped[Optional[dict]] = mapped_column(JSON, default=None)  # 可选参数默认值
     tags: Mapped[Optional[str]] = mapped_column(Text)  # 标签，逗号分隔
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)  # 是否启用
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now(UTC))
-    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now(UTC), onupdate=datetime.now(UTC))
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(UTC))
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(UTC), onupdate=lambda: datetime.now(UTC))
 
 
 # ==========================================
@@ -128,7 +128,7 @@ class AuditLog(Base):
 
     # 环境信息
     ip_address: Mapped[Optional[str]] = mapped_column(String(50))
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now(UTC), index=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(UTC), index=True)
 
 
 # ==========================================
@@ -149,7 +149,7 @@ class Task(Base):
     actor_type: Mapped[str] = mapped_column(String(20))  # 'human' 或 'ai'
     actor_id: Mapped[int] = mapped_column(Integer)
     command_details: Mapped[dict] = mapped_column(JSON)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now(UTC), index=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(UTC), index=True)
 
 
 # ==========================================
@@ -169,8 +169,8 @@ class Automation(Base):
     is_enabled: Mapped[bool] = mapped_column(Boolean, default=True)
     last_run_time: Mapped[Optional[datetime]] = mapped_column(DateTime)
     last_run_status: Mapped[Optional[str]] = mapped_column(String(20))
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now(UTC))
-    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now(UTC), onupdate=datetime.now(UTC))
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(UTC))
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(UTC), onupdate=lambda: datetime.now(UTC))
 
     project: Mapped["Project"] = relationship("Project")
     command: Mapped["Command"] = relationship("Command")
