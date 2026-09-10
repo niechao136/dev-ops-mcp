@@ -15,18 +15,37 @@ SSH_USER = os.environ.get("HOST_SSH_USER", "devops")
 SSH_KEY  = os.environ.get("HOST_SSH_KEY", "/root/.ssh/id_rsa")
 
 
+# 这些系统路径即使被配置为 work_dir，也不应执行 chown，避免误改系统目录属主
+_PROTECTED_PATHS = {
+    "/", "/bin", "/boot", "/dev", "/etc", "/home", "/lib", "/lib32", "/lib64",
+    "/libx32", "/media", "/mnt", "/opt", "/proc", "/root", "/run", "/sbin",
+    "/srv", "/sys", "/tmp", "/usr", "/var",
+}
+
+
+def _should_restore_owner(work_dir: str) -> bool:
+    """判断工作目录是否需要把属主交还给运维用户"""
+    normalized = (work_dir or "").rstrip("/") or "/"
+    return normalized not in _PROTECTED_PATHS
+
+
 def _build_ssh_command(remote_cmd: str, work_dir: str) -> str:
     """把本地命令包装成 SSH 远程执行命令"""
     # 用单引号包裹远程命令，防止本地 shell 提前展开变量
     escaped = remote_cmd.replace("'", "'\\''")
-    # 使用 sudo mkdir -p 确保即使 devops 用户没有权限也能创建目录
+    # 使用 sudo mkdir -p 确保即使 devops 用户没有权限也能创建目录。
+    # 注意：sudo 创建出来的目录属主是 root，必须再 chown 回运维用户，
+    # 否则 Web 终端（以 devops 登录）在目录内 cp / vi 保存时会报权限拒绝。
+    mkdir_cmd = f"sudo mkdir -p {work_dir}"
+    if _should_restore_owner(work_dir):
+        mkdir_cmd += f" && sudo chown {SSH_USER}:{SSH_USER} {work_dir}"
     return (
         f"ssh -i {SSH_KEY} "
         f"-o StrictHostKeyChecking=no "
         f"-o ConnectTimeout=10 "
         f"-p {SSH_PORT} "
         f"{SSH_USER}@{SSH_HOST} "
-        f"'sudo mkdir -p {work_dir} && cd {work_dir} && {escaped}'"
+        f"'{mkdir_cmd} && cd {work_dir} && {escaped}'"
     )
 
 
