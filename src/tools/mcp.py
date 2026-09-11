@@ -46,9 +46,11 @@ async def _run_health_check(project: Project) -> str:
         return "unknown"
 
     try:
+        # 与真实执行保持一致：优先使用健康检查命令级 work_dir
+        check_work_dir = health_cmd.work_dir or project.work_dir
         for cmd in command_list:
             _, status, _ = await asyncio.wait_for(
-                execute_shell_script(cmd, project.work_dir, min(health_cmd.timeout, 30)),
+                execute_shell_script(cmd, check_work_dir, min(health_cmd.timeout, 30)),
                 timeout=35
             )
             if status != "success":

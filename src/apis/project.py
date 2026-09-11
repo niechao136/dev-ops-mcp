@@ -41,9 +41,12 @@ async def _check_project_health(project: Project) -> str:
         return "unknown"
 
     try:
+        # 健康检查必须使用命令级 work_dir（若配置），否则与真实执行路径不一致，
+        # 会出现“命令手动执行成功、状态却显示 unhealthy”的问题。
+        check_work_dir = health_cmd.work_dir or project.work_dir
         for cmd in command_list:
             _, status, _ = await asyncio.wait_for(
-                execute_shell_script(cmd, project.work_dir, min(health_cmd.timeout, 30)),
+                execute_shell_script(cmd, check_work_dir, min(health_cmd.timeout, 30)),
                 timeout=35
             )
             if status != "success":
@@ -475,9 +478,10 @@ async def execute_health_check(
             )
 
         results = []
+        check_work_dir = health_cmd.work_dir or project.work_dir
         for cmd in command_list:
             exit_code, status, log = await execute_shell_script(
-                cmd, project.work_dir, health_cmd.timeout
+                cmd, check_work_dir, health_cmd.timeout
             )
             results.append({
                 "command": cmd,
