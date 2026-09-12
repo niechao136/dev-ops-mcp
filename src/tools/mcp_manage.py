@@ -688,6 +688,8 @@ def register_manage_tools(mcp) -> None:
                 project = project_service.get_project_by_name(db, project_name)
                 if not project:
                     return _text_out(f"❌ 找不到项目: {project_name}")
+                # 会话关闭后 ORM 实例会 detach 且属性已过期，先取出模板名称备用
+                tpl_name = tpl.name
                 if db.query(Command).filter(
                     Command.project_id == project.id, Command.action_type == tpl.action_type
                 ).first():
@@ -702,12 +704,15 @@ def register_manage_tools(mcp) -> None:
                     description=description,
                     timeout=timeout,
                 )
+                # 同上：取出返回消息需要的字段，避免在会话外访问已 detach 的实例
+                tpl_action_type = tpl.action_type
+                cmd_id = cmd.id
             _audit("manage_public_command", project_name, {
                 "operation": "import_to_project", "template_id": command_id,
             })
             return _text_out(
-                f"✅ 模板 '{tpl.name}' 已导入项目 '{project_name}' (命令 id={cmd.id}, "
-                f"action='{tpl.action_type}')。可通过 manage_command(operation='update') 微调后执行。"
+                f"✅ 模板 '{tpl_name}' 已导入项目 '{project_name}' (命令 id={cmd_id}, "
+                f"action='{tpl_action_type}')。可通过 manage_command(operation='update') 微调后执行。"
             )
 
         with get_db_session() as db:
