@@ -33,6 +33,15 @@ def migrate_database():
                 print("Successfully added created_at column")
             except sqlite3.OperationalError as e:
                 print(f"Info: {e}")
+
+        if "scopes" not in api_tokens_columns:
+            print("Adding scopes column to api_tokens table...")
+            try:
+                cursor.execute("ALTER TABLE api_tokens ADD COLUMN scopes TEXT")
+                conn.commit()
+                print("Successfully added scopes column")
+            except sqlite3.OperationalError as e:
+                print(f"Info: {e}")
         
         # Check projects table
         cursor.execute("PRAGMA table_info(projects)")

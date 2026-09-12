@@ -14,6 +14,7 @@ from src.dbs.db import get_db_session
 from src.dbs.orm import AuditLog, Command, Project
 from src.utils.context import check_token, check_project, current_mcp_token
 from src.utils.task_executor import submit_task, get_task_info, is_project_locked, get_running_task, cancel_task
+from src.tools.mcp_manage import register_manage_tools
 
 
 load_dotenv()
@@ -426,4 +427,10 @@ async def query_audit_logs(project_name: str, hours_ago: int = 24) -> list[TextC
 
         full_report = f"项目 '{project_name}' 过去 {hours_ago} 小时操作日志 (最新10条):\n" + "\n".join(report_lines)
         return [TextContent(type="text", text=full_report)]
+
+
+# =====================================================================
+# 注册管理类工具与资源（资源 CRUD / scope 权限 / 两段式确认）
+# =====================================================================
+register_manage_tools(mcp)
 

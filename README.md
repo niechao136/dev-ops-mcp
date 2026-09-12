@@ -19,6 +19,8 @@
 
 ### 🤖 MCP 工具集
 
+#### 执行/观测类工具
+
 | 工具名称 | 功能描述 |
 |---------|---------|
 | `get_node_overview` | 获取当前服务器节点上所有项目列表及支持的操作（含健康状态） |
@@ -29,10 +31,52 @@
 | `get_system_metrics` | 获取服务器 CPU、内存、磁盘使用情况 |
 | `query_audit_logs` | 查询项目操作历史日志 |
 
+#### 资源管理类工具（读写分离设计）
+
+| 工具名称 | Scope | 功能描述 |
+|---------|-------|---------|
+| `list_projects` | `resources:read` | 分页获取项目列表（含命令数量与可用操作） |
+| `get_project_detail` | `resources:read` | 获取项目完整详情（含全部命令定义） |
+| `list_project_commands` | `resources:read` | 分页获取项目下的命令列表 |
+| `search_public_commands` | `resources:read` | 搜索公共命令模板库 |
+| `list_automations` | `resources:read` | 获取项目下的自动化规则列表 |
+| `manage_project` | `resources:write` | 创建/更新/删除项目 |
+| `manage_command` | `resources:write` | 创建/更新/删除项目命令（含 Shell 脚本） |
+| `manage_public_command` | `resources:write` | 管理公共命令模板（含导入到项目） |
+| `manage_automation` | `resources:write` | 管理自动化规则（cron/条件触发） |
+
+#### MCP Resources（只读配置，供支持 resource 的客户端直接读取）
+
+| URI | 描述 |
+|-----|------|
+| `devops://projects` | 当前有权限访问的项目清单（含可用操作与参数占位符） |
+| `devops://projects/{project_name}/commands` | 指定项目的全部命令定义 |
+| `devops://public-commands` | 公共命令模板库清单 |
+| `devops://public-commands/{name}` | 按名称获取单个命令模板详情 |
+
+### 🔒 Scope 权限模型
+
+API Key 支持通过 `scopes` 字段控制能力边界（在 Web 控制台创建/编辑密钥，或调用 API Key 管理接口设置）：
+
+| Scope | 能力 |
+|-------|------|
+| `ops:execute` | 执行/观测类工具（默认，旧密钥自动兼容） |
+| `resources:read` | 资源管理只读工具 + MCP Resources |
+| `resources:write` | 资源管理写工具（项目/命令/公共命令/自动化规则的增删改） |
+
+安全边界设计：
+
+- **两段式确认**：所有 `delete` 操作、以及涉及 `shell_command` / `condition_script` 的写入，第一次调用只返回**变更预览 + confirm_token**（有效期 5 分钟、一次性、与操作类型绑定）；LLM 须向用户复述风险并征得同意后，携带 confirm_token 二次调用才真正落库。
+- **模板优先**：工具描述引导 LLM 优先从公共命令库导入模板再微调，而非手写脚本。
+- **凭证与身份不对 AI 开放**：API Key 管理、用户管理、审计日志删除不提供任何 MCP 工具，仅能通过 Web UI + JWT 操作。
+- 所有管理写操作写入审计日志（`actor_type=ai`，`action_category=manage_*`）。
+
 ### 🔒 安全特性
 
 - JWT 认证机制
 - API Key 加密存储（Fernet 加密）
+- API Key Scope 权限隔离（ops:execute / resources:read / resources:write）
+- 管理写操作两段式确认（变更预览 + 一次性 confirm_token）
 - 项目级权限隔离
 - 路径安全检查（防止目录遍历攻击）
 - 操作审计追踪
@@ -201,7 +245,8 @@ dev-ops-mcp/
 │   │   └── migrate.py      # 数据库迁移脚本
 │   ├── schemas/            # Pydantic 数据模型
 │   ├── tools/              # MCP 工具定义
-│   │   └── mcp.py          # MCP 工具实现
+│   │   ├── mcp.py          # MCP 执行/观测类工具实现
+│   │   └── mcp_manage.py   # MCP 资源管理类工具与 Resources（scope 权限 + 两段式确认）
 │   ├── middlewares/        # 中间件
 │   │   └── mcp_auth.py     # MCP 认证中间件
 │   ├── utils/              # 工具函数
@@ -213,7 +258,8 @@ dev-ops-mcp/
 │   │   ├── ssh_client.py   # SSH 客户端（支持多密钥类型）
 │   │   ├── scheduler.py    # APScheduler 定时调度
 │   │   ├── path.py         # 路径安全检查
-│   │   └── context.py      # 上下文管理
+│   │   ├── context.py      # 上下文管理（含 scope 权限校验）
+│   │   ├── confirm_store.py # 两段式确认令牌存储
 │   └── main.py             # FastAPI 入口
 ├── web/                    # 前端 Next.js 代码
 │   ├── app/                # 应用页面
@@ -441,6 +487,40 @@ result = await client.call_tool(
 print(result)
 ```
 
+### 管理资源：创建项目命令（两段式确认示例）
+
+```python
+# 第一次调用：返回变更预览 + confirm_token，尚未生效
+result = await client.call_tool(
+    "manage_command",
+    operation="create",
+    project_name="my-project",
+    action_type="backup",
+    description="备份数据目录",
+    shell_command="tar -czf /backup/data-$(date +%F).tar.gz ./data",
+    timeout=300
+)
+# LLM 应向用户展示 preview 中的脚本内容并征得同意
+
+# 第二次调用：用户确认后，携带 confirm_token 真正落库
+result = await client.call_tool(
+    "manage_command",
+    operation="create",
+    project_name="my-project",
+    action_type="backup",
+    shell_command="tar -czf /backup/data-$(date +%F).tar.gz ./data",
+    confirm_token="<第一次调用返回的 confirm_token>"
+)
+```
+
+### 读取 MCP Resource
+
+```python
+# 支持资源读取的客户端可直接读取项目清单（无需调用工具）
+resources = await client.list_resources()
+content = await client.read_resource("devops://projects")
+```
+
 ## 数据库模型
 
 ### 用户表 (users)
@@ -462,6 +542,7 @@ print(result)
 | token_hash | varchar(255) | 密钥哈希 |
 | token_prefix | varchar(20) | 密钥前缀（用于快速识别） |
 | allowed_projects | text | 允许访问的项目列表 (JSON) |
+| scopes | text | 权限范围列表 (JSON)，如 ["ops:execute","resources:read"]；NULL 默认 ["ops:execute"] |
 | is_active | bool | 是否激活 |
 | created_by | int | 创建者用户 ID |
 | created_at | datetime | 创建时间 |

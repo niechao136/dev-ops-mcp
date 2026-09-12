@@ -44,6 +44,9 @@ async def create_token(
     # 格式化项目白名单
     allowed_projects_json = json.dumps(payload.allowed_projects) if payload.allowed_projects is not None else None
 
+    # 格式化 scope 列表（未指定时默认仅运维执行权限）
+    scopes_json = json.dumps(payload.scopes if payload.scopes is not None else ["ops:execute"])
+
     # 构建 ORM 模型
     new_token = ApiToken(
         token_name=payload.name,
@@ -51,6 +54,7 @@ async def create_token(
         token_hash=key_hash,
         token_prefix=prefix,
         allowed_projects=allowed_projects_json,
+        scopes=scopes_json,
         is_active=True,
         creator=current_admin  # 直接利用关系绑定当前登录的 Admin 对象
     )
@@ -116,12 +120,14 @@ async def list_tokens(
         for r in records:
             # 将数据库内的 JSON 文本反序列化为 Python 列表
             projects_list = json.loads(r.allowed_projects) if r.allowed_projects else None
+            scopes_list = json.loads(r.scopes) if r.scopes else None
 
             result_items.append(ApiKeyItem(
                 id=r.id,
                 token_name=r.token_name,
                 token_prefix=r.token_prefix,
                 allowed_projects=projects_list,
+                scopes=scopes_list,
                 is_active=r.is_active,
                 created_by=r.created_by,
                 created_by_name=r.creator.username if r.creator else None
@@ -152,7 +158,8 @@ async def get_token_detail(key_id: int):
             return DataResult(status=0, msg="密钥不存在")
         
         projects_list = json.loads(token.allowed_projects) if token.allowed_projects else None
-        
+        scopes_list = json.loads(token.scopes) if token.scopes else None
+
         return DataResult(
             status=1,
             data=ApiKeyDetail(
@@ -160,6 +167,7 @@ async def get_token_detail(key_id: int):
                 token_name=token.token_name,
                 token_prefix=token.token_prefix,
                 allowed_projects=projects_list,
+                scopes=scopes_list,
                 is_active=token.is_active,
                 created_by=token.created_by,
                 created_by_name=token.creator.username if token.creator else None
@@ -191,7 +199,10 @@ async def update_token(
         
         if payload.allowed_projects is not None:
             token.allowed_projects = json.dumps(payload.allowed_projects)
-        
+
+        if payload.scopes is not None:
+            token.scopes = json.dumps(payload.scopes)
+
         if payload.is_active is not None:
             token.is_active = payload.is_active
         

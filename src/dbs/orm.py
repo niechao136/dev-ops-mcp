@@ -38,6 +38,7 @@ class ApiToken(Base):
     token_hash: Mapped[str] = mapped_column(String(255), unique=True, index=True)
     token_prefix: Mapped[Optional[str]] = mapped_column(String(20))
     allowed_projects: Mapped[Optional[str]] = mapped_column(Text)  # JSON数组字符串，空代表全部权限
+    scopes: Mapped[Optional[str]] = mapped_column(Text)  # JSON数组字符串，如 ["ops:execute","resources:read"]；None 时默认 ["ops:execute"]
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(UTC))
 
