@@ -7,7 +7,10 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     UV_LINK_MODE=copy \
     UV_PROJECT_ENVIRONMENT=/app/.venv
 
-COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /usr/local/bin/
+# 通过 PyPI 安装 uv：原先从 ghcr.io/astral-sh/uv 拷贝镜像文件，
+# 但构建机访问 ghcr.io 匿名拉取会被拒（failed to fetch oauth token: denied）
+RUN --mount=type=cache,target=/root/.cache/pip \
+    pip install "uv>=0.8,<1"
 
 # RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
 #     --mount=type=cache,target=/var/lib/apt/lists,sharing=locked \
