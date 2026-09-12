@@ -26,7 +26,9 @@ from typing import Any, Dict, List, Literal, Optional
 from mcp.types import TextContent
 
 from src.dbs.db import get_db_session
-from src.dbs.orm import AuditLog, Automation, Command, Project, PublicCommand
+from src.dbs.orm import Automation, Command, Project, PublicCommand
+from src.services import automation_service, project_service, public_command_service
+from src.services.audit_service import log_ai_action
 from src.utils.confirm_store import consume_confirm, create_confirm
 from src.utils.context import check_project, check_token, get_scopes
 
@@ -76,20 +78,7 @@ def _perm_error(project_name: str) -> Optional[list[TextContent]]:
 
 
 def _audit(action_category: str, target_project: Optional[str], details: Dict[str, Any]):
-    token = check_token()[0]
-    if not token:
-        return
-    with get_db_session() as db:
-        db.add(AuditLog(
-            actor_type="ai",
-            actor_id=token.id,
-            action_category=action_category,
-            target_project=target_project,
-            action_details=details,
-            status="success",
-            created_at=datetime.now(UTC),
-        ))
-        db.commit()
+    log_ai_action(action_category, target_project, details)
 
 
 def _confirm_or_proceed(
@@ -319,28 +308,9 @@ def register_manage_tools(mcp) -> None:
             return _text_out(err)
         page, size = _clamp_page(page, size)
 
-        from sqlalchemy import or_
-
         with get_db_session() as db:
-            query = db.query(PublicCommand).filter(PublicCommand.is_active == True)  # noqa: E712
-            if keyword:
-                search = f"%{keyword}%"
-                query = query.filter(
-                    or_(
-                        PublicCommand.name.ilike(search),
-                        PublicCommand.description.ilike(search),
-                        PublicCommand.action_type.ilike(search),
-                    )
-                )
-            if tags:
-                for tag in [t.strip() for t in tags.split(",") if t.strip()]:
-                    query = query.filter(PublicCommand.tags.ilike(f"%{tag}%"))
-            total = query.count()
-            records = (
-                query.order_by(PublicCommand.updated_at.desc())
-                .offset((page - 1) * size)
-                .limit(size)
-                .all()
+            total, records = public_command_service.list_public_commands(
+                db, keyword=keyword, tags=tags, page=page, size=size,
             )
             data = [
                 {
@@ -439,39 +409,40 @@ def register_manage_tools(mcp) -> None:
         action = f"manage_project:{operation}:{name}"
 
         if operation == "create":
+            if not work_dir:
+                return _text_out("❌ 创建项目必须提供 work_dir（服务器上的工作目录绝对路径）。")
             with get_db_session() as db:
-                if db.query(Project).filter(Project.name == name).first():
+                if project_service.get_project_by_name(db, name):
                     return _text_out(
                         f"❌ 项目 '{name}' 已存在。如需修改请使用 operation='update'；"
                         f"如需查看详情请调用 get_project_detail。"
                     )
-                if not work_dir:
-                    return _text_out("❌ 创建项目必须提供 work_dir（服务器上的工作目录绝对路径）。")
-                project = Project(
+                project_service.create_project(
+                    db,
                     name=name,
-                    description=description,
                     work_dir=work_dir,
+                    description=description,
                     is_active=is_active if is_active is not None else True,
-                    created_at=datetime.now(UTC),
                 )
-                db.add(project)
-                db.commit()
             _audit("manage_project", name, {"operation": "create", "work_dir": work_dir})
             return _text_out(f"✅ 项目 '{name}' 创建成功。接下来可用 manage_command 为其添加命令。")
 
         with get_db_session() as db:
-            project = db.query(Project).filter(Project.name == name).first()
+            project = project_service.get_project_by_name(db, name)
             if not project:
                 return _text_out(f"❌ 找不到项目: {name}。可调用 list_projects 查看现有项目。")
 
             if operation == "update":
-                if description is not None:
-                    project.description = description
-                if work_dir is not None:
-                    project.work_dir = work_dir
-                if is_active is not None:
-                    project.is_active = is_active
-                db.commit()
+                try:
+                    project_service.update_project(
+                        db,
+                        project,
+                        description=description,
+                        work_dir=work_dir,
+                        is_active=is_active,
+                    )
+                except ValueError as e:
+                    return _text_out(f"❌ {str(e)}")
                 _audit("manage_project", name, {
                     "operation": "update",
                     "description": description,
@@ -495,8 +466,7 @@ def register_manage_tools(mcp) -> None:
             )
             if gate is not None:
                 return gate
-            db.delete(project)
-            db.commit()
+            project_service.delete_project_cascade(db, project)
             _audit("manage_project", name, {"operation": "delete"})
             return _text_out(f"✅ 项目 '{name}' 已删除（含 {command_count} 条命令配置）。")
 
@@ -544,7 +514,7 @@ def register_manage_tools(mcp) -> None:
             return perm_err
 
         with get_db_session() as db:
-            project = db.query(Project).filter(Project.name == project_name).first()
+            project = project_service.get_project_by_name(db, project_name)
             if not project:
                 return _text_out(f"❌ 找不到项目: {project_name}。可调用 list_projects 查看现有项目。")
 
@@ -587,20 +557,18 @@ def register_manage_tools(mcp) -> None:
                 )
                 if gate is not None:
                     return gate
-                cmd = Command(
+                cmd = project_service.create_command(
+                    db,
                     project_id=project.id,
                     action_type=action_type,
-                    description=description,
                     shell_command=shell_command,
-                    timeout=timeout or 600,
+                    description=description,
+                    timeout=timeout,
                     default_params=default_params,
                     work_dir=work_dir,
                     is_health_check=is_health_check or False,
                     requires_confirm=requires_confirm or False,
-                    created_at=datetime.now(UTC),
                 )
-                db.add(cmd)
-                db.commit()
                 _audit("manage_command", project_name, {
                     "operation": "create", "action_type": action_type, "script": shell_command,
                 })
@@ -631,21 +599,17 @@ def register_manage_tools(mcp) -> None:
                 )
                 if gate is not None:
                     return gate
-                if description is not None:
-                    command.description = description
-                if shell_command is not None:
-                    command.shell_command = shell_command
-                if timeout is not None:
-                    command.timeout = timeout
-                if default_params is not None:
-                    command.default_params = default_params
-                if work_dir is not None:
-                    command.work_dir = work_dir
-                if is_health_check is not None:
-                    command.is_health_check = is_health_check
-                if requires_confirm is not None:
-                    command.requires_confirm = requires_confirm
-                db.commit()
+                project_service.update_command(
+                    db,
+                    command,
+                    description=description,
+                    shell_command=shell_command,
+                    timeout=timeout,
+                    default_params=default_params,
+                    work_dir=work_dir,
+                    is_health_check=is_health_check,
+                    requires_confirm=requires_confirm,
+                )
                 _audit("manage_command", project_name, {
                     "operation": "update", "command_id": command.id,
                     "action_type": command.action_type, "new_script": shell_command,
@@ -718,12 +682,10 @@ def register_manage_tools(mcp) -> None:
             if (perm_err := _perm_error(project_name)) is not None:
                 return perm_err
             with get_db_session() as db:
-                tpl = db.query(PublicCommand).filter(
-                    PublicCommand.id == command_id, PublicCommand.is_active == True  # noqa: E712
-                ).first()
-                if not tpl:
+                tpl = public_command_service.get_public_command_by_id(db, command_id)
+                if not tpl or not tpl.is_active:
                     return _text_out(f"❌ 找不到启用的公共命令模板: id={command_id}。")
-                project = db.query(Project).filter(Project.name == project_name).first()
+                project = project_service.get_project_by_name(db, project_name)
                 if not project:
                     return _text_out(f"❌ 找不到项目: {project_name}")
                 if db.query(Command).filter(
@@ -733,17 +695,13 @@ def register_manage_tools(mcp) -> None:
                         f"❌ 项目 '{project_name}' 已存在 action_type='{tpl.action_type}' 的命令。"
                         f"如需覆盖请先用 manage_command(operation='delete') 删除旧命令。"
                     )
-                cmd = Command(
+                cmd = public_command_service.import_to_project(
+                    db,
+                    public_command_id=command_id,
                     project_id=project.id,
-                    action_type=tpl.action_type,
-                    description=description or tpl.description,
-                    shell_command=tpl.shell_command,
-                    timeout=timeout or tpl.timeout,
-                    default_params=tpl.default_params,
-                    created_at=datetime.now(UTC),
+                    description=description,
+                    timeout=timeout,
                 )
-                db.add(cmd)
-                db.commit()
             _audit("manage_public_command", project_name, {
                 "operation": "import_to_project", "template_id": command_id,
             })
@@ -755,15 +713,15 @@ def register_manage_tools(mcp) -> None:
         with get_db_session() as db:
             def _locate():
                 if command_id is not None:
-                    return db.query(PublicCommand).filter(PublicCommand.id == command_id).first()
+                    return public_command_service.get_public_command_by_id(db, command_id)
                 if name:
-                    return db.query(PublicCommand).filter(PublicCommand.name == name).first()
+                    return public_command_service.get_public_command_by_name(db, name)
                 return None
 
             if operation == "create":
                 if not name or not action_type or not shell_command:
                     return _text_out("❌ 创建公共命令必须提供 name、action_type 与 shell_command。")
-                if db.query(PublicCommand).filter(PublicCommand.name == name).first():
+                if public_command_service.get_public_command_by_name(db, name):
                     return _text_out(f"❌ 公共命令 '{name}' 已存在，如需修改请使用 operation='update'。")
                 gate = _confirm_or_proceed(
                     f"manage_public_command:create:{name}",
@@ -780,21 +738,16 @@ def register_manage_tools(mcp) -> None:
                 )
                 if gate is not None:
                     return gate
-                now = datetime.now(UTC)
-                tpl = PublicCommand(
+                tpl = public_command_service.create_public_command(
+                    db,
                     name=name,
                     action_type=action_type,
-                    description=description,
                     shell_command=shell_command,
-                    timeout=timeout or 600,
+                    description=description,
+                    timeout=timeout,
                     default_params=default_params,
                     tags=tags,
-                    is_active=True,
-                    created_at=now,
-                    updated_at=now,
                 )
-                db.add(tpl)
-                db.commit()
                 _audit("manage_public_command", None, {
                     "operation": "create", "name": name, "script": shell_command,
                 })
@@ -822,15 +775,13 @@ def register_manage_tools(mcp) -> None:
                 )
                 if gate is not None:
                     return gate
-                for field, value in [
-                    ("name", name), ("action_type", action_type), ("description", description),
-                    ("shell_command", shell_command), ("timeout", timeout),
-                    ("default_params", default_params), ("tags", tags), ("is_active", is_active),
-                ]:
-                    if value is not None:
-                        setattr(template, field, value)
-                template.updated_at = datetime.now(UTC)
-                db.commit()
+                template = public_command_service.update_public_command(
+                    db,
+                    template,
+                    name=name, action_type=action_type, description=description,
+                    shell_command=shell_command, timeout=timeout,
+                    default_params=default_params, tags=tags, is_active=is_active,
+                )
                 _audit("manage_public_command", None, {
                     "operation": "update", "name": template.name, "new_script": shell_command,
                 })
@@ -899,7 +850,7 @@ def register_manage_tools(mcp) -> None:
             return perm_err
 
         with get_db_session() as db:
-            project = db.query(Project).filter(Project.name == project_name).first()
+            project = project_service.get_project_by_name(db, project_name)
             if not project:
                 return _text_out(f"❌ 找不到项目: {project_name}。")
 
@@ -955,20 +906,20 @@ def register_manage_tools(mcp) -> None:
                 )
                 if gate is not None:
                     return gate
-                auto = Automation(
-                    project_id=project.id,
-                    name=name,
-                    trigger_type=trigger_type,
-                    cron_expression=cron_expression,
-                    condition_script=condition_script,
-                    condition_interval=condition_interval or 60,
-                    command_id=command.id,
-                    is_enabled=is_enabled if is_enabled is not None else True,
-                    created_at=datetime.now(UTC),
-                    updated_at=datetime.now(UTC),
-                )
-                db.add(auto)
-                db.commit()
+                try:
+                    auto = automation_service.create_automation(
+                        db,
+                        project_id=project.id,
+                        name=name,
+                        trigger_type=trigger_type,
+                        command_id=command.id,
+                        cron_expression=cron_expression,
+                        condition_script=condition_script,
+                        condition_interval=condition_interval,
+                        is_enabled=is_enabled,
+                    )
+                except ValueError as e:
+                    return _text_out(f"❌ {str(e)}")
                 _audit("manage_automation", project_name, {
                     "operation": "create", "name": name, "trigger_type": trigger_type,
                 })
@@ -994,36 +945,37 @@ def register_manage_tools(mcp) -> None:
                 )
                 if gate is not None:
                     return gate
+                update_fields = {}
                 if name:
-                    rule.name = name
+                    update_fields["name"] = name
                 if trigger_type:
-                    rule.trigger_type = trigger_type
+                    update_fields["trigger_type"] = trigger_type
                 if cron_expression is not None:
-                    rule.cron_expression = cron_expression
+                    update_fields["cron_expression"] = cron_expression
                 if condition_script is not None:
-                    rule.condition_script = condition_script
+                    update_fields["condition_script"] = condition_script
                 if condition_interval is not None:
-                    rule.condition_interval = condition_interval
+                    update_fields["condition_interval"] = condition_interval
                 if command_action:
                     command = db.query(Command).filter(
                         Command.project_id == project.id, Command.action_type == command_action
                     ).first()
                     if not command:
                         return _text_out(f"❌ 项目 '{project_name}' 不存在 action='{command_action}' 的命令。")
-                    rule.command_id = command.id
+                    update_fields["command_id"] = command.id
                 if is_enabled is not None:
-                    rule.is_enabled = is_enabled
-                rule.updated_at = datetime.now(UTC)
-                db.commit()
+                    update_fields["is_enabled"] = is_enabled
+                try:
+                    automation_service.update_automation(db, rule, **update_fields)
+                except ValueError as e:
+                    return _text_out(f"❌ {str(e)}")
                 _audit("manage_automation", project_name, {
                     "operation": "update", "automation_id": rule.id,
                 })
                 return _text_out(f"✅ 自动化规则 (id={rule.id}) 更新成功。")
 
             if operation == "toggle":
-                rule.is_enabled = not rule.is_enabled
-                rule.updated_at = datetime.now(UTC)
-                db.commit()
+                automation_service.toggle_automation(db, rule)
                 _audit("manage_automation", project_name, {
                     "operation": "toggle", "automation_id": rule.id,
                     "is_enabled": rule.is_enabled,
@@ -1046,8 +998,7 @@ def register_manage_tools(mcp) -> None:
             )
             if gate is not None:
                 return gate
-            db.delete(rule)
-            db.commit()
+            automation_service.delete_automation(db, rule)
             _audit("manage_automation", project_name, {
                 "operation": "delete", "automation_id": rule.id, "name": rule.name,
             })

@@ -14,6 +14,7 @@ from src.dbs.db import get_db_session
 from src.dbs.orm import AuditLog, Command, Project
 from src.utils.context import check_token, check_project, current_mcp_token
 from src.utils.task_executor import submit_task, get_task_info, is_project_locked, get_running_task, cancel_task
+from src.services import project_service
 from src.tools.mcp_manage import register_manage_tools
 
 
@@ -30,37 +31,8 @@ mcp_app = mcp.http_app(path="/")
 # Tool 1: 节点全貌探测 (聚合了项目与可用操作)
 # =====================================================================
 async def _run_health_check(project: Project) -> str:
-    health_cmd = None
-    for cmd in project.commands:
-        if cmd.is_health_check:
-            health_cmd = cmd
-            break
-
-    if not health_cmd:
-        return "unknown"
-
-    from src.utils.executor import execute_shell_script
-    import asyncio
-
-    command_list = [line.strip() for line in health_cmd.shell_command.splitlines() if line.strip()]
-    if not command_list:
-        return "unknown"
-
-    try:
-        # 与真实执行保持一致：优先使用健康检查命令级 work_dir
-        check_work_dir = health_cmd.work_dir or project.work_dir
-        for cmd in command_list:
-            _, status, _ = await asyncio.wait_for(
-                execute_shell_script(cmd, check_work_dir, min(health_cmd.timeout, 30)),
-                timeout=35
-            )
-            if status != "success":
-                return "unhealthy"
-        return "healthy"
-    except asyncio.TimeoutError:
-        return "unhealthy"
-    except Exception:
-        return "unhealthy"
+    from src.services.project_service import check_project_health
+    return await check_project_health(project)
 
 
 @mcp.tool()
@@ -162,15 +134,14 @@ async def execute_action(project_name: str, action: str, params: Optional[dict] 
         return [TextContent(type="text", text=f"⏳ 项目 '{project_name}' 当前有任务正在执行，请稍后再试。任务ID: {running_task_id}")]
 
     with get_db_session() as db:
-        project = db.query(Project).filter(Project.name == project_name, Project.is_active == True).first()
-        if not project:
-            return [TextContent(type="text", text=f"❌ 找不到激活的项目: {project_name}")]
+        # 高危命令确认检查：先定位命令（未配置的项目/操作由 service 统一报错）
+        from src.services.project_service import get_project_by_name
+        project = get_project_by_name(db, project_name)
+        command = None
+        if project:
+            command = next((c for c in project.commands if c.action_type == action), None)
 
-        command = db.query(Command).filter(Command.project_id == project.id, Command.action_type == action).first()
-        if not command:
-            return [TextContent(type="text", text=f"❌ 项目 '{project_name}' 未配置 '{action}' 操作。")]
-
-        if command.requires_confirm and not confirm:
+        if command and command.requires_confirm and not confirm:
             return [TextContent(type="text", text=f"""
 {{
 "status": "requires_confirm",
@@ -179,36 +150,17 @@ async def execute_action(project_name: str, action: str, params: Optional[dict] 
 }}
 """)]
 
-        raw_command_text = command.shell_command
-        
-        merged_params = {**(command.default_params or {}), **(params or {})}
-        
-        if merged_params:
-            for key, value in merged_params.items():
-                placeholder = f"${{{key}}}"
-                raw_command_text = raw_command_text.replace(placeholder, str(value))
-
-        command_list = [line.strip() for line in raw_command_text.splitlines() if line.strip()]
-
-        if not command_list:
-            return [TextContent(type="text", text=f"❌ '{action}' 配置的脚本内容为空。")]
-
-        command_details = {
-            "script": command.shell_command,
-            "params": params,
-            "default_params": command.default_params
-        }
-
-        task_id = submit_task(
-            project_name=project_name,
-            action=action,
-            commands=command_list,
-            work_dir=command.work_dir or project.work_dir,
-            timeout=command.timeout,
-            actor_type="ai",
-            actor_id=caller_token_id,
-            command_details=command_details
-        )
+        try:
+            task_id = project_service.submit_execute(
+                db,
+                project_name=project_name,
+                action=action,
+                params=params,
+                actor_type="ai",
+                actor_id=caller_token_id,
+            )
+        except ValueError as e:
+            return [TextContent(type="text", text=f"❌ {str(e)}")]
 
     return [TextContent(type="text", text=f"📋 任务已提交，task_id: {task_id}\n请使用 get_task_status('{task_id}', log_offset=0) 查询执行状态和输出。后续轮询时请传入上次返回的 next_offset 值以获取增量日志。")]
 

@@ -5,57 +5,21 @@ from typing import List, Annotated, Optional
 from sqlalchemy import asc, desc, or_
 
 from src.dbs.db import get_db_session
-from src.dbs.orm import Project, Command, User, Task
+from src.dbs.orm import Project, Task, User
 from src.schemas.api import DataResult, PageResult
 from src.schemas.project import (
     ProjectPageParams, ProjectInfo, ProjectAdd, ProjectUpdate, ProjectDel,
     CommandInfo, CommandAdd, CommandUpdate, CommandDel, CommandExecute,
     ProjectRunningTask
 )
+from src.services import project_service
 from src.utils.auth import get_current_admin, get_current_user
-from src.utils.executor import execute_shell_script
 
 
 project_router = APIRouter(
     prefix="/projects",
     tags=["项目管理"]
 )
-
-
-def get_project_by_id(db, project_id: int) -> Optional[Project]:
-    return db.query(Project).filter(Project.id == project_id).first()
-
-
-async def _check_project_health(project: Project) -> str:
-    health_cmd = None
-    for cmd in project.commands:
-        if cmd.is_health_check:
-            health_cmd = cmd
-            break
-
-    if not health_cmd:
-        return "unknown"
-
-    command_list = [line.strip() for line in health_cmd.shell_command.splitlines() if line.strip()]
-    if not command_list:
-        return "unknown"
-
-    try:
-        # 健康检查必须使用命令级 work_dir（若配置），否则与真实执行路径不一致，
-        # 会出现“命令手动执行成功、状态却显示 unhealthy”的问题。
-        check_work_dir = health_cmd.work_dir or project.work_dir
-        for cmd in command_list:
-            _, status, _ = await asyncio.wait_for(
-                execute_shell_script(cmd, check_work_dir, min(health_cmd.timeout, 30)),
-                timeout=35
-            )
-            if status != "success":
-                return "unhealthy"
-        return "healthy"
-    except asyncio.TimeoutError:
-        return "unhealthy"
-    except Exception:
-        return "unknown"
 
 
 @project_router.get(
@@ -102,7 +66,7 @@ async def project_list(
                     "command_count": command_count
                 }
             )
-            health_tasks.append(_check_project_health(record))
+            health_tasks.append(project_service.check_project_health(record))
 
         if health_tasks:
             health_results = await asyncio.gather(*health_tasks, return_exceptions=True)
@@ -155,12 +119,12 @@ async def project_detail(
     _: User = Depends(get_current_user)
 ):
     with get_db_session() as db:
-        project = get_project_by_id(db, project_id)
+        project = project_service.get_project_by_id(db, project_id)
         if not project:
             return DataResult(status=0, msg="项目不存在")
 
         command_count = len(project.commands)
-        health_status = await _check_project_health(project)
+        health_status = await project_service.check_project_health(project)
 
         running_task = db.query(Task).filter(
             Task.project_name == project.name,
@@ -201,19 +165,15 @@ async def project_create(
     _: User = Depends(get_current_admin)
 ):
     with get_db_session() as db:
-        exists = db.query(Project).filter(Project.name == project_data.name).first()
-        if exists:
-            return DataResult(status=0, msg="项目名称已存在")
-
-        new_project = Project(
-            name=project_data.name,
-            description=project_data.description,
-            work_dir=project_data.work_dir,
-            is_active=True
-        )
-        db.add(new_project)
-        db.commit()
-        db.refresh(new_project)
+        try:
+            new_project = project_service.create_project(
+                db,
+                name=project_data.name,
+                description=project_data.description,
+                work_dir=project_data.work_dir,
+            )
+        except ValueError as e:
+            return DataResult(status=0, msg=str(e))
 
         return DataResult(status=1, data=new_project.id, msg="创建成功")
 
@@ -229,26 +189,21 @@ async def project_update(
     _: User = Depends(get_current_admin)
 ):
     with get_db_session() as db:
-        project = get_project_by_id(db, project_id)
+        project = project_service.get_project_by_id(db, project_id)
         if not project:
             return DataResult(status=0, msg="项目不存在")
 
-        if project_data.name and project_data.name != project.name:
-            exists = db.query(Project).filter(Project.name == project_data.name).first()
-            if exists:
-                return DataResult(status=0, msg="项目名称已存在")
-            project.name = project_data.name
-
-        if project_data.description is not None:
-            project.description = project_data.description
-
-        if project_data.work_dir:
-            project.work_dir = project_data.work_dir
-
-        if project_data.is_active is not None:
-            project.is_active = project_data.is_active
-
-        db.commit()
+        try:
+            project_service.update_project(
+                db,
+                project,
+                name=project_data.name,
+                description=project_data.description,
+                work_dir=project_data.work_dir,
+                is_active=project_data.is_active,
+            )
+        except ValueError as e:
+            return DataResult(status=0, msg=str(e))
 
         return DataResult(status=1, data=True, msg="更新成功")
 
@@ -263,10 +218,7 @@ async def project_delete(
     _: User = Depends(get_current_admin)
 ):
     with get_db_session() as db:
-        deleted_count = db.query(Project).filter(
-            Project.id.in_(delete_data.ids)
-        ).delete(synchronize_session=False)
-        db.commit()
+        deleted_count = project_service.delete_projects(db, delete_data.ids)
 
         return DataResult(status=1, data=True, msg=f"删除了 {deleted_count} 个项目")
 
@@ -282,16 +234,12 @@ async def project_commands(
     size: int = 20,
     _: User = Depends(get_current_user)
 ):
-    offset = (page - 1) * size
-
     with get_db_session() as db:
-        project = get_project_by_id(db, project_id)
+        project = project_service.get_project_by_id(db, project_id)
         if not project:
             return DataResult(status=0, msg="项目不存在")
 
-        query = db.query(Command).filter(Command.project_id == project_id)
-        total = query.count()
-        commands = query.offset(offset).limit(size).all()
+        total, commands = project_service.list_project_commands(db, project_id, page, size)
 
         result_items = [
             CommandInfo(
@@ -328,11 +276,12 @@ async def command_create(
     _: User = Depends(get_current_admin)
 ):
     with get_db_session() as db:
-        project = get_project_by_id(db, project_id)
+        project = project_service.get_project_by_id(db, project_id)
         if not project:
             return DataResult(status=0, msg="项目不存在")
 
-        new_command = Command(
+        new_command = project_service.create_command(
+            db,
             project_id=project_id,
             action_type=command_data.action_type,
             description=command_data.description,
@@ -340,11 +289,8 @@ async def command_create(
             timeout=command_data.timeout,
             default_params=command_data.default_params,
             work_dir=command_data.work_dir,
-            requires_confirm=command_data.requires_confirm
+            requires_confirm=command_data.requires_confirm,
         )
-        db.add(new_command)
-        db.commit()
-        db.refresh(new_command)
 
         return DataResult(status=1, data=new_command.id, msg="创建成功")
 
@@ -360,32 +306,21 @@ async def command_update(
     _: User = Depends(get_current_admin)
 ):
     with get_db_session() as db:
-        command = db.query(Command).filter(Command.id == command_id).first()
+        command = project_service.get_command_by_id(db, command_id)
         if not command:
             return DataResult(status=0, msg="命令不存在")
 
-        if command_data.action_type:
-            command.action_type = command_data.action_type
-
-        if command_data.description is not None:
-            command.description = command_data.description
-
-        if command_data.shell_command:
-            command.shell_command = command_data.shell_command
-
-        if command_data.timeout:
-            command.timeout = command_data.timeout
-
-        if command_data.default_params is not None:
-            command.default_params = command_data.default_params
-
-        if command_data.work_dir is not None:
-            command.work_dir = command_data.work_dir
-
-        if command_data.requires_confirm is not None:
-            command.requires_confirm = command_data.requires_confirm
-
-        db.commit()
+        project_service.update_command(
+            db,
+            command,
+            action_type=command_data.action_type,
+            description=command_data.description,
+            shell_command=command_data.shell_command,
+            timeout=command_data.timeout,
+            default_params=command_data.default_params,
+            work_dir=command_data.work_dir,
+            requires_confirm=command_data.requires_confirm,
+        )
 
         return DataResult(status=1, data=True, msg="更新成功")
 
@@ -400,10 +335,7 @@ async def command_delete(
     _: User = Depends(get_current_admin)
 ):
     with get_db_session() as db:
-        deleted_count = db.query(Command).filter(
-            Command.id.in_(delete_data.ids)
-        ).delete(synchronize_session=False)
-        db.commit()
+        deleted_count = project_service.delete_commands(db, delete_data.ids)
 
         return DataResult(status=1, data=True, msg=f"删除了 {deleted_count} 个命令")
 
@@ -418,26 +350,17 @@ async def set_health_check_command(
     _: User = Depends(get_current_admin)
 ):
     with get_db_session() as db:
-        command = db.query(Command).filter(Command.id == command_id).first()
+        command = project_service.get_command_by_id(db, command_id)
         if not command:
             return DataResult(status=0, msg="命令不存在")
 
-        project_id = command.project_id
+        is_set = project_service.set_health_check(db, command)
 
-        if command.is_health_check:
-            command.is_health_check = False
-            db.commit()
-            return DataResult(status=1, data=False, msg="已取消健康检查命令")
-
-        db.query(Command).filter(
-            Command.project_id == project_id,
-            Command.is_health_check == True
-        ).update({"is_health_check": False})
-
-        command.is_health_check = True
-        db.commit()
-
-        return DataResult(status=1, data=True, msg="已设置为健康检查命令")
+        return DataResult(
+            status=1,
+            data=is_set,
+            msg="已设置为健康检查命令" if is_set else "已取消健康检查命令"
+        )
 
 
 @project_router.get(
@@ -450,56 +373,22 @@ async def execute_health_check(
     _: User = Depends(get_current_user)
 ):
     with get_db_session() as db:
-        project = get_project_by_id(db, project_id)
+        project = project_service.get_project_by_id(db, project_id)
         if not project:
             return DataResult(status=0, msg="项目不存在")
 
-        health_cmd = db.query(Command).filter(
-            Command.project_id == project_id,
-            Command.is_health_check == True
-        ).first()
+        try:
+            result = await project_service.run_health_check_detail(project)
+        except ValueError as e:
+            return DataResult(status=1, data={"status": "unknown", "message": str(e)}, msg=str(e))
 
-        if not health_cmd:
-            return DataResult(
-                status=1,
-                data={"status": "unknown", "message": "该项目未配置健康检查命令"},
-                msg="未配置健康检查命令"
-            )
-
-        import asyncio
-        from src.utils.executor import execute_shell_script
-
-        command_list = [line.strip() for line in health_cmd.shell_command.splitlines() if line.strip()]
-        if not command_list:
-            return DataResult(
-                status=1,
-                data={"status": "unknown", "message": "健康检查脚本内容为空"},
-                msg="健康检查脚本内容为空"
-            )
-
-        results = []
-        check_work_dir = health_cmd.work_dir or project.work_dir
-        for cmd in command_list:
-            exit_code, status, log = await execute_shell_script(
-                cmd, check_work_dir, health_cmd.timeout
-            )
-            results.append({
-                "command": cmd,
-                "status": status,
-                "exit_code": exit_code,
-                "output": log
-            })
-            if status != "success":
-                break
-
-        overall_status = "healthy" if all(r["status"] == "success" for r in results) else "unhealthy"
-
+        overall_status = result["status"]
         return DataResult(
             status=1,
             data={
                 "status": overall_status,
                 "project_name": project.name,
-                "results": results
+                "results": result["results"]
             },
             msg=f"健康检查{'通过' if overall_status == 'healthy' else '失败'}"
         )
@@ -514,16 +403,16 @@ async def command_execute(
     execute_data: CommandExecute,
     _: User = Depends(get_current_admin)
 ):
-    from src.utils.task_executor import submit_task, is_project_locked, get_running_task
+    from src.utils.task_executor import is_project_locked, get_running_task
     from src.utils.context import current_mcp_token
-    
+
     caller_token = current_mcp_token.get()
     caller_token_id = caller_token.id if caller_token else 0
-    
+
     project_name = execute_data.project_name
     action = execute_data.action
     params = execute_data.params
-    
+
     if is_project_locked(project_name):
         running_task_id = get_running_task(project_name)
         return DataResult(
@@ -531,54 +420,19 @@ async def command_execute(
             msg=f"项目 '{project_name}' 当前有任务正在执行，请稍后再试",
             data={"task_id": running_task_id, "status": "running"}
         )
-    
+
     with get_db_session() as db:
-        project = db.query(Project).filter(
-            Project.name == project_name,
-            Project.is_active == True
-        ).first()
-        
-        if not project:
-            return DataResult(status=0, msg=f"找不到激活的项目: {project_name}")
-
-        command = db.query(Command).filter(
-            Command.project_id == project.id,
-            Command.action_type == action
-        ).first()
-        
-        if not command:
-            return DataResult(status=0, msg=f"项目 '{project_name}' 未配置 '{action}' 操作。")
-
-        raw_command_text = command.shell_command
-        
-        merged_params = {**(command.default_params or {}), **(params or {})}
-        
-        if merged_params:
-            for key, value in merged_params.items():
-                placeholder = f"${{{key}}}"
-                raw_command_text = raw_command_text.replace(placeholder, str(value))
-
-        command_list = [line.strip() for line in raw_command_text.splitlines() if line.strip()]
-
-        if not command_list:
-            return DataResult(status=0, msg=f"'{action}' 配置的脚本内容为空。")
-
-        command_details = {
-            "script": command.shell_command,
-            "params": params,
-            "default_params": command.default_params
-        }
-
-        task_id = submit_task(
-            project_name=project_name,
-            action=action,
-            commands=command_list,
-            work_dir=command.work_dir or project.work_dir,
-            timeout=command.timeout,
-            actor_type="human",
-            actor_id=caller_token_id,
-            command_details=command_details
-        )
+        try:
+            task_id = project_service.submit_execute(
+                db,
+                project_name=project_name,
+                action=action,
+                params=params,
+                actor_type="human",
+                actor_id=caller_token_id,
+            )
+        except ValueError as e:
+            return DataResult(status=0, msg=str(e))
 
     return DataResult(
         status=1,

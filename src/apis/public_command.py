@@ -5,12 +5,13 @@ from datetime import datetime, UTC
 from sqlalchemy import asc, desc, or_
 
 from src.dbs.db import get_db_session
-from src.dbs.orm import PublicCommand, Command, User
+from src.dbs.orm import PublicCommand, User
 from src.schemas.api import DataResult, PageResult
 from src.schemas.public_command import (
     PublicCommandPageParams, PublicCommandInfo, PublicCommandAdd,
     PublicCommandUpdate, PublicCommandDel, PublicCommandImport, PublicCommandBatchImport
 )
+from src.services import public_command_service
 from src.utils.auth import get_current_admin, get_current_user
 
 
@@ -18,6 +19,22 @@ public_command_router = APIRouter(
     prefix="/public_commands",
     tags=["公共命令"]
 )
+
+
+def _to_info(r: PublicCommand) -> PublicCommandInfo:
+    return PublicCommandInfo(
+        id=r.id,
+        name=r.name,
+        action_type=r.action_type,
+        description=r.description,
+        shell_command=r.shell_command,
+        timeout=r.timeout,
+        default_params=r.default_params,
+        tags=r.tags,
+        is_active=r.is_active,
+        created_at=r.created_at,
+        updated_at=r.updated_at
+    )
 
 
 @public_command_router.get(
@@ -31,58 +48,15 @@ async def get_public_commands(
     _: User = Depends(get_current_user)
 ):
     with get_db_session() as db:
-        query = db.query(PublicCommand)
+        total, records = public_command_service.list_public_commands(
+            db,
+            keyword=params.keyword,
+            tags=params.tags,
+            page=params.page,
+            size=params.size,
+        )
 
-        # 筛选启用的命令
-        query = query.filter(PublicCommand.is_active == True)
-
-        # 关键词搜索
-        if params.keyword:
-            search = f"%{params.keyword}%"
-            query = query.filter(
-                or_(
-                    PublicCommand.name.ilike(search),
-                    PublicCommand.description.ilike(search),
-                    PublicCommand.action_type.ilike(search)
-                )
-            )
-
-        # 标签筛选
-        if params.tags:
-            tag_list = [t.strip() for t in params.tags.split(',') if t.strip()]
-            for tag in tag_list:
-                query = query.filter(PublicCommand.tags.ilike(f"%{tag}%"))
-
-        total = query.count()
-
-        # 排序
-        if params.order_by:
-            order_column = getattr(PublicCommand, params.order_by)
-            if params.direction == "asc":
-                query = query.order_by(asc(order_column))
-            else:
-                query = query.order_by(desc(order_column))
-        else:
-            query = query.order_by(desc(PublicCommand.updated_at))
-
-        records = query.offset(params.offset).limit(params.size).all()
-
-        result_items = [
-            PublicCommandInfo(
-                id=r.id,
-                name=r.name,
-                action_type=r.action_type,
-                description=r.description,
-                shell_command=r.shell_command,
-                timeout=r.timeout,
-                default_params=r.default_params,
-                tags=r.tags,
-                is_active=r.is_active,
-                created_at=r.created_at,
-                updated_at=r.updated_at
-            )
-            for r in records
-        ]
+        result_items = [_to_info(r) for r in records]
 
         return PageResult(
             total=total,
@@ -103,27 +77,12 @@ async def get_public_command(
     _: User = Depends(get_current_user)
 ):
     with get_db_session() as db:
-        command = db.query(PublicCommand).filter(PublicCommand.id == command_id).first()
+        command = public_command_service.get_public_command_by_id(db, command_id)
 
         if not command:
             return DataResult(status=0, msg="公共命令不存在")
 
-        return DataResult(
-            status=1,
-            data=PublicCommandInfo(
-                id=command.id,
-                name=command.name,
-                action_type=command.action_type,
-                description=command.description,
-                shell_command=command.shell_command,
-                timeout=command.timeout,
-                default_params=command.default_params,
-                tags=command.tags,
-                is_active=command.is_active,
-                created_at=command.created_at,
-                updated_at=command.updated_at
-            )
-        )
+        return DataResult(status=1, data=_to_info(command))
 
 
 @public_command_router.post(
@@ -137,22 +96,16 @@ async def create_public_command(
     _: User = Depends(get_current_admin)
 ):
     with get_db_session() as db:
-        now = datetime.now(UTC)
-        command = PublicCommand(
+        command = public_command_service.create_public_command(
+            db,
             name=data.name,
             action_type=data.action_type,
-            description=data.description,
             shell_command=data.shell_command,
+            description=data.description,
             timeout=data.timeout,
             default_params=data.default_params,
             tags=data.tags,
-            is_active=True,
-            created_at=now,
-            updated_at=now
         )
-        db.add(command)
-        db.commit()
-        db.refresh(command)
 
         return DataResult(status=1, data=command.id, msg="创建成功")
 
@@ -169,36 +122,15 @@ async def update_public_command(
     _: User = Depends(get_current_admin)
 ):
     with get_db_session() as db:
-        command = db.query(PublicCommand).filter(PublicCommand.id == command_id).first()
+        command = public_command_service.get_public_command_by_id(db, command_id)
 
         if not command:
             return DataResult(status=0, msg="公共命令不存在")
 
         update_data = data.model_dump(exclude_unset=True)
-        for key, value in update_data.items():
-            setattr(command, key, value)
+        command = public_command_service.update_public_command(db, command, **update_data)
 
-        command.updated_at = datetime.now(UTC)
-        db.commit()
-        db.refresh(command)
-
-        return DataResult(
-            status=1,
-            data=PublicCommandInfo(
-                id=command.id,
-                name=command.name,
-                action_type=command.action_type,
-                description=command.description,
-                shell_command=command.shell_command,
-                timeout=command.timeout,
-                default_params=command.default_params,
-                tags=command.tags,
-                is_active=command.is_active,
-                created_at=command.created_at,
-                updated_at=command.updated_at
-            ),
-            msg="更新成功"
-        )
+        return DataResult(status=1, data=_to_info(command), msg="更新成功")
 
 
 @public_command_router.delete(
@@ -212,10 +144,7 @@ async def delete_public_commands(
     _: User = Depends(get_current_admin)
 ):
     with get_db_session() as db:
-        count = db.query(PublicCommand).filter(PublicCommand.id.in_(data.ids)).delete(
-            synchronize_session=False
-        )
-        db.commit()
+        count = public_command_service.delete_public_commands(db, data.ids)
 
         return DataResult(status=1, msg=f"成功删除 {count} 条记录")
 
@@ -231,27 +160,14 @@ async def import_public_command(
     _: User = Depends(get_current_user)
 ):
     with get_db_session() as db:
-        public_cmd = db.query(PublicCommand).filter(
-            PublicCommand.id == data.public_command_id,
-            PublicCommand.is_active == True
-        ).first()
-
-        if not public_cmd:
-            return DataResult(status=0, msg="公共命令不存在或已禁用")
-
-        now = datetime.now(UTC)
-        project_cmd = Command(
-            project_id=data.project_id,
-            action_type=public_cmd.action_type,
-            description=public_cmd.description,
-            shell_command=public_cmd.shell_command,
-            timeout=public_cmd.timeout,
-            default_params=public_cmd.default_params,
-            created_at=now
-        )
-        db.add(project_cmd)
-        db.commit()
-        db.refresh(project_cmd)
+        try:
+            project_cmd = public_command_service.import_to_project(
+                db,
+                public_command_id=data.public_command_id,
+                project_id=data.project_id,
+            )
+        except ValueError as e:
+            return DataResult(status=0, msg=str(e))
 
         return DataResult(
             status=1,
@@ -271,33 +187,20 @@ async def batch_import_public_command(
     _: User = Depends(get_current_user)
 ):
     with get_db_session() as db:
-        public_cmds = db.query(PublicCommand).filter(
-            PublicCommand.id.in_(data.public_command_ids),
-            PublicCommand.is_active == True
-        ).all()
+        imported_ids = []
+        for cmd_id in data.public_command_ids:
+            try:
+                project_cmd = public_command_service.import_to_project(
+                    db,
+                    public_command_id=cmd_id,
+                    project_id=data.project_id,
+                )
+                imported_ids.append(project_cmd.id)
+            except ValueError:
+                continue
 
-        if not public_cmds:
+        if not imported_ids:
             return DataResult(status=0, msg="未找到有效的公共命令")
-
-        now = datetime.now(UTC)
-        project_cmds = []
-
-        for public_cmd in public_cmds:
-            project_cmd = Command(
-                project_id=data.project_id,
-                action_type=public_cmd.action_type,
-                description=public_cmd.description,
-                shell_command=public_cmd.shell_command,
-                timeout=public_cmd.timeout,
-                default_params=public_cmd.default_params,
-                created_at=now
-            )
-            db.add(project_cmd)
-            project_cmds.append(project_cmd)
-
-        db.flush()
-        imported_ids = [cmd.id for cmd in project_cmds]
-        db.commit()
 
         return DataResult(
             status=1,

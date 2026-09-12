@@ -228,7 +228,12 @@ docker compose up -d
 ```
 dev-ops-mcp/
 ├── src/                    # 后端 Python 代码
-│   ├── apis/               # API 路由
+│   ├── services/           # 领域服务层（REST API 与 MCP 工具共用业务逻辑）
+│   │   ├── project_service.py        # 项目/命令/健康检查/任务提交
+│   │   ├── public_command_service.py # 公共命令模板 CRUD 与导入
+│   │   ├── automation_service.py     # 自动化规则 CRUD
+│   │   └── audit_service.py          # 审计日志写入
+│   ├── apis/               # API 路由（薄层：参数适配 + 响应格式化）
 │   │   ├── api_key.py      # API Key 管理接口
 │   │   ├── auth.py         # 认证接口
 │   │   ├── project.py      # 项目管理接口

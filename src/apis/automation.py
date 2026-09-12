@@ -5,9 +5,10 @@ from datetime import datetime, UTC
 from sqlalchemy import asc, desc
 
 from src.dbs.db import get_db_session
-from src.dbs.orm import Automation, Project, Command, User
+from src.dbs.orm import Automation, User
 from src.schemas.api import DataResult, PageResult
 from src.schemas.automation import AutomationAdd, AutomationUpdate, AutomationInfo
+from src.services import automation_service
 from src.utils.auth import get_current_admin, get_current_user
 
 automation_router = APIRouter(
@@ -27,45 +28,15 @@ async def get_project_automations(
     size: int = 20,
     _: User = Depends(get_current_user)
 ):
-    offset = (page - 1) * size
-
     with get_db_session() as db:
-        project = db.query(Project).filter(Project.id == project_id).first()
-        if not project:
-            return DataResult(status=0, msg="项目不存在")
-
-        query = db.query(Automation).filter(Automation.project_id == project_id)
-        total = query.count()
-        automations = query.offset(offset).limit(size).all()
-
-        result_items = []
-        for automation in automations:
-            command = db.query(Command).filter(Command.id == automation.command_id).first()
-            command_action = command.action_type if command else ""
-            command_description = command.description if command else ""
-
-            result_items.append({
-                "id": automation.id,
-                "project_id": automation.project_id,
-                "project_name": project.name,
-                "name": automation.name,
-                "trigger_type": automation.trigger_type,
-                "cron_expression": automation.cron_expression,
-                "condition_script": automation.condition_script,
-                "condition_interval": automation.condition_interval,
-                "command_id": automation.command_id,
-                "command_action": command_action,
-                "command_description": command_description,
-                "is_enabled": automation.is_enabled,
-                "last_run_time": automation.last_run_time.isoformat() if automation.last_run_time else None,
-                "last_run_status": automation.last_run_status,
-                "created_at": automation.created_at.isoformat(),
-                "updated_at": automation.updated_at.isoformat()
-            })
+        try:
+            total, items = automation_service.list_project_automations(db, project_id, page, size)
+        except ValueError as e:
+            return DataResult(status=0, msg=str(e))
 
         return PageResult(
             total=total,
-            data=result_items,
+            data=items,
             page=page,
             size=size
         )
@@ -81,40 +52,20 @@ async def create_automation(
     _: User = Depends(get_current_admin)
 ):
     with get_db_session() as db:
-        project = db.query(Project).filter(Project.id == data.project_id).first()
-        if not project:
-            return DataResult(status=0, msg="项目不存在")
-
-        command = db.query(Command).filter(Command.id == data.command_id).first()
-        if not command:
-            return DataResult(status=0, msg="命令不存在")
-
-        trigger_type = data.trigger_type
-        if trigger_type not in ["cron", "condition"]:
-            return DataResult(status=0, msg="触发类型必须是 cron 或 condition")
-
-        if trigger_type == "cron" and not data.cron_expression:
-            return DataResult(status=0, msg="定时触发需要配置 cron 表达式")
-
-        if trigger_type == "condition" and not data.condition_script:
-            return DataResult(status=0, msg="条件触发需要配置检查脚本")
-
-        new_automation = Automation(
-            project_id=data.project_id,
-            name=data.name,
-            trigger_type=trigger_type,
-            cron_expression=data.cron_expression,
-            condition_script=data.condition_script,
-            condition_interval=data.condition_interval or 60,
-            command_id=data.command_id,
-            is_enabled=data.is_enabled if data.is_enabled is not None else True,
-            created_at=datetime.now(UTC),
-            updated_at=datetime.now(UTC)
-        )
-
-        db.add(new_automation)
-        db.commit()
-        db.refresh(new_automation)
+        try:
+            new_automation = automation_service.create_automation(
+                db,
+                project_id=data.project_id,
+                name=data.name,
+                trigger_type=data.trigger_type,
+                command_id=data.command_id,
+                cron_expression=data.cron_expression,
+                condition_script=data.condition_script,
+                condition_interval=data.condition_interval,
+                is_enabled=data.is_enabled,
+            )
+        except ValueError as e:
+            return DataResult(status=0, msg=str(e))
 
         return DataResult(status=1, data=new_automation.id, msg="创建成功")
 
@@ -130,39 +81,15 @@ async def update_automation(
     _: User = Depends(get_current_admin)
 ):
     with get_db_session() as db:
-        automation = db.query(Automation).filter(Automation.id == automation_id).first()
+        automation = automation_service.get_automation_by_id(db, automation_id)
         if not automation:
             return DataResult(status=0, msg="自动化规则不存在")
 
-        if data.name is not None:
-            automation.name = data.name
-
-        if data.trigger_type is not None:
-            trigger_type = data.trigger_type
-            if trigger_type not in ["cron", "condition"]:
-                return DataResult(status=0, msg="触发类型必须是 cron 或 condition")
-            automation.trigger_type = trigger_type
-
-        if data.cron_expression is not None:
-            automation.cron_expression = data.cron_expression
-
-        if data.condition_script is not None:
-            automation.condition_script = data.condition_script
-
-        if data.condition_interval is not None:
-            automation.condition_interval = data.condition_interval
-
-        if data.command_id is not None:
-            command = db.query(Command).filter(Command.id == data.command_id).first()
-            if not command:
-                return DataResult(status=0, msg="命令不存在")
-            automation.command_id = data.command_id
-
-        if data.is_enabled is not None:
-            automation.is_enabled = data.is_enabled
-
-        automation.updated_at = datetime.now(UTC)
-        db.commit()
+        fields = data.model_dump(exclude_unset=True)
+        try:
+            automation_service.update_automation(db, automation, **fields)
+        except ValueError as e:
+            return DataResult(status=0, msg=str(e))
 
         return DataResult(status=1, data=True, msg="更新成功")
 
@@ -177,12 +104,11 @@ async def delete_automation(
     _: User = Depends(get_current_admin)
 ):
     with get_db_session() as db:
-        automation = db.query(Automation).filter(Automation.id == automation_id).first()
+        automation = automation_service.get_automation_by_id(db, automation_id)
         if not automation:
             return DataResult(status=0, msg="自动化规则不存在")
 
-        db.delete(automation)
-        db.commit()
+        automation_service.delete_automation(db, automation)
 
         return DataResult(status=1, data=True, msg="删除成功")
 
@@ -197,16 +123,14 @@ async def toggle_automation(
     _: User = Depends(get_current_admin)
 ):
     with get_db_session() as db:
-        automation = db.query(Automation).filter(Automation.id == automation_id).first()
+        automation = automation_service.get_automation_by_id(db, automation_id)
         if not automation:
             return DataResult(status=0, msg="自动化规则不存在")
 
-        automation.is_enabled = not automation.is_enabled
-        automation.updated_at = datetime.now(UTC)
-        db.commit()
+        is_enabled = automation_service.toggle_automation(db, automation)
 
         return DataResult(
             status=1,
-            data=automation.is_enabled,
-            msg="已" + ("启用" if automation.is_enabled else "禁用")
+            data=is_enabled,
+            msg="已" + ("启用" if is_enabled else "禁用")
         )
