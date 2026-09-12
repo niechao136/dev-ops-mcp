@@ -27,6 +27,10 @@ import {
   ToggleOn
 } from '@mui/icons-material';
 import type { ApiKeyInfo } from '@/types/api';
+import { API_KEY_SCOPES } from '@/types/api';
+
+const scopeLabel = (scope: string) =>
+  API_KEY_SCOPES.find((s) => s.value === scope)?.label ?? scope;
 
 interface ApiKeyTableProps {
   apiKeys: ApiKeyInfo[] | undefined;
@@ -88,6 +92,7 @@ export default function ApiKeyTable({
               <TableCell>名称</TableCell>
               <TableCell>前缀</TableCell>
               <TableCell>权限</TableCell>
+              <TableCell>读写权限</TableCell>
               <TableCell>创建者</TableCell>
               <TableCell>状态</TableCell>
               <TableCell align="right">操作</TableCell>
@@ -119,6 +124,29 @@ export default function ApiKeyTable({
                     </Box>
                   ) : (
                     <Chip label="全部权限" color="primary" size="small" />
+                  )}
+                </TableCell>
+                <TableCell>
+                  {key.scopes && key.scopes.length > 0 ? (
+                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                      {key.scopes.map((scope) => (
+                        <Chip
+                          key={scope}
+                          label={scopeLabel(scope)}
+                          size="small"
+                          variant="outlined"
+                          color={
+                            scope === 'resources:write'
+                              ? 'warning'
+                              : scope === 'resources:read'
+                                ? 'info'
+                                : 'default'
+                          }
+                        />
+                      ))}
+                    </Box>
+                  ) : (
+                    <Chip label="运维执行（默认）" size="small" variant="outlined" />
                   )}
                 </TableCell>
                 <TableCell>

@@ -3,6 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { enqueueSnackbar } from 'notistack';
 import { apiService } from '@/services/api';
 import type { ApiKeyInfo, ApiKeyAdd, ApiKeyUpdate, ApiKeyCreated } from '@/types/api';
+import { DEFAULT_API_KEY_SCOPES } from '@/types/api';
 import { copyToClipboard } from '@/utils/string';
 
 export function useApiKeys() {
@@ -20,7 +21,8 @@ export function useApiKeys() {
   const [newKey, setNewKey] = useState<ApiKeyCreated | null>(null);
   const [formData, setFormData] = useState<ApiKeyAdd & ApiKeyUpdate>({
     name: '',
-    allowed_projects: undefined
+    allowed_projects: undefined,
+    scopes: [...DEFAULT_API_KEY_SCOPES]
   });
 
   const { data: projectsData } = useQuery({
@@ -46,7 +48,7 @@ export function useApiKeys() {
         setNewKey(result.data);
         setSuccessDialogOpen(true);
         setCreateDialogOpen(false);
-        setFormData({ name: '', allowed_projects: undefined });
+        setFormData({ name: '', allowed_projects: undefined, scopes: [...DEFAULT_API_KEY_SCOPES] });
         queryClient.invalidateQueries({ queryKey: ['apiKeys'] });
       } else {
         enqueueSnackbar(result.msg || '创建失败', { variant: 'error' });
@@ -176,6 +178,7 @@ export function useApiKeys() {
     setFormData({
       name: key.token_name,
       allowed_projects: key.allowed_projects,
+      scopes: key.scopes ?? [...DEFAULT_API_KEY_SCOPES],
       is_active: key.is_active
     });
     setEditDialogOpen(true);

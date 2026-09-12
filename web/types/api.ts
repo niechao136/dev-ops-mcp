@@ -172,6 +172,7 @@ export interface ApiKeyInfo {
   token_name: string;
   token_prefix?: string;
   allowed_projects?: string[];
+  scopes?: string[];
   is_active: boolean;
   created_by: number;
   created_by_name?: string;
@@ -180,13 +181,25 @@ export interface ApiKeyInfo {
 export interface ApiKeyAdd {
   name: string;
   allowed_projects?: string[];
+  scopes?: string[];
 }
 
 export interface ApiKeyUpdate {
   name?: string;
   allowed_projects?: string[];
+  scopes?: string[];
   is_active?: boolean;
 }
+
+// 可授予的 API Key 权限范围
+export const API_KEY_SCOPES = [
+  { value: 'ops:execute', label: '运维执行', desc: '执行项目运维动作（ops:execute）' },
+  { value: 'resources:read', label: '资源只读', desc: '查询项目、命令、任务等资源（resources:read）' },
+  { value: 'resources:write', label: '资源管理写', desc: '创建/修改/删除项目与命令（resources:write）' }
+] as const;
+
+// 未显式配置 scopes 的旧密钥，后端默认仅有 ops:execute
+export const DEFAULT_API_KEY_SCOPES = ['ops:execute'];
 
 export interface ApiKeyCreated {
   id: number;

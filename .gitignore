@@ -1,4 +1,6 @@
 .idea/
+.vscode/
+.codebuddy/
 .venv/
 .env
 __pycache__

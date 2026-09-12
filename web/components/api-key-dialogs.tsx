@@ -12,10 +12,15 @@ import {
   IconButton,
   Tooltip,
   Alert,
-  Typography
+  Typography,
+  Checkbox,
+  FormControlLabel,
+  FormGroup,
+  FormLabel
 } from '@mui/material';
 import { ContentCopy } from '@mui/icons-material';
 import type { ApiKeyInfo, ApiKeyAdd, ApiKeyUpdate, ApiKeyCreated } from '@/types/api';
+import { API_KEY_SCOPES } from '@/types/api';
 
 interface ApiKeyDialogsProps {
   createDialogOpen: boolean;
@@ -67,6 +72,47 @@ export default function ApiKeyDialogs({
     onChangeFormData({ ...formData, allowed_projects: projects });
   };
 
+  const handleScopeToggle = (scope: string, checked: boolean) => {
+    const current = formData.scopes ?? [];
+    const next = checked ? [...current, scope] : current.filter(s => s !== scope);
+    onChangeFormData({ ...formData, scopes: next });
+  };
+
+  const renderScopeSelector = () => (
+    <Box>
+      <FormLabel component="legend" sx={{ fontSize: 14, mb: 0.5 }}>
+        读写权限
+      </FormLabel>
+      <FormGroup>
+        {API_KEY_SCOPES.map((scope) => (
+          <FormControlLabel
+            key={scope.value}
+            control={
+              <Checkbox
+                size="small"
+                checked={(formData.scopes ?? []).includes(scope.value)}
+                onChange={(e) => handleScopeToggle(scope.value, e.target.checked)}
+              />
+            }
+            label={
+              <Box>
+                <Typography variant="body2" component="span">
+                  {scope.label}
+                </Typography>
+                <Typography variant="caption" color="text.secondary" component="div">
+                  {scope.desc}
+                </Typography>
+              </Box>
+            }
+          />
+        ))}
+      </FormGroup>
+      <Typography variant="caption" color="text.secondary">
+        全部取消表示该 Key 无任何权限；旧密钥未配置时默认仅有「运维执行」。
+      </Typography>
+    </Box>
+  );
+
   return (
     <>
       <Dialog open={createDialogOpen} onClose={onCloseCreate} maxWidth="sm" fullWidth>
@@ -88,6 +134,7 @@ export default function ApiKeyDialogs({
               onChange={(e) => handleAllowedProjectsChange(e.target.value)}
               placeholder="project1, project2, project3"
             />
+            {renderScopeSelector()}
           </Box>
         </DialogContent>
         <DialogActions>
@@ -121,6 +168,7 @@ export default function ApiKeyDialogs({
               onChange={(e) => handleAllowedProjectsChange(e.target.value)}
               placeholder="project1, project2, project3"
             />
+            {renderScopeSelector()}
           </Box>
         </DialogContent>
         <DialogActions>
