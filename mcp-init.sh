@@ -122,10 +122,19 @@ ${DEVOPS_USER} ALL=(ALL) NOPASSWD: /usr/local/bin/docker-compose
 ${DEVOPS_USER} ALL=(ALL) NOPASSWD: /usr/bin/git
 
 # 服务管理
+# 注意：systemctl 的路径在 usrmerge 系统(Debian12+/Ubuntu24+)是 /usr/bin/systemctl，
+# 老系统才是 /bin/systemctl；sudo 按解析后的绝对路径匹配，不做 symlink 等价，
+# 因此两个路径都要写，否则会出现「明明配了 sudo 却仍要密码」
+${DEVOPS_USER} ALL=(ALL) NOPASSWD: /usr/bin/systemctl start *
+${DEVOPS_USER} ALL=(ALL) NOPASSWD: /usr/bin/systemctl stop *
+${DEVOPS_USER} ALL=(ALL) NOPASSWD: /usr/bin/systemctl restart *
+${DEVOPS_USER} ALL=(ALL) NOPASSWD: /usr/bin/systemctl status *
+${DEVOPS_USER} ALL=(ALL) NOPASSWD: /usr/bin/systemctl is-active *
 ${DEVOPS_USER} ALL=(ALL) NOPASSWD: /bin/systemctl start *
 ${DEVOPS_USER} ALL=(ALL) NOPASSWD: /bin/systemctl stop *
 ${DEVOPS_USER} ALL=(ALL) NOPASSWD: /bin/systemctl restart *
 ${DEVOPS_USER} ALL=(ALL) NOPASSWD: /bin/systemctl status *
+${DEVOPS_USER} ALL=(ALL) NOPASSWD: /bin/systemctl is-active *
 
 # 日志查看
 ${DEVOPS_USER} ALL=(ALL) NOPASSWD: /usr/bin/journalctl
