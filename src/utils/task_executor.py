@@ -3,7 +3,7 @@ import os
 import signal
 import uuid
 from datetime import datetime, UTC
-from typing import Optional, Dict, List, Any
+from typing import Any, Optional, Dict, List
 from contextlib import asynccontextmanager
 
 from src.dbs.db import get_db_session
@@ -11,9 +11,9 @@ from src.dbs.orm import Task, AuditLog
 from src.utils.executor import _build_ssh_command
 
 
-_running_tasks: Dict[str, asyncio.Task] = {}
+_running_tasks: Dict[str, asyncio.Task[None]] = {}
 _project_locks: Dict[str, asyncio.Lock] = {}
-_task_results: Dict[str, dict] = {}
+_task_results: Dict[str, dict[str, object]] = {}
 
 
 def get_project_lock(project_name: str) -> asyncio.Lock:
@@ -242,7 +242,7 @@ def submit_task(
     return task_id
 
 
-def get_task_info(task_id: str) -> Optional[dict]:
+def get_task_info(task_id: str) -> Optional[dict[str, object]]:
     """
     查询任务状态
     """

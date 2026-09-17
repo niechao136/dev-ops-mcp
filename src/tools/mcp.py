@@ -99,7 +99,7 @@ async def get_node_overview() -> list[TextContent]:
 # Tool 2: 提交执行任务（异步）
 # =====================================================================
 @mcp.tool()
-async def execute_action(project_name: str, action: str, params: Optional[dict] = None, confirm: bool = False) -> list[TextContent]:
+async def execute_action(project_name: str, action: str, params: Optional[dict[str, object]] = None, confirm: bool = False) -> list[TextContent]:
     """
     提交指定项目的特定运维操作（如 start, restart, deploy），任务将异步执行。
     执行前请先确保该项目支持该 action。
@@ -200,9 +200,10 @@ async def get_task_status(task_id: str, log_offset: int = 0) -> list[TextContent
         "cancelled": "🚫 已取消"
     }
 
-    status_text = status_map.get(task_info["status"], task_info["status"])
-    
-    full_log = task_info.get("output_log", "")
+    status = str(task_info["status"])
+    status_text = status_map.get(status, status)
+
+    full_log = str(task_info.get("output_log") or "")
     incremental_log = full_log[log_offset:]
     next_offset = len(full_log)
     

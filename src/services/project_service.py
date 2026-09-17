@@ -9,19 +9,36 @@
 import asyncio
 import re
 from datetime import datetime, UTC
-from typing import List, Optional, Tuple
+from typing import List, Optional, Tuple, TypedDict
+
+from sqlalchemy.orm import Session
 
 from src.dbs.orm import Command, Project
 
 
 # =====================================================================
+# 类型定义
+# =====================================================================
+class HealthCheckStepData(TypedDict):
+    command: str
+    status: str
+    exit_code: int
+    output: str
+
+
+class HealthCheckDetail(TypedDict):
+    status: str
+    results: list[HealthCheckStepData]
+
+
+# =====================================================================
 # 查询辅助
 # =====================================================================
-def get_project_by_id(db, project_id: int) -> Optional[Project]:
+def get_project_by_id(db: Session, project_id: int) -> Optional[Project]:
     return db.query(Project).filter(Project.id == project_id).first()
 
 
-def get_project_by_name(db, name: str) -> Optional[Project]:
+def get_project_by_name(db: Session, name: str) -> Optional[Project]:
     return db.query(Project).filter(Project.name == name).first()
 
 
@@ -65,7 +82,7 @@ async def check_project_health(project: Project) -> str:
         return "unhealthy"
 
 
-async def run_health_check_detail(project: Project) -> dict:
+async def run_health_check_detail(project: Project) -> HealthCheckDetail:
     """
     完整健康检查（带每步命令的执行详情，用于"执行健康检查"接口）。
     返回: {"status": ..., "results": [...]}
@@ -81,7 +98,7 @@ async def run_health_check_detail(project: Project) -> dict:
 
     from src.utils.executor import execute_shell_script
 
-    results = []
+    results: list[HealthCheckStepData] = []
     check_work_dir = health_cmd.work_dir or project.work_dir
     for cmd in command_list:
         exit_code, status, log = await execute_shell_script(cmd, check_work_dir, health_cmd.timeout)
@@ -102,7 +119,7 @@ async def run_health_check_detail(project: Project) -> dict:
 # 项目 CRUD
 # =====================================================================
 def create_project(
-    db,
+    db: Session,
     name: str,
     work_dir: str,
     description: Optional[str] = None,
@@ -125,13 +142,13 @@ def create_project(
 
 
 def update_project(
-    db,
+    db: Session,
     project: Project,
     name: Optional[str] = None,
     description: Optional[str] = None,
     work_dir: Optional[str] = None,
     is_active: Optional[bool] = None,
-) -> Project:
+) -> None:
     # 语义与原 API 保持一致: name/work_dir 为 truthy 才更新，description/is_active 传入即更新
     if name and name != project.name:
         if db.query(Project).filter(Project.name == name).first():
@@ -146,16 +163,15 @@ def update_project(
         project.is_active = is_active
 
     db.commit()
-    return project
 
 
-def delete_projects(db, ids: List[int]) -> int:
+def delete_projects(db: Session, ids: List[int]) -> int:
     deleted = db.query(Project).filter(Project.id.in_(ids)).delete(synchronize_session=False)
     db.commit()
     return deleted
 
 
-def delete_project_cascade(db, project: Project) -> int:
+def delete_project_cascade(db: Session, project: Project) -> int:
     """
     级联删除单个项目（含其下属命令配置，ORM 级联）。
     返回被级联删除的命令数量。
@@ -169,25 +185,25 @@ def delete_project_cascade(db, project: Project) -> int:
 # =====================================================================
 # 命令 CRUD
 # =====================================================================
-def list_project_commands(db, project_id: int, page: int = 1, size: int = 20) -> Tuple[int, List[Command]]:
+def list_project_commands(db: Session, project_id: int, page: int = 1, size: int = 20) -> Tuple[int, List[Command]]:
     query = db.query(Command).filter(Command.project_id == project_id)
     total = query.count()
     commands = query.offset((page - 1) * size).limit(size).all()
     return total, commands
 
 
-def get_command_by_id(db, command_id: int) -> Optional[Command]:
+def get_command_by_id(db: Session, command_id: int) -> Optional[Command]:
     return db.query(Command).filter(Command.id == command_id).first()
 
 
 def create_command(
-    db,
+    db: Session,
     project_id: int,
     action_type: str,
     shell_command: str,
     description: Optional[str] = None,
     timeout: Optional[int] = None,
-    default_params: Optional[dict] = None,
+    default_params: Optional[dict[str, object]] = None,
     work_dir: Optional[str] = None,
     is_health_check: bool = False,
     requires_confirm: bool = False,
@@ -211,17 +227,17 @@ def create_command(
 
 
 def update_command(
-    db,
+    db: Session,
     command: Command,
     action_type: Optional[str] = None,
     description: Optional[str] = None,
     shell_command: Optional[str] = None,
     timeout: Optional[int] = None,
-    default_params: Optional[dict] = None,
+    default_params: Optional[dict[str, object]] = None,
     work_dir: Optional[str] = None,
     is_health_check: Optional[bool] = None,
     requires_confirm: Optional[bool] = None,
-) -> Command:
+) -> None:
     # 语义与原 API 保持一致: action_type/shell_command/timeout 为 truthy 才更新
     if action_type:
         command.action_type = action_type
@@ -241,16 +257,15 @@ def update_command(
         command.requires_confirm = requires_confirm
 
     db.commit()
-    return command
 
 
-def delete_commands(db, ids: List[int]) -> int:
+def delete_commands(db: Session, ids: List[int]) -> int:
     deleted = db.query(Command).filter(Command.id.in_(ids)).delete(synchronize_session=False)
     db.commit()
     return deleted
 
 
-def set_health_check(db, command: Command) -> bool:
+def set_health_check(db: Session, command: Command) -> bool:
     """
     设置/取消健康检查命令。同一项目内只允许一个健康检查命令。
     返回设置后的状态（True=已设置为健康检查，False=已取消）。
@@ -274,10 +289,10 @@ def set_health_check(db, command: Command) -> bool:
 # 命令执行（异步任务提交）
 # =====================================================================
 def submit_execute(
-    db,
+    db: Session,
     project_name: str,
     action: str,
-    params: Optional[dict],
+    params: Optional[dict[str, object]],
     actor_type: str,
     actor_id: int,
 ) -> str:

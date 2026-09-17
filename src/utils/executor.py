@@ -3,7 +3,7 @@ import os
 import signal
 import time
 from dotenv import load_dotenv
-from typing import List, Tuple, Optional
+from typing import List, Tuple
 
 
 load_dotenv()
@@ -53,7 +53,7 @@ async def execute_shell_script(
         command: str,
         work_dir: str,
         timeout: int = 600
-) -> Tuple[Optional[int], str, str]:
+) -> Tuple[int, str, str]:
     """
     异步执行 Shell 脚本，支持超时控制、工作目录切换和日志捕获。
 
@@ -92,7 +92,7 @@ async def execute_shell_script(
             # 合并日志，优先展示 stderr，没有则展示 stdout
             full_log = f"[STDOUT]\n{stdout}\n\n[STDERR]\n{stderr}".strip()
 
-            exit_code = process.returncode
+            exit_code = process.returncode if process.returncode is not None else -1
             status = "success" if exit_code == 0 else "failed"
 
             return exit_code, status, full_log

@@ -1,6 +1,7 @@
 import asyncio
-from fastapi import APIRouter, Depends, HTTPException, status
-from typing import List, Annotated, Optional
+from collections.abc import Awaitable
+from fastapi import APIRouter, Depends
+from typing import Annotated, TypedDict
 
 from sqlalchemy import asc, desc, or_
 
@@ -10,10 +11,16 @@ from src.schemas.api import DataResult, PageResult
 from src.schemas.project import (
     ProjectPageParams, ProjectInfo, ProjectAdd, ProjectUpdate, ProjectDel,
     CommandInfo, CommandAdd, CommandUpdate, CommandDel, CommandExecute,
-    ProjectRunningTask
+    ProjectRunningTask, HealthCheckResult, CommandExecuteResult
 )
 from src.services import project_service
 from src.utils.auth import get_current_admin, get_current_user
+
+
+class _ProjectListEntry(TypedDict):
+    record: Project
+    command_count: int
+    health_status: str
 
 
 project_router = APIRouter(
@@ -30,7 +37,7 @@ project_router = APIRouter(
 )
 async def project_list(
     params: Annotated[ProjectPageParams, Depends()],
-    _: User = Depends(get_current_user)
+    _: Annotated[User, Depends(get_current_user)]
 ):
     with get_db_session() as db:
         query = db.query(Project)
@@ -47,23 +54,30 @@ async def project_list(
         total = query.count()
 
         if params.order_by:
-            order_column = getattr(Project, params.order_by)
-            if params.direction == "asc":
-                query = query.order_by(asc(order_column))
-            else:
-                query = query.order_by(desc(order_column))
+            order_columns = {
+                "name": Project.name,
+                "work_dir": Project.work_dir,
+                "is_active": Project.is_active,
+            }
+            order_column = order_columns.get(params.order_by)
+            if order_column is not None:
+                if params.direction == "asc":
+                    query = query.order_by(asc(order_column))
+                else:
+                    query = query.order_by(desc(order_column))
 
         records = query.offset(params.offset).limit(params.size).all()
 
-        result_items = []
-        health_tasks = []
+        result_items: list[_ProjectListEntry] = []
+        health_tasks: list[Awaitable[str]] = []
 
         for record in records:
             command_count = len(record.commands)
             result_items.append(
                 {
                     "record": record,
-                    "command_count": command_count
+                    "command_count": command_count,
+                    "health_status": "unknown"
                 }
             )
             health_tasks.append(project_service.check_project_health(record))
@@ -71,7 +85,7 @@ async def project_list(
         if health_tasks:
             health_results = await asyncio.gather(*health_tasks, return_exceptions=True)
             for i, result in enumerate(health_results):
-                if isinstance(result, Exception):
+                if isinstance(result, BaseException):
                     result_items[i]["health_status"] = "unknown"
                 else:
                     result_items[i]["health_status"] = result
@@ -102,7 +116,7 @@ async def project_list(
     response_model=DataResult[int],
     summary="获取项目总数"
 )
-async def project_count(_: User = Depends(get_current_user)):
+async def project_count(_: Annotated[User, Depends(get_current_user)]):
     with get_db_session() as db:
         count = db.query(Project).count()
 
@@ -116,12 +130,12 @@ async def project_count(_: User = Depends(get_current_user)):
 )
 async def project_detail(
     project_id: int,
-    _: User = Depends(get_current_user)
+    _: Annotated[User, Depends(get_current_user)]
 ):
     with get_db_session() as db:
         project = project_service.get_project_by_id(db, project_id)
         if not project:
-            return DataResult(status=0, msg="项目不存在")
+            return DataResult[ProjectInfo](status=0, msg="项目不存在")
 
         command_count = len(project.commands)
         health_status = await project_service.check_project_health(project)
@@ -162,7 +176,7 @@ async def project_detail(
 )
 async def project_create(
     project_data: ProjectAdd,
-    _: User = Depends(get_current_admin)
+    _: Annotated[User, Depends(get_current_admin)]
 ):
     with get_db_session() as db:
         try:
@@ -173,7 +187,7 @@ async def project_create(
                 work_dir=project_data.work_dir,
             )
         except ValueError as e:
-            return DataResult(status=0, msg=str(e))
+            return DataResult[int](status=0, msg=str(e))
 
         return DataResult(status=1, data=new_project.id, msg="创建成功")
 
@@ -186,12 +200,12 @@ async def project_create(
 async def project_update(
     project_id: int,
     project_data: ProjectUpdate,
-    _: User = Depends(get_current_admin)
+    _: Annotated[User, Depends(get_current_admin)]
 ):
     with get_db_session() as db:
         project = project_service.get_project_by_id(db, project_id)
         if not project:
-            return DataResult(status=0, msg="项目不存在")
+            return DataResult[bool](status=0, msg="项目不存在")
 
         try:
             project_service.update_project(
@@ -203,7 +217,7 @@ async def project_update(
                 is_active=project_data.is_active,
             )
         except ValueError as e:
-            return DataResult(status=0, msg=str(e))
+            return DataResult[bool](status=0, msg=str(e))
 
         return DataResult(status=1, data=True, msg="更新成功")
 
@@ -215,7 +229,7 @@ async def project_update(
 )
 async def project_delete(
     delete_data: ProjectDel,
-    _: User = Depends(get_current_admin)
+    _: Annotated[User, Depends(get_current_admin)]
 ):
     with get_db_session() as db:
         deleted_count = project_service.delete_projects(db, delete_data.ids)
@@ -230,14 +244,14 @@ async def project_delete(
 )
 async def project_commands(
     project_id: int,
+    _: Annotated[User, Depends(get_current_user)],
     page: int = 1,
-    size: int = 20,
-    _: User = Depends(get_current_user)
+    size: int = 20
 ):
     with get_db_session() as db:
         project = project_service.get_project_by_id(db, project_id)
         if not project:
-            return DataResult(status=0, msg="项目不存在")
+            return DataResult[CommandInfo](status=0, msg="项目不存在")
 
         total, commands = project_service.list_project_commands(db, project_id, page, size)
 
@@ -273,12 +287,12 @@ async def project_commands(
 async def command_create(
     project_id: int,
     command_data: CommandAdd,
-    _: User = Depends(get_current_admin)
+    _: Annotated[User, Depends(get_current_admin)]
 ):
     with get_db_session() as db:
         project = project_service.get_project_by_id(db, project_id)
         if not project:
-            return DataResult(status=0, msg="项目不存在")
+            return DataResult[int](status=0, msg="项目不存在")
 
         new_command = project_service.create_command(
             db,
@@ -303,12 +317,12 @@ async def command_create(
 async def command_update(
     command_id: int,
     command_data: CommandUpdate,
-    _: User = Depends(get_current_admin)
+    _: Annotated[User, Depends(get_current_admin)]
 ):
     with get_db_session() as db:
         command = project_service.get_command_by_id(db, command_id)
         if not command:
-            return DataResult(status=0, msg="命令不存在")
+            return DataResult[bool](status=0, msg="命令不存在")
 
         project_service.update_command(
             db,
@@ -332,7 +346,7 @@ async def command_update(
 )
 async def command_delete(
     delete_data: CommandDel,
-    _: User = Depends(get_current_admin)
+    _: Annotated[User, Depends(get_current_admin)]
 ):
     with get_db_session() as db:
         deleted_count = project_service.delete_commands(db, delete_data.ids)
@@ -347,12 +361,12 @@ async def command_delete(
 )
 async def set_health_check_command(
     command_id: int,
-    _: User = Depends(get_current_admin)
+    _: Annotated[User, Depends(get_current_admin)]
 ):
     with get_db_session() as db:
         command = project_service.get_command_by_id(db, command_id)
         if not command:
-            return DataResult(status=0, msg="命令不存在")
+            return DataResult[bool](status=0, msg="命令不存在")
 
         is_set = project_service.set_health_check(db, command)
 
@@ -365,17 +379,17 @@ async def set_health_check_command(
 
 @project_router.get(
     path="/{project_id}/health_check",
-    response_model=DataResult[dict],
+    response_model=DataResult[HealthCheckResult],
     summary="执行健康检查"
 )
 async def execute_health_check(
     project_id: int,
-    _: User = Depends(get_current_user)
+    _: Annotated[User, Depends(get_current_user)]
 ):
     with get_db_session() as db:
         project = project_service.get_project_by_id(db, project_id)
         if not project:
-            return DataResult(status=0, msg="项目不存在")
+            return DataResult[HealthCheckResult](status=0, msg="项目不存在")
 
         try:
             result = await project_service.run_health_check_detail(project)
@@ -396,12 +410,12 @@ async def execute_health_check(
 
 @project_router.post(
     path="/execute",
-    response_model=DataResult[dict],
+    response_model=DataResult[CommandExecuteResult],
     summary="执行命令（异步）"
 )
 async def command_execute(
     execute_data: CommandExecute,
-    _: User = Depends(get_current_admin)
+    _: Annotated[User, Depends(get_current_admin)]
 ):
     from src.utils.task_executor import is_project_locked, get_running_task
     from src.utils.context import current_mcp_token
@@ -432,7 +446,7 @@ async def command_execute(
                 actor_id=caller_token_id,
             )
         except ValueError as e:
-            return DataResult(status=0, msg=str(e))
+            return DataResult[CommandExecuteResult](status=0, msg=str(e))
 
     return DataResult(
         status=1,

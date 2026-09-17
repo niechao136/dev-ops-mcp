@@ -67,7 +67,7 @@ def create_public_command(
     shell_command: str,
     description: Optional[str] = None,
     timeout: Optional[int] = None,
-    default_params: Optional[dict] = None,
+    default_params: Optional[dict[str, object]] = None,
     tags: Optional[str] = None,
     is_active: bool = True,
     check_duplicate: bool = False,

@@ -21,3 +21,12 @@ dependencies = [
     "uvicorn",
     "apscheduler",
 ]
+
+[tool.basedpyright]
+# basedpyright 默认的 "recommended" 模式会对未完整注解的代码与第三方库产生上千条提示
+# （reportAny / reportUnknown* / reportDeprecated / reportExplicitAny 等）。
+# 本项目采用 "standard" 标准模式：保留真实类型错误检查（返回类型不匹配、
+# 缺少泛型参数、Optional 成员访问、参数类型不兼容等），关闭风格类提示。
+typeCheckingMode = "standard"
+include = ["src"]
+exclude = ["**/node_modules", "**/__pycache__", "data", "web", ".venv"]

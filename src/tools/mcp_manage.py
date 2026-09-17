@@ -23,6 +23,8 @@ import re
 from datetime import datetime, UTC
 from typing import Any, Dict, List, Literal, Optional
 
+from sqlalchemy import false
+
 from mcp.types import TextContent
 
 from src.dbs.db import get_db_session
@@ -482,7 +484,7 @@ def register_manage_tools(mcp) -> None:
         description: Optional[str] = None,
         shell_command: Optional[str] = None,
         timeout: Optional[int] = None,
-        default_params: Optional[dict] = None,
+        default_params: Optional[dict[str, object]] = None,
         work_dir: Optional[str] = None,
         is_health_check: Optional[bool] = None,
         requires_confirm: Optional[bool] = None,
@@ -650,7 +652,7 @@ def register_manage_tools(mcp) -> None:
         description: Optional[str] = None,
         shell_command: Optional[str] = None,
         timeout: Optional[int] = None,
-        default_params: Optional[dict] = None,
+        default_params: Optional[dict[str, object]] = None,
         tags: Optional[str] = None,
         is_active: Optional[bool] = None,
         project_name: Optional[str] = None,
@@ -877,7 +879,7 @@ def register_manage_tools(mcp) -> None:
                     return _text_out("❌ 定时触发必须提供 cron_expression（5 段式，如 '0 3 * * *'）。")
                 if trigger_type == "condition" and not condition_script:
                     return _text_out("❌ 条件触发必须提供 condition_script。")
-                if trigger_type == "cron":
+                if trigger_type == "cron" and cron_expression:
                     parts = cron_expression.split()
                     if len(parts) not in (5, 6):
                         return _text_out(
@@ -1021,7 +1023,7 @@ def register_manage_tools(mcp) -> None:
         with get_db_session() as db:
             query = db.query(Project)
             if not is_all_permitted:
-                query = query.filter(Project.name.in_(allowed_list)) if allowed_list else query.filter(False)
+                query = query.filter(Project.name.in_(allowed_list)) if allowed_list else query.filter(false())
             projects = query.all()
             data = [
                 {

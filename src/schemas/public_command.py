@@ -11,7 +11,7 @@ class PublicCommandPageParams(PageParams):
 
     @field_validator('tags')
     @classmethod
-    def validate_tags(cls, v):
+    def validate_tags(cls, v: Optional[str]) -> Optional[str]:
         if v:
             # 将逗号分隔的字符串转换为列表
             return ','.join([t.strip() for t in v.split(',') if t.strip()])
@@ -25,7 +25,7 @@ class PublicCommandInfo(BaseModel):
     description: Optional[str] = Field(default=None, description="描述")
     shell_command: str = Field(..., description="Shell 命令")
     timeout: int = Field(default=600, description="超时时间(秒)")
-    default_params: Optional[dict] = Field(default=None, description="可选参数默认值")
+    default_params: Optional[dict[str, object]] = Field(default=None, description="可选参数默认值")
     tags: Optional[str] = Field(default=None, description="标签，逗号分隔")
     is_active: bool = Field(default=True, description="是否启用")
     created_at: Optional[datetime] = Field(default=None, description="创建时间")
@@ -38,7 +38,7 @@ class PublicCommandAdd(BaseModel):
     description: Optional[str] = Field(default=None, description="描述")
     shell_command: str = Field(..., description="Shell 命令")
     timeout: int = Field(default=60, ge=1, le=3600, description="超时时间(秒)")
-    default_params: Optional[dict] = Field(default=None, description="可选参数默认值")
+    default_params: Optional[dict[str, object]] = Field(default=None, description="可选参数默认值")
     tags: Optional[str] = Field(default=None, description="标签，逗号分隔")
 
 
@@ -48,7 +48,7 @@ class PublicCommandUpdate(BaseModel):
     description: Optional[str] = Field(default=None, description="描述")
     shell_command: Optional[str] = Field(default=None, description="Shell 命令")
     timeout: Optional[int] = Field(default=None, ge=1, le=3600, description="超时时间(秒)")
-    default_params: Optional[dict] = Field(default=None, description="可选参数默认值")
+    default_params: Optional[dict[str, object]] = Field(default=None, description="可选参数默认值")
     tags: Optional[str] = Field(default=None, description="标签，逗号分隔")
     is_active: Optional[bool] = Field(default=None, description="是否启用")
 

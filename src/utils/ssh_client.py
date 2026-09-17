@@ -1,4 +1,5 @@
 import os
+import io
 import asyncio
 import errno
 import paramiko
@@ -86,7 +87,7 @@ class SSHClient:
             
             for key_class in key_types:
                 try:
-                    key = key_class.from_private_key(key_content)
+                    key = key_class.from_private_key(io.StringIO(key_content))
                     logger.info(f"成功从内容加载密钥，类型: {key_class.__name__}")
                     return key
                 except Exception as e:

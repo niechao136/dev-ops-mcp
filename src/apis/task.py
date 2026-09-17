@@ -33,7 +33,7 @@ async def task_status(
     if not task_info:
         return DataResult(status=0, msg="任务不存在")
     
-    full_log = task_info.get("output_log", "")
+    full_log = str(task_info.get("output_log") or "")
     if log_offset > 0:
         task_info["output_log"] = full_log[log_offset:]
     task_info["next_offset"] = len(full_log)
@@ -124,7 +124,7 @@ async def task_stream(
                 yield f"data: {{'error': '任务不存在'}}\n\n"
                 return
             
-            current_log = task_info.get("output_log", "")
+            current_log = str(task_info.get("output_log") or "")
             if len(current_log) > last_log_length:
                 new_content = current_log[last_log_length:]
                 last_log_length = len(current_log)

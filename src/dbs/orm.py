@@ -76,7 +76,7 @@ class Command(Base):
     description: Mapped[Optional[str]] = mapped_column(Text)
     shell_command: Mapped[str] = mapped_column(Text) # 真实的 Linux 脚本
     timeout: Mapped[int] = mapped_column(Integer, default=600) # 超时时间(秒)
-    default_params: Mapped[Optional[dict]] = mapped_column(JSON, default=None) # 可选参数默认值
+    default_params: Mapped[Optional[dict[str, object]]] = mapped_column(JSON, default=None) # 可选参数默认值
     work_dir: Mapped[Optional[str]] = mapped_column(String(255)) # 命令级工作目录，为空则使用项目的 work_dir
     is_health_check: Mapped[bool] = mapped_column(Boolean, default=False) # 是否为健康检查命令
     requires_confirm: Mapped[bool] = mapped_column(Boolean, default=False) # 是否为高危命令，需要确认
@@ -97,7 +97,7 @@ class PublicCommand(Base):
     description: Mapped[Optional[str]] = mapped_column(Text)  # 命令描述
     shell_command: Mapped[str] = mapped_column(Text)  # Shell 脚本内容
     timeout: Mapped[int] = mapped_column(Integer, default=60)  # 超时时间(秒)
-    default_params: Mapped[Optional[dict]] = mapped_column(JSON, default=None)  # 可选参数默认值
+    default_params: Mapped[Optional[dict[str, object]]] = mapped_column(JSON, default=None)  # 可选参数默认值
     tags: Mapped[Optional[str]] = mapped_column(Text)  # 标签，逗号分隔
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)  # 是否启用
     created_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(UTC))
@@ -121,7 +121,7 @@ class AuditLog(Base):
     target_project: Mapped[Optional[str]] = mapped_column(String(100))
 
     # 核心：存放当时执行的真实命令或修改前后的参数（JSON 格式便于后续检索和分析）
-    action_details: Mapped[dict] = mapped_column(JSON)
+    action_details: Mapped[dict[str, object]] = mapped_column(JSON)
 
     # 执行结果
     status: Mapped[str] = mapped_column(String(20))  # success, failed, timeout
@@ -149,7 +149,7 @@ class Task(Base):
     timeout: Mapped[int] = mapped_column(Integer, default=600)
     actor_type: Mapped[str] = mapped_column(String(20))  # 'human' 或 'ai'
     actor_id: Mapped[int] = mapped_column(Integer)
-    command_details: Mapped[dict] = mapped_column(JSON)
+    command_details: Mapped[dict[str, object]] = mapped_column(JSON)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(UTC), index=True)
 
 

@@ -25,7 +25,7 @@ def _validate_trigger(trigger_type: str, cron_expression: Optional[str], conditi
 # =====================================================================
 # 查询
 # =====================================================================
-def list_project_automations(db, project_id: int, page: int = 1, size: int = 20) -> Tuple[int, List[dict]]:
+def list_project_automations(db, project_id: int, page: int = 1, size: int = 20) -> Tuple[int, List[dict[str, object]]]:
     """分页获取项目自动化规则（附带命令 action 信息），返回 (total, items)"""
     project = db.query(Project).filter(Project.id == project_id).first()
     if not project:
@@ -35,7 +35,7 @@ def list_project_automations(db, project_id: int, page: int = 1, size: int = 20)
     total = query.count()
     automations = query.offset((page - 1) * size).limit(size).all()
 
-    items = []
+    items: list[dict[str, object]] = []
     for automation in automations:
         command = db.query(Command).filter(Command.id == automation.command_id).first()
         items.append({

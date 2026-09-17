@@ -59,7 +59,7 @@ class CommandInfo(BaseModel):
     description: Optional[str] = Field(default=None, description="描述")
     shell_command: str = Field(..., description="Shell 命令")
     timeout: int = Field(default=600, description="超时时间(秒)")
-    default_params: Optional[dict] = Field(default=None, description="可选参数默认值")
+    default_params: Optional[dict[str, object]] = Field(default=None, description="可选参数默认值")
     is_health_check: bool = Field(default=False, description="是否为健康检查命令")
     work_dir: Optional[str] = Field(default=None, description="命令级工作目录，留空则使用项目的 work_dir")
     requires_confirm: bool = Field(default=False, description="是否为高危命令，需要确认")
@@ -71,7 +71,7 @@ class CommandAdd(BaseModel):
     description: Optional[str] = Field(default=None, description="描述")
     shell_command: str = Field(..., description="Shell 命令")
     timeout: int = Field(default=60, ge=1, le=3600, description="超时时间(秒)")
-    default_params: Optional[dict] = Field(default=None, description="可选参数默认值")
+    default_params: Optional[dict[str, object]] = Field(default=None, description="可选参数默认值")
     work_dir: Optional[str] = Field(default=None, description="命令级工作目录，留空则使用项目的 work_dir")
     requires_confirm: bool = Field(default=False, description="是否为高危命令，需要确认")
 
@@ -81,7 +81,7 @@ class CommandUpdate(BaseModel):
     description: Optional[str] = Field(default=None, description="描述")
     shell_command: Optional[str] = Field(default=None, description="Shell 命令")
     timeout: Optional[int] = Field(default=None, ge=1, le=3600, description="超时时间(秒)")
-    default_params: Optional[dict] = Field(default=None, description="可选参数默认值")
+    default_params: Optional[dict[str, object]] = Field(default=None, description="可选参数默认值")
     work_dir: Optional[str] = Field(default=None, description="命令级工作目录，留空则使用项目的 work_dir")
     requires_confirm: Optional[bool] = Field(default=None, description="是否为高危命令，需要确认")
 
@@ -93,4 +93,24 @@ class CommandDel(BaseModel):
 class CommandExecute(BaseModel):
     project_name: str = Field(..., description="项目名称")
     action: str = Field(..., description="操作类型")
-    params: Optional[dict] = Field(default=None, description="参数字典，用于替换脚本中的 ${参数名} 占位符")
+    params: Optional[dict[str, object]] = Field(default=None, description="参数字典，用于替换脚本中的 ${参数名} 占位符")
+
+
+class HealthCheckStepResult(BaseModel):
+    command: str = Field(..., description="执行的检查命令")
+    status: str = Field(..., description="执行状态")
+    exit_code: int = Field(default=0, description="退出码")
+    output: str = Field(default="", description="执行输出")
+
+
+class HealthCheckResult(BaseModel):
+    status: str = Field(..., description="健康状态: healthy/unhealthy/unknown")
+    project_name: str | None = Field(default=None, description="项目名称")
+    message: str | None = Field(default=None, description="提示信息")
+    results: list[HealthCheckStepResult] | None = Field(default=None, description="各步骤执行详情")
+
+
+class CommandExecuteResult(BaseModel):
+    task_id: str | None = Field(default=None, description="任务ID")
+    status: str = Field(..., description="任务状态")
+    message: str | None = Field(default=None, description="提示信息")

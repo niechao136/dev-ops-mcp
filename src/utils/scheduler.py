@@ -10,7 +10,7 @@ from src.utils.executor import execute_shell_script
 from src.utils.task_executor import submit_task
 
 _scheduler = None
-_running_checkers: Dict[int, asyncio.Task] = {}
+_running_checkers: Dict[int, asyncio.Task[None]] = {}
 
 
 def get_scheduler() -> AsyncIOScheduler:

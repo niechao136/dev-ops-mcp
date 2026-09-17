@@ -1,10 +1,11 @@
 import os
 import sys
+from collections.abc import Iterator
 from contextlib import contextmanager
 from dotenv import load_dotenv
 from pathlib import Path
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import Session, sessionmaker
 
 from src.utils.path import ROOT_DIR
 from src.utils.security import encrypt_api_key, generate_api_key, pwd_context
@@ -35,7 +36,7 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 
 @contextmanager
-def get_db_session():
+def get_db_session() -> Iterator[Session]:
     db = SessionLocal()
     try:
         yield db
