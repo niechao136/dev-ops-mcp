@@ -26,6 +26,10 @@ import {
   ToggleOn
 } from '@mui/icons-material';
 import type { ProjectInfo } from '@/types/api';
+import { useIsMobile } from '@/hooks/use-is-mobile';
+import { MobileCard, MobileField } from './base/mobile-card';
+import MobileSelectionBar from './base/mobile-selection-bar';
+import MobilePagination from './base/mobile-pagination';
 
 interface ProjectTableProps {
   projects: ProjectInfo[] | undefined;
@@ -62,11 +66,90 @@ export default function ProjectTable({
   onDelete,
   toggleActiveMutation
 }: ProjectTableProps) {
+  const isMobile = useIsMobile();
+
   if (isLoading) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', py: 8 }}>
         <CircularProgress />
       </Box>
+    );
+  }
+
+  if (isMobile) {
+    const isEmpty = !projects || projects.length === 0;
+    return (
+      <>
+        <MobileSelectionBar
+          count={selectedIds.length}
+          checked={!!projects?.length && selectedIds.length === projects.length}
+          indeterminate={selectedIds.length > 0 && selectedIds.length < (projects?.length || 0)}
+          onToggleAll={onToggleSelectAll}
+          onDelete={onDelete}
+        />
+        {projects?.map((project) => (
+          <MobileCard
+            key={project.id}
+            title={project.name}
+            subtitle={project.description || undefined}
+            headerRight={
+              <Checkbox
+                checked={selectedIds.includes(project.id)}
+                onChange={() => onToggleSelect(project.id)}
+                aria-label={`选择项目 ${project.name}`}
+              />
+            }
+            footer={
+              <>
+                <IconButton
+                  aria-label={project.is_active ? '禁用' : '启用'}
+                  color={project.is_active ? 'default' : 'primary'}
+                  onClick={() => onToggleActive(project.id, !project.is_active)}
+                  disabled={toggleActiveMutation.isPending}
+                >
+                  {project.is_active ? <ToggleOff /> : <ToggleOn />}
+                </IconButton>
+                <IconButton aria-label="查看详情" onClick={() => onView(project.id)}>
+                  <Visibility />
+                </IconButton>
+                <IconButton aria-label="编辑" onClick={() => onEdit(project)}>
+                  <Edit />
+                </IconButton>
+                <IconButton aria-label="删除" color="error" onClick={onDelete}>
+                  <Delete />
+                </IconButton>
+              </>
+            }
+          >
+            <MobileField label="工作目录" value={project.work_dir} span={2} />
+            <MobileField label="命令数" value={project.command_count} />
+            <MobileField
+              label="状态"
+              value={
+                <Chip
+                  label={project.is_active ? '启用' : '禁用'}
+                  color={project.is_active ? 'success' : 'default'}
+                  size="small"
+                />
+              }
+            />
+          </MobileCard>
+        ))}
+        {isEmpty && (
+          <Alert severity="info" sx={{ mt: 2 }}>
+            暂无项目，请点击上方按钮创建
+          </Alert>
+        )}
+        {total > 0 && (
+          <MobilePagination
+            total={total}
+            page={page}
+            pageSize={pageSize}
+            onPageChange={onPageChange}
+            onPageSizeChange={onPageSizeChange}
+          />
+        )}
+      </>
     );
   }
 
