@@ -28,6 +28,10 @@ import {
 } from '@mui/icons-material';
 import type { ApiKeyInfo } from '@/types/api';
 import { API_KEY_SCOPES } from '@/types/api';
+import { useIsMobile } from '@/hooks/use-is-mobile';
+import { MobileCard, MobileField } from './base/mobile-card';
+import MobileSelectionBar from './base/mobile-selection-bar';
+import MobilePagination from './base/mobile-pagination';
 
 const scopeLabel = (scope: string) =>
   API_KEY_SCOPES.find((s) => s.value === scope)?.label ?? scope;
@@ -66,13 +70,138 @@ export default function ApiKeyTable({
   onCopyApiKey,
   onRegenerate,
   onEdit,
+  onDelete,
   toggleActiveMutation
 }: ApiKeyTableProps) {
+  const isMobile = useIsMobile();
+
   if (isLoading) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', py: 8 }}>
         <CircularProgress />
       </Box>
+    );
+  }
+
+  if (isMobile) {
+    const isEmpty = !apiKeys || apiKeys.length === 0;
+    return (
+      <>
+        <MobileSelectionBar
+          count={selectedIds.length}
+          checked={!!apiKeys?.length && selectedIds.length === apiKeys.length}
+          indeterminate={selectedIds.length > 0 && selectedIds.length < (apiKeys?.length || 0)}
+          onToggleAll={onToggleSelectAll}
+          onDelete={onDelete}
+        />
+        {apiKeys?.map((key) => (
+          <MobileCard
+            key={key.id}
+            title={key.token_name}
+            headerRight={
+              <Checkbox
+                checked={selectedIds.includes(key.id)}
+                onChange={() => onToggleSelect(key.id)}
+                aria-label={`选择 API Key ${key.token_name}`}
+              />
+            }
+            footer={
+              <>
+                <IconButton
+                  aria-label={key.is_active ? '禁用' : '启用'}
+                  color={key.is_active ? 'default' : 'primary'}
+                  onClick={() => onToggleActive(key.id, !key.is_active)}
+                  disabled={toggleActiveMutation.isPending}
+                >
+                  {key.is_active ? <ToggleOff /> : <ToggleOn />}
+                </IconButton>
+                <IconButton aria-label="复制 Key" onClick={() => onCopyApiKey(key.id)}>
+                  <ContentCopy />
+                </IconButton>
+                <IconButton aria-label="重新生成" onClick={() => onRegenerate(key.id)}>
+                  <RestartAlt />
+                </IconButton>
+                <IconButton aria-label="编辑" onClick={() => onEdit(key)}>
+                  <Edit />
+                </IconButton>
+              </>
+            }
+          >
+            <MobileField label="创建者" value={key.created_by_name || '-'} />
+            <MobileField
+              label="状态"
+              value={
+                <Chip
+                  label={key.is_active ? '启用' : '禁用'}
+                  color={key.is_active ? 'success' : 'default'}
+                  size="small"
+                />
+              }
+            />
+            <MobileField
+              label="项目权限"
+              span={2}
+              value={
+                key.allowed_projects ? (
+                  <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                    {key.allowed_projects.slice(0, 3).map((project, idx) => (
+                      <Chip key={idx} label={project} size="small" />
+                    ))}
+                    {key.allowed_projects.length > 3 && (
+                      <Chip label={`+${key.allowed_projects.length - 3}`} size="small" variant="outlined" />
+                    )}
+                  </Box>
+                ) : (
+                  <Chip label="全部权限" color="primary" size="small" />
+                )
+              }
+            />
+            <MobileField
+              label="读写权限"
+              span={2}
+              value={
+                key.scopes && key.scopes.length > 0 ? (
+                  <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                    {key.scopes.map((scope) => (
+                      <Chip
+                        key={scope}
+                        label={scopeLabel(scope)}
+                        size="small"
+                        variant="outlined"
+                        color={
+                          scope === 'resources:write' ? 'warning' : scope === 'resources:read' ? 'info' : 'default'
+                        }
+                      />
+                    ))}
+                  </Box>
+                ) : (
+                  <Chip label="运维执行（默认）" size="small" variant="outlined" />
+                )
+              }
+            />
+            {key.token_prefix && (
+              <MobileField
+                label="前缀"
+                value={<Chip label={key.token_prefix} size="small" variant="outlined" />}
+              />
+            )}
+          </MobileCard>
+        ))}
+        {isEmpty && (
+          <Alert severity="info" sx={{ mt: 2 }}>
+            暂无 API Key，请点击上方按钮创建
+          </Alert>
+        )}
+        {total > 0 && (
+          <MobilePagination
+            total={total}
+            page={page}
+            pageSize={pageSize}
+            onPageChange={onPageChange}
+            onPageSizeChange={onPageSizeChange}
+          />
+        )}
+      </>
     );
   }
 
