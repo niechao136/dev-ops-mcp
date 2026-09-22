@@ -5,6 +5,7 @@ import {
   Button,
   Container,
   Typography,
+  IconButton,
 } from '@mui/material';
 import {
   Add,
@@ -62,27 +63,42 @@ export default function ApiKeysPage() {
       <MainLayout>
         <Container maxWidth="lg">
           <Box sx={{ mb: 4 }}>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-              <Typography variant="h4" component="h1">
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', gap: 1.5, mb: 3 }}>
+              <Typography variant="h4" component="h1" sx={{ fontSize: { xs: '1.5rem', md: '2.125rem' } }}>
                 API Key 管理
               </Typography>
-              <Box sx={{ display: 'flex', gap: 2 }}>
+              <Box sx={{ display: 'flex', gap: 1 }}>
                 <Button
                   variant="outlined"
                   startIcon={<Refresh />}
                   onClick={() => refetch()}
+                  sx={{ display: { xs: 'none', sm: 'inline-flex' } }}
                 >
                   刷新
                 </Button>
+                <IconButton aria-label="刷新" onClick={() => refetch()} sx={{ display: { xs: 'inline-flex', sm: 'none' } }}>
+                  <Refresh />
+                </IconButton>
                 {selectedIds.length > 0 && (
-                  <Button
-                    variant="outlined"
-                    color="error"
-                    startIcon={<Delete />}
-                    onClick={() => setDeleteDialogOpen(true)}
-                  >
-                    删除选中 ({selectedIds.length})
-                  </Button>
+                  <>
+                    <Button
+                      variant="outlined"
+                      color="error"
+                      startIcon={<Delete />}
+                      onClick={() => setDeleteDialogOpen(true)}
+                      sx={{ display: { xs: 'none', sm: 'inline-flex' } }}
+                    >
+                      删除选中 ({selectedIds.length})
+                    </Button>
+                    <IconButton
+                      aria-label={`删除选中 ${selectedIds.length} 项`}
+                      color="error"
+                      onClick={() => setDeleteDialogOpen(true)}
+                      sx={{ display: { xs: 'inline-flex', sm: 'none' } }}
+                    >
+                      <Delete />
+                    </IconButton>
+                  </>
                 )}
                 <Button
                   variant="contained"
