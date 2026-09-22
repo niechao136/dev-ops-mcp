@@ -16,13 +16,18 @@ import {
   CircularProgress,
   Alert,
   TablePagination,
-  Typography
+  Typography,
+  Button
 } from '@mui/material';
 import {
   Delete,
   Visibility
 } from '@mui/icons-material';
 import type { AuditLogInfo } from '@/types/api';
+import { useIsMobile } from '@/hooks/use-is-mobile';
+import { MobileCard, MobileField } from './base/mobile-card';
+import MobileSelectionBar from './base/mobile-selection-bar';
+import MobilePagination from './base/mobile-pagination';
 
 interface AuditLogTableProps {
   logs: AuditLogInfo[] | undefined;
@@ -55,16 +60,78 @@ export default function AuditLogTable({
   onToggleSelect,
   onToggleSelectAll,
   onViewDetail,
+  onDelete,
   formatDate,
   getActorTypeLabel,
   getStatusColor,
   getStatusLabel
 }: AuditLogTableProps) {
+  const isMobile = useIsMobile();
+
   if (isLoading) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', py: 8 }}>
         <CircularProgress />
       </Box>
+    );
+  }
+
+  if (isMobile) {
+    const isEmpty = !logs || logs.length === 0;
+    return (
+      <>
+        <MobileSelectionBar
+          count={selectedIds.length}
+          checked={!!logs?.length && selectedIds.length === logs.length}
+          indeterminate={selectedIds.length > 0 && selectedIds.length < (logs?.length || 0)}
+          onToggleAll={onToggleSelectAll}
+          onDelete={onDelete}
+        />
+        {logs?.map((log) => (
+          <MobileCard
+            key={log.id}
+            title={log.actor_name || '-'}
+            subtitle={getActorTypeLabel(log.actor_type)}
+            headerRight={
+              <Checkbox
+                checked={selectedIds.includes(log.id)}
+                onChange={() => onToggleSelect(log.id)}
+                aria-label={`选择日志 ${log.id}`}
+              />
+            }
+            footer={
+              <Button size="small" startIcon={<Visibility />} onClick={() => onViewDetail(log)}>
+                查看详情
+              </Button>
+            }
+          >
+            <MobileField label="操作类型" value={log.action_category} />
+            <MobileField
+              label="状态"
+              value={
+                <Chip label={getStatusLabel(log.status)} color={getStatusColor(log.status)} size="small" />
+              }
+            />
+            <MobileField label="目标项目" value={log.target_project || '-'} span={2} />
+            <MobileField label="IP 地址" value={log.ip_address || '-'} />
+            <MobileField label="操作时间" value={formatDate(log.created_at)} />
+          </MobileCard>
+        ))}
+        {isEmpty && (
+          <Alert severity="info" sx={{ mt: 2 }}>
+            暂无日志记录
+          </Alert>
+        )}
+        {total > 0 && (
+          <MobilePagination
+            total={total}
+            page={page}
+            pageSize={pageSize}
+            onPageChange={onPageChange}
+            onPageSizeChange={onPageSizeChange}
+          />
+        )}
+      </>
     );
   }
 
