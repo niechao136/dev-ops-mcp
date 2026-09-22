@@ -3,7 +3,6 @@
 import {
   Box,
   Button,
-  Dialog,
   DialogTitle,
   DialogContent,
   DialogActions,
@@ -20,6 +19,7 @@ import {
   Select,
   MenuItem,
 } from '@mui/material';
+import ResponsiveDialog from './base/responsive-dialog';
 import { ExpandMore, Search } from '@mui/icons-material';
 import type { AuditLogInfo, AuditLogQueryParams } from '@/types/api';
 
@@ -130,7 +130,7 @@ export default function AuditLogDialogs({
         </AccordionDetails>
       </Accordion>
 
-      <Dialog open={detailDialogOpen} onClose={onCloseDetail} maxWidth="md" fullWidth>
+      <ResponsiveDialog open={detailDialogOpen} onClose={onCloseDetail} maxWidth="md" fullWidth>
         <DialogTitle>操作日志详情</DialogTitle>
         <DialogContent>
           <Box sx={{ mt: 1 }}>
@@ -212,9 +212,9 @@ export default function AuditLogDialogs({
         <DialogActions>
           <Button onClick={onCloseDetail}>关闭</Button>
         </DialogActions>
-      </Dialog>
+      </ResponsiveDialog>
 
-      <Dialog open={deleteDialogOpen} onClose={onCloseDelete}>
+      <ResponsiveDialog open={deleteDialogOpen} onClose={onCloseDelete}>
         <DialogTitle>确认删除</DialogTitle>
         <DialogContent>
           <Typography>
@@ -232,7 +232,7 @@ export default function AuditLogDialogs({
             {deleteMutation.isPending ? <CircularProgress size={24} /> : '删除'}
           </Button>
         </DialogActions>
-      </Dialog>
+      </ResponsiveDialog>
     </>
   );
 }

@@ -1,4 +1,5 @@
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle, CircularProgress, Typography } from '@mui/material';
+import { Button, DialogActions, DialogContent, DialogTitle, CircularProgress, Typography } from '@mui/material';
+import ResponsiveDialog from './base/responsive-dialog';
 
 interface DeleteDialogProps {
   open: boolean;
@@ -14,7 +15,7 @@ export function DeleteDialog({
   isDeleting
 }: DeleteDialogProps) {
   return (
-    <Dialog open={open} onClose={onClose}>
+    <ResponsiveDialog open={open} onClose={onClose}>
       <DialogTitle>确认删除</DialogTitle>
       <DialogContent>
         <Typography>
@@ -32,6 +33,6 @@ export function DeleteDialog({
           {isDeleting ? <CircularProgress size={20} /> : '删除'}
         </Button>
       </DialogActions>
-    </Dialog>
+    </ResponsiveDialog>
   );
 }

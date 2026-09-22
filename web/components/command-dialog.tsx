@@ -1,4 +1,5 @@
-import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField, CircularProgress, Switch, FormControlLabel } from '@mui/material';
+import { Box, Button, DialogActions, DialogContent, DialogTitle, TextField, CircularProgress, Switch, FormControlLabel } from '@mui/material';
+import ResponsiveDialog from './base/responsive-dialog';
 import type { CommandAdd, CommandUpdate } from '@/types/api';
 
 interface CommandDialogProps {
@@ -27,7 +28,7 @@ export function CommandDialog({
   submitText
 }: CommandDialogProps) {
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
+    <ResponsiveDialog open={open} onClose={onClose} maxWidth="md" fullWidth>
       <DialogTitle>{title}</DialogTitle>
       <DialogContent>
         <Box sx={{ pt: 1, display: 'flex', flexDirection: 'column', gap: 2 }}>
@@ -111,6 +112,6 @@ export function CommandDialog({
           {isSubmitting ? <CircularProgress size={20} /> : submitText}
         </Button>
       </DialogActions>
-    </Dialog>
+    </ResponsiveDialog>
   );
 }

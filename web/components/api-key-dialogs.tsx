@@ -3,7 +3,6 @@
 import {
   Box,
   Button,
-  Dialog,
   DialogTitle,
   DialogContent,
   DialogActions,
@@ -18,6 +17,7 @@ import {
   FormGroup,
   FormLabel
 } from '@mui/material';
+import ResponsiveDialog from './base/responsive-dialog';
 import { ContentCopy } from '@mui/icons-material';
 import type { ApiKeyInfo, ApiKeyAdd, ApiKeyUpdate, ApiKeyCreated } from '@/types/api';
 import { API_KEY_SCOPES } from '@/types/api';
@@ -115,7 +115,7 @@ export default function ApiKeyDialogs({
 
   return (
     <>
-      <Dialog open={createDialogOpen} onClose={onCloseCreate} maxWidth="sm" fullWidth>
+      <ResponsiveDialog open={createDialogOpen} onClose={onCloseCreate} maxWidth="sm" fullWidth>
         <DialogTitle>生成 API Key</DialogTitle>
         <DialogContent>
           <Box sx={{ pt: 1, display: 'flex', flexDirection: 'column', gap: 2 }}>
@@ -147,9 +147,9 @@ export default function ApiKeyDialogs({
             {createMutation.isPending ? <CircularProgress size={20} /> : '生成'}
           </Button>
         </DialogActions>
-      </Dialog>
+      </ResponsiveDialog>
 
-      <Dialog open={editDialogOpen} onClose={onCloseEdit} maxWidth="sm" fullWidth>
+      <ResponsiveDialog open={editDialogOpen} onClose={onCloseEdit} maxWidth="sm" fullWidth>
         <DialogTitle>编辑 API Key</DialogTitle>
         <DialogContent>
           <Box sx={{ pt: 1, display: 'flex', flexDirection: 'column', gap: 2 }}>
@@ -181,9 +181,9 @@ export default function ApiKeyDialogs({
             {updateMutation.isPending ? <CircularProgress size={20} /> : '保存'}
           </Button>
         </DialogActions>
-      </Dialog>
+      </ResponsiveDialog>
 
-      <Dialog open={deleteDialogOpen} onClose={onCloseDelete}>
+      <ResponsiveDialog open={deleteDialogOpen} onClose={onCloseDelete}>
         <DialogTitle>确认删除</DialogTitle>
         <DialogContent>
           <Typography>
@@ -201,9 +201,9 @@ export default function ApiKeyDialogs({
             {deleteMutation.isPending ? <CircularProgress size={20} /> : '删除'}
           </Button>
         </DialogActions>
-      </Dialog>
+      </ResponsiveDialog>
 
-      <Dialog open={successDialogOpen} onClose={onCloseSuccess} maxWidth="sm" fullWidth>
+      <ResponsiveDialog open={successDialogOpen} onClose={onCloseSuccess} maxWidth="sm" fullWidth>
         <DialogTitle>API Key 生成成功！</DialogTitle>
         <DialogContent>
           <Alert severity="warning" sx={{ mb: 2 }}>
@@ -241,7 +241,7 @@ export default function ApiKeyDialogs({
             关闭
           </Button>
         </DialogActions>
-      </Dialog>
+      </ResponsiveDialog>
     </>
   );
 }

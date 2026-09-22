@@ -1,4 +1,5 @@
-import { Box, Button, Chip, CircularProgress, Dialog, DialogActions, DialogContent, DialogTitle, LinearProgress, TextField, Typography } from '@mui/material';
+import { Box, Button, Chip, CircularProgress, DialogActions, DialogContent, DialogTitle, LinearProgress, TextField, Typography } from '@mui/material';
+import ResponsiveDialog from './base/responsive-dialog';
 import { PlayArrow, Cancel } from '@mui/icons-material';
 import type { CommandInfo, ProjectInfo } from '@/types/api';
 
@@ -38,7 +39,7 @@ export function ExecuteDialog({
   onCancelTask
 }: ExecuteDialogProps) {
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="lg" fullWidth>
+    <ResponsiveDialog open={open} onClose={onClose} maxWidth="lg" fullWidth>
       <DialogTitle>执行命令</DialogTitle>
       <DialogContent>
         <Box sx={{ pt: 1, display: 'flex', flexDirection: 'column', gap: 2 }}>
@@ -198,6 +199,6 @@ export function ExecuteDialog({
           </Button>
         )}
       </DialogActions>
-    </Dialog>
+    </ResponsiveDialog>
   );
 }

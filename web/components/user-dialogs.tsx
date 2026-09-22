@@ -3,7 +3,6 @@
 import {
   Box,
   Button,
-  Dialog,
   DialogTitle,
   DialogContent,
   DialogActions,
@@ -15,6 +14,7 @@ import {
   MenuItem,
   Typography
 } from '@mui/material';
+import ResponsiveDialog from './base/responsive-dialog';
 import type { UserInfo, UserAdd, UserUpdate, UserPassword } from '@/types/api';
 
 interface UserDialogsProps {
@@ -68,7 +68,7 @@ export default function UserDialogs({
 }: UserDialogsProps) {
   return (
     <>
-      <Dialog open={createDialogOpen} onClose={onCloseCreate} maxWidth="sm" fullWidth>
+      <ResponsiveDialog open={createDialogOpen} onClose={onCloseCreate} maxWidth="sm" fullWidth>
         <DialogTitle>新建用户</DialogTitle>
         <DialogContent>
           <Box sx={{ mt: 1 }}>
@@ -120,9 +120,9 @@ export default function UserDialogs({
             {createMutation.isPending ? <CircularProgress size={24} /> : '创建'}
           </Button>
         </DialogActions>
-      </Dialog>
+      </ResponsiveDialog>
 
-      <Dialog open={editDialogOpen} onClose={onCloseEdit} maxWidth="sm" fullWidth>
+      <ResponsiveDialog open={editDialogOpen} onClose={onCloseEdit} maxWidth="sm" fullWidth>
         <DialogTitle>编辑用户</DialogTitle>
         <DialogContent>
           <Box sx={{ mt: 1 }}>
@@ -165,9 +165,9 @@ export default function UserDialogs({
             {updateMutation.isPending ? <CircularProgress size={24} /> : '更新'}
           </Button>
         </DialogActions>
-      </Dialog>
+      </ResponsiveDialog>
 
-      <Dialog open={passwordDialogOpen} onClose={onClosePassword} maxWidth="sm" fullWidth>
+      <ResponsiveDialog open={passwordDialogOpen} onClose={onClosePassword} maxWidth="sm" fullWidth>
         <DialogTitle>修改密码 - {currentUser?.username}</DialogTitle>
         <DialogContent>
           <Box sx={{ mt: 1 }}>
@@ -192,9 +192,9 @@ export default function UserDialogs({
             {passwordMutation.isPending ? <CircularProgress size={24} /> : '确定'}
           </Button>
         </DialogActions>
-      </Dialog>
+      </ResponsiveDialog>
 
-      <Dialog open={deleteDialogOpen} onClose={onCloseDelete}>
+      <ResponsiveDialog open={deleteDialogOpen} onClose={onCloseDelete}>
         <DialogTitle>确认删除</DialogTitle>
         <DialogContent>
           <Typography>
@@ -212,7 +212,7 @@ export default function UserDialogs({
             {deleteMutation.isPending ? <CircularProgress size={24} /> : '删除'}
           </Button>
         </DialogActions>
-      </Dialog>
+      </ResponsiveDialog>
     </>
   );
 }

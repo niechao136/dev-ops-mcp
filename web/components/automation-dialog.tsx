@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import {
   Box,
   Button,
-  Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
@@ -20,6 +19,7 @@ import {
   SelectChangeEvent,
   Divider
 } from '@mui/material';
+import ResponsiveDialog from './base/responsive-dialog';
 import type { AutomationInfo, AutomationAdd, AutomationUpdate, CommandInfo } from '@/types/api';
 
 interface AutomationDialogProps {
@@ -196,7 +196,7 @@ export function AutomationDialog({
   };
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="lg" fullWidth>
+    <ResponsiveDialog open={open} onClose={onClose} maxWidth="lg" fullWidth>
       <DialogTitle>
         {automation ? '编辑自动化规则' : '新建自动化规则'}
       </DialogTitle>
@@ -353,6 +353,6 @@ export function AutomationDialog({
           {automation ? '保存' : '创建'}
         </Button>
       </DialogActions>
-    </Dialog>
+    </ResponsiveDialog>
   );
 }

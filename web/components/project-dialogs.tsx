@@ -3,7 +3,6 @@
 import {
   Box,
   Button,
-  Dialog,
   DialogTitle,
   DialogContent,
   DialogActions,
@@ -11,6 +10,7 @@ import {
   CircularProgress,
   Typography
 } from '@mui/material';
+import ResponsiveDialog from './base/responsive-dialog';
 import type { ProjectInfo, ProjectAdd, ProjectUpdate } from '@/types/api';
 
 interface ProjectDialogsProps {
@@ -52,7 +52,7 @@ export default function ProjectDialogs({
 }: ProjectDialogsProps) {
   return (
     <>
-      <Dialog open={createDialogOpen} onClose={onCloseCreate} maxWidth="sm" fullWidth>
+      <ResponsiveDialog open={createDialogOpen} onClose={onCloseCreate} maxWidth="sm" fullWidth>
         <DialogTitle>新建项目</DialogTitle>
         <DialogContent>
           <Box sx={{ pt: 1, display: 'flex', flexDirection: 'column', gap: 2 }}>
@@ -89,9 +89,9 @@ export default function ProjectDialogs({
             {createMutation.isPending ? <CircularProgress size={20} /> : '创建'}
           </Button>
         </DialogActions>
-      </Dialog>
+      </ResponsiveDialog>
 
-      <Dialog open={editDialogOpen} onClose={onCloseEdit} maxWidth="sm" fullWidth>
+      <ResponsiveDialog open={editDialogOpen} onClose={onCloseEdit} maxWidth="sm" fullWidth>
         <DialogTitle>编辑项目</DialogTitle>
         <DialogContent>
           <Box sx={{ pt: 1, display: 'flex', flexDirection: 'column', gap: 2 }}>
@@ -127,9 +127,9 @@ export default function ProjectDialogs({
             {updateMutation.isPending ? <CircularProgress size={20} /> : '保存'}
           </Button>
         </DialogActions>
-      </Dialog>
+      </ResponsiveDialog>
 
-      <Dialog open={deleteDialogOpen} onClose={onCloseDelete}>
+      <ResponsiveDialog open={deleteDialogOpen} onClose={onCloseDelete}>
         <DialogTitle>确认删除</DialogTitle>
         <DialogContent>
           <Typography>
@@ -147,7 +147,7 @@ export default function ProjectDialogs({
             {deleteMutation.isPending ? <CircularProgress size={20} /> : '删除'}
           </Button>
         </DialogActions>
-      </Dialog>
+      </ResponsiveDialog>
     </>
   );
 }

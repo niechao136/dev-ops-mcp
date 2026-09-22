@@ -3,7 +3,6 @@
 import {
   Box,
   Button,
-  Dialog,
   DialogTitle,
   DialogContent,
   DialogActions,
@@ -11,6 +10,7 @@ import {
   CircularProgress,
   Typography
 } from '@mui/material';
+import ResponsiveDialog from './base/responsive-dialog';
 import type { PublicCommandInfo, PublicCommandAdd, PublicCommandUpdate } from '@/types/api';
 
 interface PublicCommandDialogsProps {
@@ -56,7 +56,7 @@ export default function PublicCommandDialogs({
 }: PublicCommandDialogsProps) {
   return (
     <>
-      <Dialog open={createDialogOpen} onClose={onCloseCreate} maxWidth="md" fullWidth>
+      <ResponsiveDialog open={createDialogOpen} onClose={onCloseCreate} maxWidth="md" fullWidth>
         <DialogTitle>新建公共命令</DialogTitle>
         <DialogContent>
           <Box sx={{ pt: 1, display: 'flex', flexDirection: 'column', gap: 2 }}>
@@ -136,9 +136,9 @@ export default function PublicCommandDialogs({
             {createMutation.isPending ? <CircularProgress size={20} /> : '创建'}
           </Button>
         </DialogActions>
-      </Dialog>
+      </ResponsiveDialog>
 
-      <Dialog open={editDialogOpen} onClose={onCloseEdit} maxWidth="md" fullWidth>
+      <ResponsiveDialog open={editDialogOpen} onClose={onCloseEdit} maxWidth="md" fullWidth>
         <DialogTitle>编辑公共命令</DialogTitle>
         <DialogContent>
           <Box sx={{ pt: 1, display: 'flex', flexDirection: 'column', gap: 2 }}>
@@ -212,9 +212,9 @@ export default function PublicCommandDialogs({
             {updateMutation.isPending ? <CircularProgress size={20} /> : '保存'}
           </Button>
         </DialogActions>
-      </Dialog>
+      </ResponsiveDialog>
 
-      <Dialog open={deleteDialogOpen} onClose={onCloseDelete}>
+      <ResponsiveDialog open={deleteDialogOpen} onClose={onCloseDelete}>
         <DialogTitle>确认删除</DialogTitle>
         <DialogContent>
           <Typography>
@@ -232,7 +232,7 @@ export default function PublicCommandDialogs({
             {deleteMutation.isPending ? <CircularProgress size={20} /> : '删除'}
           </Button>
         </DialogActions>
-      </Dialog>
+      </ResponsiveDialog>
     </>
   );
 }

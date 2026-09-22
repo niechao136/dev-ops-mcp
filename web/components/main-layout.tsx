@@ -19,13 +19,13 @@ import {
   MenuItem,
   Tooltip,
   Divider,
-  Dialog,
   DialogTitle,
   DialogContent,
   DialogActions,
   Button,
   TextField,
 } from '@mui/material';
+import ResponsiveDialog from './base/responsive-dialog';
 import {
   Menu as MenuIcon,
   Dashboard,
@@ -266,7 +266,7 @@ export default function MainLayout({ children }: MainLayoutProps) {
         {children}
       </Box>
 
-      <Dialog open={passwordDialogOpen} onClose={() => setPasswordDialogOpen(false)} maxWidth="sm" fullWidth>
+      <ResponsiveDialog open={passwordDialogOpen} onClose={() => setPasswordDialogOpen(false)} maxWidth="sm" fullWidth>
         <DialogTitle>修改密码</DialogTitle>
         <DialogContent>
           <Box sx={{ pt: 1, display: 'flex', flexDirection: 'column', gap: 2 }}>
@@ -294,7 +294,7 @@ export default function MainLayout({ children }: MainLayoutProps) {
             修改
           </Button>
         </DialogActions>
-      </Dialog>
+      </ResponsiveDialog>
     </Box>
   );
 }

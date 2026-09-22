@@ -1,5 +1,6 @@
 import { useState, useCallback, useEffect } from 'react';
-import { Box, Button, Checkbox, Chip, Dialog, DialogActions, DialogContent, DialogTitle, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TextField, Tooltip, Typography } from '@mui/material';
+import { Box, Button, Checkbox, Chip, DialogActions, DialogContent, DialogTitle, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TextField, Tooltip, Typography } from '@mui/material';
+import ResponsiveDialog from './base/responsive-dialog';
 import { Download } from '@mui/icons-material';
 import type { PublicCommandInfo } from '@/types/api';
 
@@ -58,7 +59,7 @@ export function ImportDialog({
   }, [open]);
 
   return (
-    <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
+    <ResponsiveDialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
       <DialogTitle>导入公共命令</DialogTitle>
       <DialogContent>
         <Box sx={{ pt: 1 }}>
@@ -155,6 +156,6 @@ export function ImportDialog({
         )}
         <Button onClick={handleClose}>关闭</Button>
       </DialogActions>
-    </Dialog>
+    </ResponsiveDialog>
   );
 }
