@@ -5,7 +5,8 @@ import {
   Button,
   Container,
   Typography,
-  TextField
+  TextField,
+  IconButton,
 } from '@mui/material';
 import {
   Add,
@@ -67,11 +68,11 @@ export default function PublicCommandsPage() {
       <MainLayout>
         <Container maxWidth="lg">
           <Box sx={{ mb: 4 }}>
-            <Typography variant="h4" component="h1" sx={{ mb: 3 }}>
+            <Typography variant="h4" component="h1" sx={{ mb: 3, fontSize: { xs: '1.5rem', md: '2.125rem' } }}>
               公共命令管理
             </Typography>
 
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', gap: 1.5, mb: 3 }}>
               <TextField
                 placeholder="搜索名称、描述、操作类型..."
                 value={search}
@@ -80,16 +81,20 @@ export default function PublicCommandsPage() {
                   setPage(1);
                 }}
                 size="small"
-                sx={{ width: 300 }}
+                sx={{ width: { xs: '100%', sm: 300 } }}
               />
-              <Box sx={{ display: 'flex', gap: 2 }}>
+              <Box sx={{ display: 'flex', gap: 1 }}>
                 <Button
                   variant="outlined"
                   startIcon={<Refresh />}
                   onClick={() => refetch()}
+                  sx={{ display: { xs: 'none', sm: 'inline-flex' } }}
                 >
                   刷新
                 </Button>
+                <IconButton aria-label="刷新" onClick={() => refetch()} sx={{ display: { xs: 'inline-flex', sm: 'none' } }}>
+                  <Refresh />
+                </IconButton>
                 <Button
                   variant="contained"
                   startIcon={<Add />}
