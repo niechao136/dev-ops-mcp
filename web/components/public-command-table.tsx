@@ -24,6 +24,9 @@ import {
   LocalOffer
 } from '@mui/icons-material';
 import type { PublicCommandInfo } from '@/types/api';
+import { useIsMobile } from '@/hooks/use-is-mobile';
+import { MobileCard, MobileField } from './base/mobile-card';
+import MobilePagination from './base/mobile-pagination';
 
 interface PublicCommandTableProps {
   commands: PublicCommandInfo[] | undefined;
@@ -50,11 +53,82 @@ export default function PublicCommandTable({
   onEdit,
   onDelete
 }: PublicCommandTableProps) {
+  const isMobile = useIsMobile();
+
   if (isLoading) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', py: 8 }}>
         <CircularProgress />
       </Box>
+    );
+  }
+
+  if (isMobile) {
+    const isEmpty = !commands || commands.length === 0;
+    return (
+      <>
+        {commands?.map((command) => (
+          <MobileCard
+            key={command.id}
+            title={command.name}
+            headerRight={<Chip label={command.action_type} size="small" color="primary" />}
+            footer={
+              <>
+                <IconButton aria-label="复制命令" onClick={() => onCopy(command.shell_command)}>
+                  <ContentCopy />
+                </IconButton>
+                <IconButton aria-label="编辑" onClick={() => onEdit(command)}>
+                  <Edit />
+                </IconButton>
+                <IconButton aria-label="删除" color="error" onClick={() => onDelete(command)}>
+                  <Delete />
+                </IconButton>
+              </>
+            }
+          >
+            <MobileField label="描述" value={command.description || '-'} span={2} />
+            <MobileField
+              label="标签"
+              span={2}
+              value={
+                command.tags ? (
+                  <Box sx={{ display: 'flex', gap: 0.5, flexWrap: 'wrap' }}>
+                    {command.tags
+                      .split(',')
+                      .filter((t) => t.trim())
+                      .map((tag, i) => (
+                        <Chip
+                          key={i}
+                          label={tag.trim()}
+                          size="small"
+                          icon={<LocalOffer />}
+                          sx={{ fontSize: '0.75rem' }}
+                        />
+                      ))}
+                  </Box>
+                ) : (
+                  '-'
+                )
+              }
+            />
+            <MobileField label="超时(秒)" value={command.timeout} />
+          </MobileCard>
+        ))}
+        {isEmpty && (
+          <Alert severity="info" sx={{ mt: 2 }}>
+            暂无公共命令，请点击上方按钮创建
+          </Alert>
+        )}
+        {total > 0 && (
+          <MobilePagination
+            total={total}
+            page={page}
+            pageSize={pageSize}
+            onPageChange={onPageChange}
+            onPageSizeChange={onPageSizeChange}
+          />
+        )}
+      </>
     );
   }
 
