@@ -173,7 +173,7 @@ export default function MainLayout({ children }: MainLayoutProps) {
           >
             <MenuIcon />
           </IconButton>
-          <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
+          <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1, fontSize: { xs: '1.05rem', sm: '1.25rem' } }}>
             运维管理平台
           </Typography>
 
@@ -260,7 +260,7 @@ export default function MainLayout({ children }: MainLayoutProps) {
 
       <Box
         component="main"
-        sx={{ flexGrow: 1, p: 3, width: { sm: `calc(100% - ${drawerWidth}px)` } }}
+        sx={{ flexGrow: 1, p: { xs: 2, md: 3 }, width: { sm: `calc(100% - ${drawerWidth}px)` } }}
       >
         <Toolbar />
         {children}
