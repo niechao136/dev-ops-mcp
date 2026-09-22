@@ -26,6 +26,10 @@ import {
   Key
 } from '@mui/icons-material';
 import type { UserInfo } from '@/types/api';
+import { useIsMobile } from '@/hooks/use-is-mobile';
+import { MobileCard, MobileField } from './base/mobile-card';
+import MobileSelectionBar from './base/mobile-selection-bar';
+import MobilePagination from './base/mobile-pagination';
 
 interface UserTableProps {
   users: UserInfo[] | undefined;
@@ -64,11 +68,96 @@ export default function UserTable({
   formatDate,
   toggleStatusMutation
 }: UserTableProps) {
+  const isMobile = useIsMobile();
+
   if (isLoading) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', py: 8 }}>
         <CircularProgress />
       </Box>
+    );
+  }
+
+  if (isMobile) {
+    const isEmpty = !users || users.length === 0;
+    return (
+      <>
+        <MobileSelectionBar
+          count={selectedIds.length}
+          checked={!!users?.length && selectedIds.length === users.length}
+          indeterminate={selectedIds.length > 0 && selectedIds.length < (users?.length || 0)}
+          onToggleAll={onToggleSelectAll}
+          onDelete={onDelete}
+        />
+        {users?.map((user) => (
+          <MobileCard
+            key={user.id}
+            title={user.username}
+            subtitle={user.email || undefined}
+            headerRight={
+              <Checkbox
+                checked={selectedIds.includes(user.id)}
+                onChange={() => onToggleSelect(user.id)}
+                aria-label={`选择用户 ${user.username}`}
+              />
+            }
+            footer={
+              <>
+                <IconButton
+                  aria-label={user.is_active ? '禁用' : '启用'}
+                  color={user.is_active ? 'default' : 'primary'}
+                  onClick={() => onToggleStatus(user.id)}
+                  disabled={toggleStatusMutation.isPending}
+                >
+                  {user.is_active ? <ToggleOff /> : <ToggleOn />}
+                </IconButton>
+                <IconButton aria-label="修改密码" onClick={() => onPassword(user)}>
+                  <Key />
+                </IconButton>
+                <IconButton aria-label="编辑" onClick={() => onEdit(user)}>
+                  <Edit />
+                </IconButton>
+              </>
+            }
+          >
+            <MobileField
+              label="角色"
+              value={
+                <Chip
+                  label={user.role === 'admin' ? '管理员' : '普通用户'}
+                  color={user.role === 'admin' ? 'primary' : 'default'}
+                  size="small"
+                />
+              }
+            />
+            <MobileField
+              label="状态"
+              value={
+                <Chip
+                  label={user.is_active ? '启用' : '禁用'}
+                  color={user.is_active ? 'success' : 'default'}
+                  size="small"
+                />
+              }
+            />
+            <MobileField label="创建时间" value={formatDate(user.created_at)} span={2} />
+          </MobileCard>
+        ))}
+        {isEmpty && (
+          <Alert severity="info" sx={{ mt: 2 }}>
+            暂无用户，请点击上方按钮创建
+          </Alert>
+        )}
+        {total > 0 && (
+          <MobilePagination
+            total={total}
+            page={page}
+            pageSize={pageSize}
+            onPageChange={onPageChange}
+            onPageSizeChange={onPageSizeChange}
+          />
+        )}
+      </>
     );
   }
 
