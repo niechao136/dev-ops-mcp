@@ -1,6 +1,9 @@
 import { Box, Button, Card, CardContent, Chip, CircularProgress, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Tooltip, IconButton, Alert, TablePagination, Typography, Switch } from '@mui/material';
 import { PlayArrow, Edit, Delete, Refresh, Add, Timer, Schema } from '@mui/icons-material';
 import type { AutomationInfo } from '@/types/api';
+import { useIsMobile } from '@/hooks/use-is-mobile';
+import { MobileCard, MobileField } from './base/mobile-card';
+import MobilePagination from './base/mobile-pagination';
 
 interface AutomationTableProps {
   automations: AutomationInfo[];
@@ -31,6 +34,8 @@ export function AutomationTable({
   onOpenDeleteDialog,
   onToggleEnabled
 }: AutomationTableProps) {
+  const isMobile = useIsMobile();
+
   const formatTime = (dateString?: string) => {
     if (!dateString) return '-';
     const date = new Date(dateString);
@@ -48,18 +53,22 @@ export function AutomationTable({
 
   return (
     <Box>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-        <Typography variant="h5" component="h2">
+      <Box sx={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', gap: 1.5, mb: 3 }}>
+        <Typography variant="h5" component="h2" sx={{ fontSize: { xs: '1.25rem', md: '1.5rem' } }}>
           自动化规则
         </Typography>
-        <Box sx={{ display: 'flex', gap: 2 }}>
+        <Box sx={{ display: 'flex', gap: 1 }}>
           <Button
             variant="outlined"
             startIcon={<Refresh />}
             onClick={onRefresh}
+            sx={{ display: { xs: 'none', sm: 'inline-flex' } }}
           >
             刷新
           </Button>
+          <IconButton aria-label="刷新" onClick={onRefresh} sx={{ display: { xs: 'inline-flex', sm: 'none' } }}>
+            <Refresh />
+          </IconButton>
           <Button
             variant="contained"
             startIcon={<Add />}
@@ -70,7 +79,115 @@ export function AutomationTable({
         </Box>
       </Box>
 
-      {isLoading ? (
+      {isMobile ? (
+        <>
+          {isLoading ? (
+            <Box sx={{ display: 'flex', justifyContent: 'center', py: 8 }}>
+              <CircularProgress />
+            </Box>
+          ) : (
+            <>
+              {automations.map((automation) => (
+                <MobileCard
+                  key={automation.id}
+                  title={automation.name}
+                  headerRight={
+                    <Chip
+                      icon={automation.trigger_type === 'cron' ? <Timer /> : <Schema />}
+                      label={automation.trigger_type === 'cron' ? '定时触发' : '条件触发'}
+                      size="small"
+                      color={automation.trigger_type === 'cron' ? 'primary' : 'info'}
+                    />
+                  }
+                  footer={
+                    <>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mr: 'auto' }}>
+                        <Switch
+                          checked={automation.is_enabled}
+                          onChange={() => onToggleEnabled(automation.id)}
+                          color={automation.is_enabled ? 'success' : 'default'}
+                        />
+                        <Typography variant="body2">
+                          {automation.is_enabled ? '已启用' : '已禁用'}
+                        </Typography>
+                      </Box>
+                      <IconButton aria-label="编辑" onClick={() => onOpenEditDialog(automation)}>
+                        <Edit />
+                      </IconButton>
+                      <IconButton aria-label="删除" color="error" onClick={() => onOpenDeleteDialog(automation.id)}>
+                        <Delete />
+                      </IconButton>
+                    </>
+                  }
+                >
+                  <MobileField
+                    label="触发配置"
+                    span={2}
+                    value={
+                      <Box
+                        sx={{
+                          fontFamily: 'monospace',
+                          bgcolor: (theme) => (theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.08)' : 'grey.100'),
+                          p: 1,
+                          borderRadius: 1,
+                          wordBreak: 'break-all',
+                        }}
+                      >
+                        {automation.trigger_type === 'cron'
+                          ? automation.cron_expression || '-'
+                          : automation.condition_script || '-'}
+                      </Box>
+                    }
+                  />
+                  <MobileField
+                    label="执行命令"
+                    span={2}
+                    value={
+                      <>
+                        <Chip label={automation.command_action} size="small" variant="outlined" />
+                        {automation.command_description && (
+                          <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+                            {automation.command_description}
+                          </Typography>
+                        )}
+                      </>
+                    }
+                  />
+                  <MobileField label="最后执行" value={formatTime(automation.last_run_time)} />
+                  <MobileField
+                    label="执行结果"
+                    value={
+                      automation.last_run_status ? (
+                        <Chip
+                          label={automation.last_run_status}
+                          size="small"
+                          color={getStatusColor(automation.last_run_status)}
+                        />
+                      ) : (
+                        '-'
+                      )
+                    }
+                  />
+                </MobileCard>
+              ))}
+              {automations.length === 0 && (
+                <Alert severity="info" sx={{ mt: 2 }}>
+                  暂无自动化规则，请点击上方按钮创建
+                </Alert>
+              )}
+            </>
+          )}
+          {total > 0 && (
+            <MobilePagination
+              total={total}
+              page={page}
+              pageSize={pageSize}
+              onPageChange={onPageChange}
+              onPageSizeChange={onPageSizeChange}
+            />
+          )}
+        </>
+      ) : isLoading ? (
         <Box sx={{ display: 'flex', justifyContent: 'center', py: 8 }}>
           <CircularProgress />
         </Box>
@@ -198,13 +315,13 @@ export function AutomationTable({
         </TableContainer>
       )}
 
-      {!isLoading && automations.length === 0 && (
+      {!isMobile && !isLoading && automations.length === 0 && (
         <Alert severity="info" sx={{ mt: 2 }}>
           暂无自动化规则，请点击上方按钮创建
         </Alert>
       )}
 
-      {total > 0 && (
+      {!isMobile && total > 0 && (
         <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2, alignItems: 'center', gap: 2 }}>
           <Typography variant="body2" sx={{ color: 'text.secondary' }}>
             共 {total} 条
