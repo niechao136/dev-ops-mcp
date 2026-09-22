@@ -1,6 +1,9 @@
 import { Box, Button, Card, CardContent, Chip, CircularProgress, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Tooltip, IconButton, Alert, TablePagination, Typography } from '@mui/material';
 import { PlayArrow, Edit, Delete, Refresh, Download, HelpOutlined, Add, Favorite, HeartBroken, Warning } from '@mui/icons-material';
 import type { CommandInfo } from '@/types/api';
+import { useIsMobile } from '@/hooks/use-is-mobile';
+import { MobileCard, MobileField } from './base/mobile-card';
+import MobilePagination from './base/mobile-pagination';
 
 interface CommandTableProps {
   commands: CommandInfo[];
@@ -35,27 +38,37 @@ export function CommandTable({
   onOpenCreateDialog,
   onToggleHealthCheck
 }: CommandTableProps) {
+  const isMobile = useIsMobile();
+
   return (
     <Box>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-        <Typography variant="h5" component="h2">
+      <Box sx={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', gap: 1.5, mb: 3 }}>
+        <Typography variant="h5" component="h2" sx={{ fontSize: { xs: '1.25rem', md: '1.5rem' } }}>
           命令管理
         </Typography>
-        <Box sx={{ display: 'flex', gap: 2 }}>
+        <Box sx={{ display: 'flex', gap: 1 }}>
           <Button
             variant="outlined"
             startIcon={<Refresh />}
             onClick={onRefresh}
+            sx={{ display: { xs: 'none', sm: 'inline-flex' } }}
           >
             刷新
           </Button>
+          <IconButton aria-label="刷新" onClick={onRefresh} sx={{ display: { xs: 'inline-flex', sm: 'none' } }}>
+            <Refresh />
+          </IconButton>
           <Button
             variant="outlined"
             startIcon={<Download />}
             onClick={onOpenImportDialog}
+            sx={{ display: { xs: 'none', sm: 'inline-flex' } }}
           >
             导入公共命令
           </Button>
+          <IconButton aria-label="导入公共命令" onClick={onOpenImportDialog} sx={{ display: { xs: 'inline-flex', sm: 'none' } }}>
+            <Download />
+          </IconButton>
           <Button
             variant="contained"
             startIcon={<Add />}
@@ -89,7 +102,87 @@ export function CommandTable({
         </CardContent>
       </Card>
 
-      {isLoading ? (
+      {isMobile ? (
+        <>
+          {isLoading ? (
+            <Box sx={{ display: 'flex', justifyContent: 'center', py: 8 }}>
+              <CircularProgress />
+            </Box>
+          ) : (
+            <>
+              {commands.map((command) => (
+                <MobileCard
+                  key={command.id}
+                  title={command.description || command.action_type}
+                  headerRight={
+                    command.requires_confirm ? (
+                      <Chip icon={<Warning />} label="高危" color="error" size="small" />
+                    ) : undefined
+                  }
+                  footer={
+                    <>
+                      <IconButton
+                        aria-label={command.is_health_check ? '取消健康检查' : '设为健康检查'}
+                        color={command.is_health_check ? 'success' : 'default'}
+                        onClick={() => onToggleHealthCheck(command.id)}
+                      >
+                        {command.is_health_check ? <Favorite /> : <HeartBroken />}
+                      </IconButton>
+                      <IconButton aria-label="执行" color="success" onClick={() => onOpenExecuteDialog(command)}>
+                        <PlayArrow />
+                      </IconButton>
+                      <IconButton aria-label="编辑" onClick={() => onOpenEditDialog(command)}>
+                        <Edit />
+                      </IconButton>
+                      <IconButton aria-label="删除" color="error" onClick={() => onOpenDeleteDialog(command.id)}>
+                        <Delete />
+                      </IconButton>
+                    </>
+                  }
+                >
+                  <MobileField
+                    label="操作类型"
+                    value={<Chip label={command.action_type} size="small" color="primary" />}
+                  />
+                  <MobileField label="超时(秒)" value={command.timeout} />
+                  <MobileField
+                    label="命令内容"
+                    span={2}
+                    value={
+                      <Box
+                        sx={{
+                          fontFamily: 'monospace',
+                          bgcolor: (theme) => (theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.08)' : 'grey.100'),
+                          p: 1,
+                          borderRadius: 1,
+                          wordBreak: 'break-all',
+                          whiteSpace: 'pre-wrap',
+                        }}
+                      >
+                        {command.shell_command}
+                      </Box>
+                    }
+                  />
+                </MobileCard>
+              ))}
+              {commands.length === 0 && (
+                <Alert severity="info" sx={{ mt: 2 }}>
+                  暂无命令，请点击上方按钮创建
+                </Alert>
+              )}
+            </>
+          )}
+          {total > 0 && (
+            <MobilePagination
+              total={total}
+              page={page}
+              pageSize={pageSize}
+              onPageChange={onPageChange}
+              onPageSizeChange={onPageSizeChange}
+            />
+          )}
+        </>
+      ) : isLoading ? (
         <Box sx={{ display: 'flex', justifyContent: 'center', py: 8 }}>
           <CircularProgress />
         </Box>
@@ -200,13 +293,13 @@ export function CommandTable({
         </TableContainer>
       )}
 
-      {!isLoading && commands.length === 0 && (
+      {!isMobile && !isLoading && commands.length === 0 && (
         <Alert severity="info" sx={{ mt: 2 }}>
           暂无命令，请点击上方按钮创建
         </Alert>
       )}
 
-      {total > 0 && (
+      {!isMobile && total > 0 && (
         <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2, alignItems: 'center', gap: 2 }}>
           <Typography variant="body2" sx={{ color: 'text.secondary' }}>
             共 {total} 条
