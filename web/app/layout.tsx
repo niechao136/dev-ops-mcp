@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import RootProvider from '@/providers/root-provider';
 import { getServerMode } from '@/utils/cookie';
@@ -7,6 +7,13 @@ import { getServerMode } from '@/utils/cookie';
 export const metadata: Metadata = {
   title: 'DevOps MCP - 运维管理平台',
   description: '基于 MCP 协议的 DevOps 运维管理平台',
+};
+
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  viewportFit: 'cover',
 };
 
 
