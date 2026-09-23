@@ -1,0 +1,116 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:f3beef85afb72a651b19fa981bed87c38f34abefc952f424d1fdf5fca4d9a2af",
+  "claims": [
+    {
+      "id": "claim_e3d19eac156e4a138e003225f6c14bb7",
+      "statement": "All durable backend state lives in a single SQLite file at data/devops.db, opened through SQLAlchemy with check_same_thread=False because FastAPI serves requests from a thread pool.",
+      "evidence": [
+        {
+          "resource": "repo://src/dbs/db.py#L25-L35",
+          "version": "repo-lines-v1:sha256:a42d760570d003bffe3659015728958cd16d8ae4e85085582ee55b210549d001:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI0OTY3YmIyY2ExZmUxMjBkMzhkNTFkY2I4YTdiZDkwMjIwMDFmMGQ1YzZlZGM2ZDlhNTRiYjJhYzJlZmQzZDkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYzZTk2ZmFkZTMwZGJlODdmZjZmNzVlMWI2NDdjNTg4YjU3MWJiY2M3N2Q0YWE2MTMzZDk2NzUxNGQwMWU3MzkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjdmMTY1NjRiYjQxZWMwOWY3NzE0OGIyMTRkNTFhZDIzYzhlYmI3OGIzZTRjZjFlMWNjMjk4Y2JhNDcwZTI0MmEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjM5MTc3M2M5MzU0YzMzNjczZWRhMmUwYTE5YzVlYmIyMTlhY2JhMjkwYzdlOWY0YjkyZmFkNjIzN2FkNjlkOTYifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_34c2c6dc06d440eca5e502c9fde9ebaf",
+      "statement": "At FastAPI lifespan startup init_db() creates any missing tables, seeds an admin user from ADMIN_USERNAME/ADMIN_PASSWORD when absent, and seeds a default MCP API key (Fernet-encrypted plaintext plus bcrypt hash, bound to the admin user) when no api_tokens row matches DEFAULT_API_KEY.",
+      "evidence": [
+        {
+          "resource": "repo://src/dbs/db.py#L52-L102",
+          "version": "repo-lines-v1:sha256:35629e8fcef42b86694028b3dc6a437aa78d68f9c2c75f41f060c070892f3e40:eyJzZWxlY3RlZExpbmVDb3VudCI6NTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjgyNzExNjQ0YTc4NWEyOTMwODcyMTEyZmIwZWM2MzlkZTU2ODVjNjgxODU2MmY3NmIwYjRlYTVhNTI5YWZmZWUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQ2NTY2OWFkMWJhOTU2NzkwZjI2ZjllYzc3MTNiODYwOTJkNDEyNjllYjY0NTcyNTk2YjNjZWM0MGQ1ZTdkNTAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjIzNGVjYzVlMGE3M2FjZTRmZjcxYWY5ZDI5YzdiNjMwNjMxZWM0YTA3OWM2YjBkN2JhNjBjMDgwNzc2YmZiODAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://src/main.py#L25-L33",
+          "version": "repo-lines-v1:sha256:1429751686f1b6860b41b2726354b8cb7c732013d7b73a79993cf2403b515478:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiM2JjYzQ0NWViZDIwZDVkZjJiOWExZjczYmM4N2Y2NDJlZDUxNzJiYWY3Nzc3MDE3MmE1NzM3MmExNDE4ZWU5YyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNTQ2M2EzYjdmNmQ3YjE2NjYwNjdjZjIyYmUwZTc3MDkxZTM4NjQzYWE3YmJlZTE4ZjA1NjU1M2ZhNzA5Yjk0MyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMGM0NjMwNmE0YjEwMzYzNjc4YTMzNDE4MjRlNDg3OGUwNTQwMjhiODY3NTM5NzBhMDYzMTFiMTY4MzEyNmY0YiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZThkNThhOTM5Yzc4ZDRmM2VmNWZmNTAzMzY2MTljN2RjMjllN2IzOWRhOTQzNjAwNDgzOWRkM2QxMzUzOTNkOSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_6832f540a6ad4032b9fcefdca25132ee",
+      "statement": "The ORM schema consists of eight tables — users, api_tokens, projects, commands, public_commands, audit_logs, tasks, and automations — where projects cascade-delete their commands and automations reference both a project and a command by foreign key.",
+      "evidence": [
+        {
+          "resource": "repo://src/dbs/orm.py#L14-L177",
+          "version": "repo-lines-v1:sha256:b9d2aa828b836a67930687b2c92b3e46291242b73dd851746358b40f7281ea48:eyJzZWxlY3RlZExpbmVDb3VudCI6MTY0LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiI1M2QxNDlkYWEyZTYyMmMwYTc2YjFlMTI5MzE5Yjk1Y2U0YmEzYjAzNjU5ZWMyYWJmNDA3ZjM4Zjk5ZjU0M2RkIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiJiYTcyMDA2YjZiYzM2NjRjOWI1Yjk4YmRiYTA3MWYwYmFhMmIwMmViMWI0NjE3MTkxZDgwOTA2NWNiNmFjYjQxIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiJlM2Y3ZDg1NDM1ZTlkYjEwOTM0Yjk2ZDdjZTUwOGM2MGQxN2JmZWQzNzg4NTU3NTljNDY2YTE5YmRhZTUzODAyIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MCwiZm9sbG93aW5nQ29udGV4dEhhc2giOiJlM2IwYzQ0Mjk4ZmMxYzE0OWFmYmY0Yzg5OTZmYjkyNDI3YWU0MWU0NjQ5YjkzNGNhNDk1OTkxYjc4NTJiODU1In0"
+        }
+      ]
+    },
+    {
+      "id": "claim_848b55133a9d4c29807f9d8888a75645",
+      "statement": "A task's complete execution output accumulates in the tasks.output_log TEXT column and task status moves through pending, running, success, failed, timeout, and cancelled, so clients reconstruct logs by slicing that column rather than reading files.",
+      "evidence": [
+        {
+          "resource": "repo://src/dbs/orm.py#L138-L153",
+          "version": "repo-lines-v1:sha256:3826a1c5c6b82a0c88fa6a0a880d8fc05b5eadf61f6a6253a6f3a590a1ef2c06:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU4OTRiOTNjNGY4NTViMDlkNmIyM2NkNzIwNzg2NjEwMjQwMWE4MzZiODY0ZjY1OTAyMWZjMTkxMGFmODEyOGEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjYzOTQyZmJlMGUxYTQwM2QwNzYxNGNkYjZjNTYzMDZjOWViM2FjM2IwOGNiMTMyYzg4MWJkZTRhMDBkODg3NDQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijc3YmFhZGQ4ZjUyMWE1N2RhNzdhNDVlZjE1ZjA3NDhlMWI3N2RlMDE4OTkwYzI1ODIwNmZiY2M0MzlmYjY1M2MiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjI4NmYzNmZhODIxZWE1NjJlYWIyYTUxODY2MTJhNTIyZTg2YWNiZjFmMmExNGQ0OGE4YzA0Y2JjMzc1YjM1MjYifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_0bfdd96d06dd43eea47259686fcd7317",
+      "statement": "api_tokens stores each MCP key twice — a Fernet-encrypted full token for disclosure via the console and a unique bcrypt token_hash plus token_prefix for verification — while allowed_projects and scopes are JSON-array text columns whose null allowed_projects means access to all projects.",
+      "evidence": [
+        {
+          "resource": "repo://src/dbs/orm.py#L32-L47",
+          "version": "repo-lines-v1:sha256:d550e5068401ff5ae70a143325be0b1ffd3fcd61e5b92bbebc095e539054de02:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijk0ZjhjYTkxZjczYjgyMjU4MjhlMTQ4YzMxNjhlNmJjM2JhNDFmNWU1OTRjMjUwZWU2ODEzZjY2M2VjMGQyNWMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRiMzY0ZDEzZWFmNTI2ZjkzYjQ0NjNkY2JjYjMyNTZkZGY3ODExYzJmYmI4ZTgzMDM3OTc5YjJlNjUzOGE5NGYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjgxMTA2ZTMyMjllODU3NjdiNWYzOGU1MTJmNWI5MzliNmJiZGRmZmU2NmViMzdkODNhOWMzN2U0M2YzMGFhYWEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjI4NmYzNmZhODIxZWE1NjJlYWIyYTUxODY2MTJhNTIyZTg2YWNiZjFmMmExNGQ0OGE4YzA0Y2JjMzc1YjM1MjYifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_86540dd129bf4a5ebdf11a6067362563",
+      "statement": "The api container's CMD runs python -m src.dbs.migrate before starting uvicorn, and migrate_database() is a raw sqlite3 script that no-ops with a warning when data/devops.db does not exist, leaving fresh databases to SQLAlchemy create_all.",
+      "evidence": [
+        {
+          "resource": "repo://Dockerfile#L48-L48",
+          "version": "repo-lines-v1:sha256:7eb70257593da06f682a3ddda54a9d260d4fc514f645237f5ca74b08f8da61a6:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiN2ViNzAyNTc1OTNkYTA2ZjY4MmEzZGRkYTU0YTlkMjYwZDRmYzUxNGY2NDUyMzdmNWNhNzRiMDhmOGRhNjFhNiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiN2ViNzAyNTc1OTNkYTA2ZjY4MmEzZGRkYTU0YTlkMjYwZDRmYzUxNGY2NDUyMzdmNWNhNzRiMDhmOGRhNjFhNiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZTFmZjJiNDRiMTIyNGY4ZWYzMTM5MDJhNWE4MjY3MGY4Y2M3ZmZmNTViYmFhYzdmOGJhYzg5ZDAwMzA3NzZhNiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjEsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYjY5NjkwNTVmMzdlMmM5YjI3OTVmOTcwMWE3ZDY0NjBmNGYzMzEyNTBjNTI1MzMyODUwMWVkNjA1YWNjODIxOSJ9"
+        },
+        {
+          "resource": "repo://src/dbs/migrate.py#L12-L15",
+          "version": "repo-lines-v1:sha256:bf16a2f88e8aefe0bdab9fe0f0e1a44ca36618ef81b9dae96c203050ddf18cdb:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNTc3MzdhN2IzYWU2NDMwNzY3Y2YxYjE4NTg3MTA3OWM1ZGJkNTJkNmE2NzBlYzg4Y2Y1ZWYzMmNlMjRjZjFiNiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNmQ4ZWM0ZTg0Mjg5NWFiZmYxMjRhOGRjODk3NTQ1N2M1MmM4MGYzYWNmMGQ4ZmU3ODhkYWQwODNhNmRiMDZjOSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiM2FiOGJjOWY4MGE4OTlkZDZkYjE3ZTgwMzI5YzY1MWQzOTdjODY0OTJkNDY5MjE1ZWVlMDk2OWJlZTQzZWViMSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYTBkZDA1YWQ1Mjk2MDFhN2Q4YjQzYjY3OGE1ODA0MGM2YWU0YWY3NzkyODY4YjVhMGQ1MzMxYjI1NzE5NDY0YyJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_ff2c2c3848664da8a25431f8716c0805",
+      "statement": "migrate.py only applies additive, idempotent schema fixes — ALTER TABLE ADD COLUMN for accumulated columns and CREATE TABLE for public_commands, tasks, and automations with indexes — and never drops, renames, or versions schema changes, rolling back on unexpected errors instead of failing startup.",
+      "evidence": [
+        {
+          "resource": "repo://src/dbs/migrate.py#L24-L199",
+          "version": "repo-lines-v1:sha256:77a0d46d643e972079876cd7f1d8b302ce7d3da7a28f3435d5ac5fea8be05cd8:eyJzZWxlY3RlZExpbmVDb3VudCI6MTc2LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiJhZTVkYzkwNDgxY2UxNDg1YmEzNTAyNmFlMTEwYzQ2MmFmZWIyNDdjZDc5Y2NlZmVhMzkyMTY1OTU3NjEyNDUzIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiI0ODgzODczOTFiOWY1MmQ5Y2VjZDVmZDhmM2M4ZTY0MzViOTc1YjEwYTNjNDc1ZjdmNjQ5ZWM3NjMxYTg0MjA0IiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiIxNDEyZGEzZGNmOWE0NDU1ODQzNGUxYTI5NDYwMzczZDcwNjc2YmU1ZDg0YmVkM2QxZTE2OWNhZTNiM2U0MWViIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiIyNmZjNDRkYjg0NDRhZWMzNDVmODBmYzI4ZmVjNzNiYmM1ZGQ1NDM3NWU2YmIzMmE3Y2ZkZjBiNzIzNTg5YzNkIn0"
+        }
+      ]
+    },
+    {
+      "id": "claim_8890bcf181af41e5ba811ebd679a898d",
+      "statement": "data/ is fully git-ignored except its .gitignore, so durability and backup depend on copying the host-mounted data/devops.db file; a zero-byte data.db also sits beside it that no code path opens.",
+      "evidence": [
+        {
+          "resource": "repo://data/.gitignore#L1-L2",
+          "version": "repo-lines-v1:sha256:e49bdf8c01314f987ba33b15b4ec3fae9f76321db1650773d2b5cb563b0c6917:eyJzZWxlY3RlZExpbmVDb3VudCI6MiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNDU1NDlhOWZmZDk5NjNmODU1ZDcyODI5ZTk3OGEzMWMwNWI4Mjg5NGIxNGIxZDhmYmRkNDMwODNiMjBjMmQ4NiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZTFmNmNiNTY4NDRkZmIyNjdkOWQ2YTc3NDE5N2NiOTQ2YWIxZjNmMzBhMDVjOWQyYzkzMGY2ZWI0ZjNmNTBkZSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjAsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjAsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSJ9"
+        },
+        {
+          "resource": "repo://src/dbs/db.py#L25-L28",
+          "version": "repo-lines-v1:sha256:1cf294407636d32b2e862bf6022ed15c9ca1853edb786b9b26d6f880886e3ab9:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMjQ5NjdiYjJjYTFmZTEyMGQzOGQ1MWRjYjhhN2JkOTAyMjAwMWYwZDVjNmVkYzZkOWE1NGJiMmFjMmVmZDNkOSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMjRlMzQ4YTNiMzE5NzRhNGE4ODZhMDM0OTY1NjZhOGI0N2RjMzFmNzg1MDAyYzkyMjNhYTlmNTY1MTM2NDE0MyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiN2YxNjU2NGJiNDFlYzA5Zjc3MTQ4YjIxNGQ1MWFkMjNjOGViYjc4YjNlNGNmMWUxY2MyOThjYmE0NzBlMjQyYSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMmRkNWU5YzYwYmJkNTY2YzkwYWQxM2RmOGUzMGIwYjdlMDBhMmVjMTQ5OTc3ZDVjYjNhYzE0NGYyMTdjOTE4NSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_7040422b40f143ccbabc15a0d8696c6e",
+      "statement": "Volatile coordination state is kept out of SQLite in process memory: confirm tokens expire after 300 seconds, are single-use, and vanish on restart, while running-task handles, per-project asyncio locks, and the task result cache live only for the process lifetime.",
+      "evidence": [
+        {
+          "resource": "repo://src/utils/confirm_store.py#L16-L35",
+          "version": "repo-lines-v1:sha256:138c0fc9da764f6e53eef7f37862ca050813a3da04bee75a3d837e497e1f797a:eyJzZWxlY3RlZExpbmVDb3VudCI6MjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZlNjExOGNjN2RmYmZlNWVlNGMzMTU5ZDgwOWNlNWEyMzlhMDk5M2UyNDY1NWQ5ODE5ZGM0MTkxNTk1Njg5YWUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAyNzEyYzgwOWQxZmIyYTY0MmQ2MjFmOTFlZDVkNzI0M2E4YzlhNjNiNzMyMWViMTllYTg4NzA5NzdlYmJiNTciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImZlNmE4ZjkwNTJhMjk4YTI0NjAxNzNhZDgwYmJmMGRlZGQyZDcxYTE5Y2NlZTc3YjE3MDc2ODA1NTQ2MDQ5MWIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImU3ZjNkMWRmMmU5YzUwMmVlZmY5YTdmYjM4MjZlYmQ2Mzc3MzFkYTUyYWNiYzFmMTlkNjMzYjg0ZWE5NjVlMTEifQ"
+        },
+        {
+          "resource": "repo://src/utils/task_executor.py#L14-L22",
+          "version": "repo-lines-v1:sha256:df3761a69c6a841b06094f1ce76c5de1bc463ed2d793c658f226c26372463493:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNGQwOTNlN2I2MDNkMjUwNTkyY2Q3Zjg0NDgxNzRjZjZjYzAzYzBhYzhhODk0M2MwYWYxOTY0ZWE5MTVhNjdhYyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiN2FlOTk5MjNiMDRmODhhNmQzODI1ODVjNGZmOTYyZjk5ZmQ3Yzc5YWVkMzUyZDc3YmFmNDBkMmVkZDUzNDI5YiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYTFhZGIzOTA4YjJlY2YzMDQ2NDg0ZGVjMmY3NDE5MTZjN2VmN2YxZjhmNmZmMmFjZTI4NTMwZWE5MzJlNTliOSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTcwOWVmZWMwZmI4YmY3ODdjN2U5Y2UzZmM5NzdmY2YwMGM5ZWFlZWRlMWFhYTE0ZWUzYzI5MTZlYzJjYmVkNCJ9"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.5.2",
+    "at": "2026-09-23T02:41:19.131Z"
+  }
+}

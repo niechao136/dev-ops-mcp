@@ -1,0 +1,128 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:33037f23d05093364212a6fb7aeb3c32dcbb34984ac65312d3014ad42466e536",
+  "claims": [
+    {
+      "id": "claim_162674a33c874a138385a676f4bde0f0",
+      "statement": "submit_task creates a UUID task id, commits a tasks row with status=pending including actor identity and command details, spawns run_task_async via asyncio.create_task, registers the coroutine in the in-memory _running_tasks map, and returns the task id without waiting for execution.",
+      "evidence": [
+        {
+          "resource": "repo://src/utils/task_executor.py#L196-L242",
+          "version": "repo-lines-v1:sha256:ae6930ba742627c1dd2c74e2a5aa94c92213544e47e2f4d43a5a915ff1c8a53c:eyJzZWxlY3RlZExpbmVDb3VudCI6NDcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM0OGMzOGRmN2YzNThmOTQxNjkwMGU2YjU1MGIzYzcxZTk4Mjg0NjViZjJmYTM4NzE4NWQ1M2RlNjc4ZDk5YjciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRjMGFhYzk3NjQ1NjkzMzAxNmVjMzJmOTg3ZDQwNGRkMjg4N2QxNzgzZjY5Y2U0M2EyNzIzMzVmM2JmNGRmMWYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjY2NmYyZTFlMjQ1NWFlNThlZDMyMzFhYzBmZWMwZjA2YjJmYjkyYWNlMWZmNzIyNjFiODRkNmJhNGQ2ZmFmZTQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjEzOGZhNmNlZWU2MTIyMjMxNGM5OTUzN2U2ZjdmMWQ4YTJjZTVjY2ZhMzM3MjQ2ZWI4YWVhZmU1MjdkMjNmMjYifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_b73f4da1f3cb4fe1a17bc95fa4b79d0f",
+      "statement": "run_task_async holds a per-project asyncio.Lock for the entire execution, so only one task per project runs at a time, while execute_action and POST /tasks/execute reject submissions earlier when is_project_locked reports a locked in-memory lock or any status=running row in the database.",
+      "evidence": [
+        {
+          "resource": "repo://src/tools/mcp.py#L132-L134",
+          "version": "repo-lines-v1:sha256:fa7865b0dfe072c2c1e61d1b587a65d4976f4072df151f66cad3f44a8b94e5ea:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYzgwZmFjZTkwYjAzM2UzNTUzY2VlZTQ5ZWVkMTcxNmExZWNhZGQzYzg4MWEyZmU1YWM1MDcyNmI3Y2YxMTM5OSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZGQyMDZlNzg4MjE1MDg3ZjM4ZWEzMzM0NzQyYzE4NDQzNmZmMTJjMTdiYWJkOWU5ZWRmZTRmZTFkZTkyZTkyMSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZGM3NjI3OTQ5MTdiNWI0MTE4MDY1NTNkNDMzZTkxYzBmZTEyZDNlYWUzY2RkMTQwNTZkOTlmYjZhYTQ5NmZkMyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiOTQxZWQ3NjkxY2E0YTVjZGRmZmY2MDNlY2ZiYWZmNDQ3NDZkYTQ1ZjE3MTBjMjgwMGMxNzkwYjQ0Y2I5MmY1OSJ9"
+        },
+        {
+          "resource": "repo://src/utils/task_executor.py#L143-L145",
+          "version": "repo-lines-v1:sha256:e5cee92a76cad583c586045f3d15fa8954651151b783ca9fd5e3ebfdd56fe3c4:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiOWY3ZDk5NDY1OTYyMGNlZjNjMWMzNDlkNjJkZDQ5OGE3NmUxNzYyMmFlY2MxY2Q1NTI5NjY0YTllNzljNjk0NyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNjljZTliYzg5ZDA4YWFhMDgxMzMwMDRhZWVhMDNlMWFlMzAyZjEzN2I1NjIxYzE0OTBhNzYxY2E5NGFjZmUzNiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNWY4ZDYzZjAzMzA5ZDYyZTQyOTZiY2E2YWMyODAxNDI3Y2UyYzk0YWIxNDZjZjcyYjJlZGZjMGE0MjEyN2NmOCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMmJiYjNiZjQ0YzQyOGI3MDYyZThiZDBkYmZlZGI0ZTVhYTIwZmM1OWY3M2QzMTI0NmQ1YjVmNWU4OTg3ZjRmZiJ9"
+        },
+        {
+          "resource": "repo://src/utils/task_executor.py#L292-L305",
+          "version": "repo-lines-v1:sha256:9427cb98ea1ac397378e2e8ecef775b8914f5552647c90fc4d6aae0b18795cf5:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImEwNDk0ZDM2NjQ1NDAxMGE3ZDU3MjBiM2U2ZWJjNDFhM2E5YjRlZGViMjE3ZDRhYjBlOTM1NmYxMzRlMjc5ZWQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRkMzM3Y2VhMWQ1Yjc5NmUwMzhiMTFlY2FmZGU3YjBiYTEwNGRlODBlNTdkNDFhNWYyNTEzODdhMDVlZTc1NTAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijk5MzQyYTVjNTg5ZjcyNjVkMTUwZTllZjRjOTdiMjM2MmZiMTdiMWRiMTQ4YzI2MzZlZjcyNGRkMjJkMjQ3YmIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImI0NDQwNjQyMDY5ZGRiYzgyZTgzYWVlMTUyNjRjZjhkY2E2ZTBiNTA3OGU1ZTJmYmJiZTdlYjg0MjY3NTIyYWIifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_97e6909aaf97436a8f537bccdeced95b",
+      "statement": "Scripts are merged (default_params then call params), ${key} placeholders substituted, and split into line-steps by project_service.submit_execute for MCP callers, while the REST /tasks/execute endpoint performs the same merge-substitute-split logic inline with actor_type=human rather than calling the service function.",
+      "evidence": [
+        {
+          "resource": "repo://src/apis/task.py#L174-L219",
+          "version": "repo-lines-v1:sha256:603574ebd1b79f12e41b6bf0464c734b1a7c7613f7f2fbc6ed0dd143344ec4dc:eyJzZWxlY3RlZExpbmVDb3VudCI6NDYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY5YzRiYWQzMjc1NjE3YjIzYmZmMzkwYjI3YWRkMjAyZGM1NjNkODVmNWM4NTAxZWRmYWNhMGY3YWUxZjgzMWUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjJhOWY4YzJiYzdhMTQxYTAyMmFmM2ZlYjhhYjUwMDhlYzI1NzU3ZWYyNGFjZDA0OWY1MDg5YTc0YjdjOWFlODEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjAwOGE4YTRkYmI4ZjI5MjIxMjQyZmM0NTYyZjNlYmNlOWIwYTY1NjYyMjQzOWNjZTJlMTI1M2NlYTdkYmQxMGQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijg3MGFjYzkyMzcwYmQzMzRhODg0ZDg2MWUyNTNiYzRkYzc4MWU4M2MxNjQ3NWFlMDJkODMxMzFmZWEwODdhNWMifQ"
+        },
+        {
+          "resource": "repo://src/services/project_service.py#L320-L345",
+          "version": "repo-lines-v1:sha256:234af9ca98e280c65bb5e986a5b5e1dafea4c700cf27040678b007d61ee1ff60:eyJzZWxlY3RlZExpbmVDb3VudCI6MjYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE4M2RiNGY0MDk5ZTA5NmQ0OGIzZTU0MzYwNmFlMDc1MGRkMzk4OWRlZjZkY2QxMzZkOWU3MDM1NGExZDdlNmQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM5MjIwNGM2NWY1MDJkYzE2NDU0YjYyNDA4NTZhOWFiN2FkZTAwM2E4ZTlmODYzMzNlYzBiN2M5ZTQwOTQ5MWQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImU0MTU5ZjlkNGM4OTc0MzI0OWU0NGI1NWUzYWU2ZTk3ZTlkMTFlNTViNzAwMTA2OTlhOWRjYWRlYzk5YWU4YjIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_3f24b52703cc4010bf48dfc038780866",
+      "statement": "Each step runs through a local ssh subprocess that sudo-creates the work directory, chowns it back to the SSH user except for a protected system-path list, cds into it, and executes the line, with StrictHostKeyChecking=no and a 10-second connect timeout.",
+      "evidence": [
+        {
+          "resource": "repo://src/utils/executor.py#L18-L49",
+          "version": "repo-lines-v1:sha256:9a93ef2fa2544df9880b558e72a820cd44eb0e2c9deb0a14d552ead5c2e0b437:eyJzZWxlY3RlZExpbmVDb3VudCI6MzIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjM1ZDE4YTFlMDExZjY5NWY2Y2Q3ZGQ5YmVkMzZmYjNlYWYzMDQ5ZjVmMWI5YjhkZTdlZTY4ZjJiMTQwYTkzZmYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM5MjIwNGM2NWY1MDJkYzE2NDU0YjYyNDA4NTZhOWFiN2FkZTAwM2E4ZTlmODYzMzNlYzBiN2M5ZTQwOTQ5MWQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImViOTM0ZWQyMmQ4OWVmYmYxMWNjZTIzZDUwZWZiN2YzZmQzMjg5Y2E0ODZkZGZlOGEyNzEwYzM4MWQ5NGIyOGUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjM2OTdhZmVjZjBmZTMwZDYwMTQ3YzIyNjQyMGMwN2E3MTE3ODQ3NzI2ZTM2MmQ3M2QyZTQxZTUxYzUxYjg3ZDYifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_6fadd50ed0fd4adc849ab62e8e62e224",
+      "statement": "Streaming execution prefixes stdout and stderr lines with [STDOUT]/[STDERR] and persists the accumulated log to tasks.output_log after every line, so observers see incremental progress while the task is still running.",
+      "evidence": [
+        {
+          "resource": "repo://src/utils/task_executor.py#L71-L81",
+          "version": "repo-lines-v1:sha256:b81af9f61f36d78faa5fe6a9bf547bcfeb1fe0daf755041a36792ee007911252:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFmNTQ0NmM5OGVjMGM0YTM3ZWZhMDkxYTEyMmI0YjdiODMyYzBkN2FiZDZmZjZjNTFlNGI1ZGZiM2QyN2JmYjIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxODUzYmQ3YjMyMjJhZmRiMzRjYjliNThhOWUzM2JmNjZhOTJkMzlkYjNkMTU0ZjEwMzkxYmViOGQ5YjJiNDciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjMwYjg4YTNlNDhlOGQxNTc3NDQ5MTNjYzk2MWUwZTcwNzljN2NmMzA5NzZhZWViMmI2YzBkOGU3YjM4ZDNjMmQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQ0MTg5NDVjMmEwYzA1Mzk1NWY0YzNlMTI0YTU5Njk2MzQ5YjcxZTMxNzY1NzI2YzQ5MDdkNjBiODU0YTc4MzIifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_e72f4d8bb50b4bdeac7bb2604fe15a68",
+      "statement": "A non-zero exit on any step triggers an immediate circuit-break that marks the task failed and skips remaining steps, while the command timeout is an overall budget enforced with process-group SIGKILL (setsid/killpg) that yields status=timeout.",
+      "evidence": [
+        {
+          "resource": "repo://src/utils/task_executor.py#L106-L109",
+          "version": "repo-lines-v1:sha256:5799d72406bca5d06b64459e269a4a88f22c6d90590aa3c1ed8c25a42a085150:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNDZhZTI0NWRkMjk3YWRkZjJlNTQ3N2RhNDM1Y2FmMTM0NmQxNGMwNzZiODk0ZTM0Y2M0YzE0OGI5MWVlZWYyMiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZjlkMTg2MGY3YmU1ZWJlZTRkOTlmNmU3M2Q0NGIxZTRhYjljZmM5OGU4MjRjMmM5NTY4YTkxYmY5MzgxZGI4MSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZGFiZDliNzIyZWZmNzJkMTUxOGUxNDJkMzg5ZjkwZGE2ZmMzZTFkOTdiZjZkMTczOGQ2MjNhMDkxNDM2NDk0ZiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTBkNGY1NWEzZWI3NWY1Y2RiZmMxNmVlNmY4MGY0MmJlMzgzZTI1ZTgxNzIzMDFmMjA0OWYxZWUwOTdiYWUwYSJ9"
+        },
+        {
+          "resource": "repo://src/utils/task_executor.py#L84-L119",
+          "version": "repo-lines-v1:sha256:3a4a01e5c7143fa59d9bf1e7e4d787917cf8a9d6e6ba1b38597955599294ae93:eyJzZWxlY3RlZExpbmVDb3VudCI6MzYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM2YzgxN2NjYTMxNmVmMTYyMjA2NGM0MDIwOTVjY2Y1ZTU3OTI5ZWUwZDYzOGQ2YWViZDA3MjI1YmE5MDRlMDkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM2ZGQ4Njk3MmJiZmExMDNlYjc2NWI4M2I4NTkxOGI2NWQxYTNhOGQ5YjZjMDExZTNmNmZmYWZkMGY0NDhkZDEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImY2N2I2Zjc1ZDI1NmIxNWIxY2E5OWMwMWQ1Nzg0ZDgzOTVkOTY3MzNkYTNhNTYxMWQ1YjQ5OWM4YzNiZDU3ZWEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjA2YWUyYWMxOGRmMDRhYTFhNTBjOTQwN2MzODZhMGViNGYyYWFhMGQwZDEzNzk2OTVjOGE2YjE0ZGQ0MWQyN2QifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_7f1a441d46864e07a771da7598830897",
+      "statement": "On natural completion run_task_async writes the final task status, inserts an AuditLog row with action_category=execute_cmd and the triggering actor_type (ai, human, or automation) plus full output, and caches the result; the CancelledError branch persists status=cancelled without an audit row.",
+      "evidence": [
+        {
+          "resource": "repo://src/utils/task_executor.py#L156-L190",
+          "version": "repo-lines-v1:sha256:30cf792c28412062356929256b4553678dcc02f840fea5443b2111faf4578e90:eyJzZWxlY3RlZExpbmVDb3VudCI6MzUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjgzOGY5ZDVjZTRhYjI0MDQ2OWJkNzU5YjlmNzAyNTQwM2QyZWQ2YTA1YTU5MDlhN2JkMGEwNTFkNjUzM2M2YWIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM5YTg1NzJiODg4YjA4Zjc5Nzk4YTE5YWNhZDFlZmRhZmVkMDI3MDQyNWEzZTFjMjJkODg4ZDEwNmQ2NTY4M2IiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImU5OGM0YmQzZjZlZWQ0MzI3ZDVkMDFmNjIwZTgxZGYzYzUxMmU0MTdmNmMzZWNiYjE2ZDBjNmZmNjc2ZTQwZDYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjVhZDcyZGM5Y2NlNjNmNWFkOTU4MGU0MDU2ZTZjZTc1MTlhZjIyMjIwZmViYWE3YmNkYjRkYjdlNjczNGM2ZDUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_5a056a2d7ec8489cb1a92a3c810b934f",
+      "statement": "MCP get_task_status and REST GET /tasks/{id} both slice tasks.output_log at log_offset and return next_offset equal to the full log length, and the SSE stream endpoint polls get_task_info every second emitting only new bytes until a terminal status frame ends the stream.",
+      "evidence": [
+        {
+          "resource": "repo://src/apis/task.py#L118-L137",
+          "version": "repo-lines-v1:sha256:72f0bc888b3b93063375bdc7fa1dcb3e28f1e5eaede1f0b04857e122206b9dd5:eyJzZWxlY3RlZExpbmVDb3VudCI6MjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRmMzhhNjVjYTEyODg1NTJjNzdlYjE1MmJiNjg0ZTJhMDExNzA1MWUxY2JlYThiZDBiZWIwNmJhYWRiYTEzOTYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjkxNjM2MGRhNGExNzVkYzAxODFiMzc0YjZkZDU4NjFlNzlkY2IyYjk4MTVlYzk2ZDA2OWQwZmNhNGYwNDVlY2UiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjMzMjBmYTMzN2EwMmEzY2ZjOGViYzRhMmYyODAzOWJiMDlhZThkZDNjNjdjOTgyZWRlZGY0MzI2MzhkOTM0MTAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImMxYjAzNjdmNDkxZTcyMGFkNTg2YzFhOGUxYTgwMGMxODI1ZjQzMGFhZDE3NmJmZWI2NTc1YWEzZDBkZTg0NjYifQ"
+        },
+        {
+          "resource": "repo://src/apis/task.py#L36-L41",
+          "version": "repo-lines-v1:sha256:e46a55aeda20856f3b0c330fc43f917bb62ea2c8e85b71cf3f2653936b868077:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNjU3OWY4NWZhZjg2Njg4NGM1Mjg0NWRhZGE1YmQzYzAwM2FkMjIyZTlhNjNjYzdmOTQ3M2M5ZmE4YzRhOTZmNSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNzRjNzQwYWMyYzE5NGMxNTBmYWU5ZThhOGUzMmI3NGQwOTAxMGRlZjU0NDkwZDJlMDY5N2QxZTcwNzJmNjMyNCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYzhkMzVkZGU4MjgxOTgxMzMzODhiMWFhNzUwYjUwN2QxZjU2MzE3NzljMWVhYzNmOTgwYmZlZWI1ZDdlOTJhZiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiM2UyMWExYWFjOGVkOTIyOTBlYzBmNDI2ODljNzljYmZiNDY2MmFiMGQyN2ZiYjIzMDhlODc1M2ZjYjgzNTBhOSJ9"
+        },
+        {
+          "resource": "repo://src/tools/mcp.py#L206-L215",
+          "version": "repo-lines-v1:sha256:7d6800ea9f34cb39fb0ee0ba77b2a777aafd0e91480a1b72ccc7cc6b6d4acd2b:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY1NzlmODVmYWY4NjY4ODRjNTI4NDVkYWRhNWJkM2MwMDNhZDIyMmU5YTYzY2M3Zjk0NzNjOWZhOGM0YTk2ZjUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjhmNTE5YTg0NjNiMTMxOTVmZDA0YTg0MGJlZTUxYzYyZTdhYjg0MjMwODEyNWYwMWUxMTg2YmM5MTFlZDdhMzUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjM4OTkwZjNiZDJlYTc3Y2RiYjFiODRkNjI5NTU5MTNkNGFlNDk4ZDc4OTMwNGUwYzhmZmI5ZjZkMWEyNzE1ZDIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUwNWY3Yjc4NGMwZjRjNzMwMzM1ZmE3ZTE0ZGVlNDRhNTc3OTg3YjllZmFkYmY0ZDk1YzdmZWE2NjcyYTNlODIifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_88047ee99cac4496b3bf299316fb95cd",
+      "statement": "cancel_task first cancels a live coroutine (whose handler persists status=cancelled), otherwise flips a pending/running database row to cancelled with an end_time, and treats already-terminal tasks as an idempotent success — covering rows orphaned after a process restart.",
+      "evidence": [
+        {
+          "resource": "repo://src/utils/task_executor.py#L177-L189",
+          "version": "repo-lines-v1:sha256:17bdc53aea198b8fad93f77d3e38ec75c68528bfbe696490573f189e9c1b705d:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjUyZTgwNTA0ODE5NDU2YmYzYzI5ODRjY2M0MjljNWI4N2ZhYjExNGNmMDI3ZDM2MjdhMDAxYmQ3MTFmZGE1ZjQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI1ODA3ODU4MGVkNTIxMDcxNDJkMDFjMjBmODY1MmIwMzY3ZWFiNTBhMzhhNTk0NTE1ZmEzNTk1YzFhNTNiNTkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjhhMTA2NTRhNDJjNmRjNGRmYWJjYWRiNjUyNmFhZWUwY2FmZDAwYWJlNTkyMzE4ZWZlODZjODM3NGNhMGM0MDQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjdjODU3NWMwODA3MTljMDllZmZiMDExNTljM2UwMWQ5YjFmYzU5NTAyMTc3ZjI1NDdlZDg4ZjAxYjg5YWU1OGUifQ"
+        },
+        {
+          "resource": "repo://src/utils/task_executor.py#L267-L289",
+          "version": "repo-lines-v1:sha256:758def43ba3f5a88881cb64e88ef08d7785578c24ca356cd4389fbd8cd479434:eyJzZWxlY3RlZExpbmVDb3VudCI6MjMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE5OTc3NTM3NTY0MzRmOGQ5OTcxZmZiNTM2NzdhMTM5MWU2MDJlMjY5MjQ3NjZjODUyZmY3ZmU1MGRmNTFjNDgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQ4MWFiYjFlOTFjMDQxNTk5ZTQzNzRkN2NkODIzZWJmN2ZhMmE4NTRmNjVhYWJjMzMxYThjZjQ0MzNkYmMzMDQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjYxZjlmZmQ5Nzg1N2Y1ZDE3MWYyNWJhZjQ0ZmVjMzg2MmQzYTU4NWE3NDliYzk0NGFjZjJlMjhhYjZhMWI2YWMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzOTZiNjk2NmQ3Zjg0MTEyYjkxYmU2M2ViYzkzNjRhMWI1MzkwMzQzYzU0NmVlNWU4NGNmZjkwYThkMGQ3ZGYifQ"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.5.2",
+    "at": "2026-09-23T02:41:19.131Z"
+  }
+}

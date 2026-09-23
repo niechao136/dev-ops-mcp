@@ -1,0 +1,118 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:dec42a3b56fc1ecfb04b844ff0959cb70047d757da8fa10bf5d824e01ae646fa",
+  "claims": [
+    {
+      "id": "claim_90a27a5af049432f8f08fc2cd59d4612",
+      "statement": "Automation rules support exactly two trigger types, cron and condition, validated on create so cron rules require a cron_expression and condition rules require a condition_script, with condition_interval defaulting to 60 seconds and both types bound to an existing command of the project.",
+      "evidence": [
+        {
+          "resource": "repo://src/services/automation_service.py#L13-L23",
+          "version": "repo-lines-v1:sha256:bfe1795240ab1e46833b532218c6accb9b57a74c00bf230c0fa12f5859f7a561:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQzMmQ0ZjEyOTU3OGY5YzMyMTMxNTZmY2NmMGVmNWZmMTVkODg1MjlmZGRjNDllMzM0OGY1MTFiYjg5NWZmODciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjdlYjcwMjU3NTkzZGEwNmY2ODJhM2RkZGE1NGE5ZDI2MGQ0ZmM1MTRmNjQ1MjM3ZjVjYTc0YjA4ZjhkYTYxYTYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjJlMTZmY2M5MzQxMDQwOThhMTQzYzEwNDc2ZGM5ZTlkNzBiN2I1ZWU1ZGVmZjExN2VlYWVkOWM1NjRiY2RlZjgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjkxMWJhZDA0NDAxZDBjMTA3N2ViNzFlZmNiMjJmOGEzODBlNDg3MTVmMGIwNGQ5ZDM3MGQxMjE3MDJmMjRjMDMifQ"
+        },
+        {
+          "resource": "repo://src/services/automation_service.py#L80-L95",
+          "version": "repo-lines-v1:sha256:9ae1abf6f04526a41a47bb1eaac3c607f9512fef843ecb4c0b789b4c863d2bef:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE4NjUwZjZmNjIzYTM1NjdjNjkxMmFkM2ZhNDBjODA3MTYzNWQ0M2NlZTc0ZjM5YmRjNGFkNGZjMmNmYjVlNWEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjcxMmJkZWE1MTE0NWJiNzVmZGE0YjI4MzJjMGEzNjNiNjRjMDhiMjNjZWM0ZWVhOWM5OTlmN2NlMzMxYTQ1NDQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjZkMzRiYzBkNTZhM2Q4MTY0MjNmNDRlZDdjMWJiOTg1YThmMjkxYTE2ZDZhYWI5MDQ4ZjAyM2E5YjQ4MDZlMzciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjM3ZjliY2VjYTg2MmE5ZDE0NzU3ZTlkOTlhNGM1M2RkNTMxZTU4OTZiYzk0NmRkZWJjYWRmNGI2NzczZjQ0YzQifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_d1354733184844fe89a03ba999c0e2c0",
+      "statement": "The APScheduler singleton is constructed with timezone=UTC, so cron expressions registered through start_automation are evaluated in UTC rather than server-local time.",
+      "evidence": [
+        {
+          "resource": "repo://src/utils/scheduler.py#L109-L124",
+          "version": "repo-lines-v1:sha256:609ddeca3feb10a3202981edcbf6ff7134a78618829bd96bb38036b4841b9c34:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYwNTMxNWQxYmY3MmI1ZmM2NWEwNWQxYmE5MDYwYjYwOTVkMDczNTMwNTFjNjk3MjBkZDRkMGQ2MmNiOTllN2EiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU1MDMyZTk2NGQwOTMyMzUxZTVkMTg1MjY5MjgxYjE3MWEzYTA5YjA4YjI4NmU2NjFlYTQ3MDMyM2M4MmViNGQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjRhMDhmYWNkNTk3YTU5ZjAxMmIwYWUyZmY3ZTYxMTE0MTBmZGVhZDFiYzJlYzQ3NzM0NjY4Y2Q1Y2QyNDg2MmQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjYzY2Y1YTQxYWFjNzA3MTRlOTUwMzU2ZDAyMDM4ZmVmMGE0YTRmYzNlNGI0Y2ZlMjIyN2ViMWI1NWJkZGJmOTUifQ"
+        },
+        {
+          "resource": "repo://src/utils/scheduler.py#L16-L20",
+          "version": "repo-lines-v1:sha256:1517a577da5725663cc8a0a3cd6e7b72ec32d3e41c03146942bd3f9d02dd1e01:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYWZlMzI5ZTNlMDAzZGZkMjhjNTY1ZDZiNzRjMmQzNjBiMTA1ZTJhOGYxMTFkNzA4YTU5MmMxMTM4N2M0MTE2ZCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMWIzMjI0ZGZmZDQ0ZGZjZDFiMjE0ODMxOWM5ZjFlZjQzNzkzYzlhOGQ4YjVkMmJlOTI4YzUzNjM1MzBjYzhhMSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMWEzNzJhYjg5ZDBhYjBjMTFmMzQ3N2Q3ZjJkZDU5YjUwNDdiYTNmOTE3OTA4MzI0YjQzNjdjY2IwZmEyOTI4NiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiOTQwYjBjODgyNjQzZGI5YzBmMWE0ZTAxNzNiZjcwNTNiMTgxMzllODNjYjMxMTY5ZjMxZDg0YWFlMjczYjQyZCJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_6c5847acf68349f2bbcbb2adc5594022",
+      "statement": "Scheduler startup runs from the FastAPI lifespan: start_scheduler loads every is_enabled automation into cron jobs or asyncio condition loops and starts APScheduler, while shutdown stops the scheduler without waiting and cancels all condition checker tasks.",
+      "evidence": [
+        {
+          "resource": "repo://src/main.py#L25-L33",
+          "version": "repo-lines-v1:sha256:1429751686f1b6860b41b2726354b8cb7c732013d7b73a79993cf2403b515478:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiM2JjYzQ0NWViZDIwZDVkZjJiOWExZjczYmM4N2Y2NDJlZDUxNzJiYWY3Nzc3MDE3MmE1NzM3MmExNDE4ZWU5YyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNTQ2M2EzYjdmNmQ3YjE2NjYwNjdjZjIyYmUwZTc3MDkxZTM4NjQzYWE3YmJlZTE4ZjA1NjU1M2ZhNzA5Yjk0MyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMGM0NjMwNmE0YjEwMzYzNjc4YTMzNDE4MjRlNDg3OGUwNTQwMjhiODY3NTM5NzBhMDYzMTFiMTY4MzEyNmY0YiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZThkNThhOTM5Yzc4ZDRmM2VmNWZmNTAzMzY2MTljN2RjMjllN2IzOWRhOTQzNjAwNDgzOWRkM2QxMzUzOTNkOSJ9"
+        },
+        {
+          "resource": "repo://src/utils/scheduler.py#L143-L162",
+          "version": "repo-lines-v1:sha256:7a824368cf038396f35a9b03b96baf484efd8e574fd75a51ffeae44d1569f858:eyJzZWxlY3RlZExpbmVDb3VudCI6MjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjYwZDAzYzQzOGUxNDdjZGRiOWRkMTU3MDIyYjZmMjJjNzIxMTM2MTFjZWI0OWZmM2IyMmZhMWRkMGE5OGU1YmYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAzMzgzMjE1ZjBjOTQyYjExOGE5N2YzYjBmOGE2ODc5MTYzMGQxZDlhYWM1NGIyOTQwNmVmOTAyMmM0OWY2YjAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjNmY2Y4NTY3MjM4OTY2NTJlOGRiYWJjMTNiOWFkNTYxNjVjMGQ3MDMyMmUwOTc1YjE2YWVmYzdiYWE5ZWFlOWUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_dd46d7fd1bf04dd1ad66b34d25b1629e",
+      "statement": "start_automation and stop_automation are only called from the startup sweep, so REST or MCP create/update/delete/toggle operations persist rows without registering or removing runtime jobs; condition loops compensate by re-reading is_enabled each iteration and exiting when disabled, but already-registered cron jobs keep firing until restart because execute_automation_command never re-checks is_enabled.",
+      "evidence": [
+        {
+          "resource": "repo://src/utils/scheduler.py#L106-L147",
+          "version": "repo-lines-v1:sha256:93b86b998877676963574a4c2eb9b1d8ebc0007fffd28622466f6af2635d1147:eyJzZWxlY3RlZExpbmVDb3VudCI6NDIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjllZDQ0N2E1ZGNkYmI2MDE5NGZlYTQ0ZmIxYjU1ODEzMDVhZGU1YmQzODhhZjI2MTNiMzg1ZTM3YzMwZTJiYzYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjdiZGQ3N2E1NGRmY2VjZTg0ZjljM2U0NzE2NjVlNjBlMDg1NWFiMGM5ZTJhYmFlYjUxYmFhMjdmZGIxOTNiZGYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQ3MDE0OWUwNjlhZDY3ZWNjZjQ3MzY0NmZmMWM3NTAwNTBkMzI5ZDExMDAxOGRjNTc2Njg3OGVhZmExZDYwN2QiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjNmYmUyOTVhZjZlMTE2YTk2MTcxNWI5MWYzOTE3NjQ0YWMyMjc2YmM2OTJmZjE0MWQ2NTk1ZTNmZTEzYTBlMzkifQ"
+        },
+        {
+          "resource": "repo://src/utils/scheduler.py#L23-L56",
+          "version": "repo-lines-v1:sha256:59efbea35ea44958bb5caa86c051151c8c156e9a5afcaf4d4f84faa6e251bfdb:eyJzZWxlY3RlZExpbmVDb3VudCI6MzQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU3ZmNjYWUxMmQ0ZDE0NmEzOThlNGE0ZGUwZjBiZTI2NjkzNWFkNjVjMGU2ZWYzZTJmMDFiNzUwZTQzZmJiNTYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjlkOTgwYTM0MTdmZjYxNmMzMzI4NzJkYWU5MTkyMjYwNmZkYThmM2ZjYjMwZGM5ZTAwODlhZTAwYzE0MzJhZWMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjIzZjhkNTJkOWExYWJkMDcxYjI2MDQxNzA0NGM4Mjk3YjVhMWI1YWZhOTNmNzkwYmM5MzdjMzVmMjMxM2Q3ZTQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjAwZDM0NGMwYjk0OTA4ZjkxMjIwN2Q1YjM1NDllMmU1NDg1ZWRlMzMxNzI2ODNjMTNiZDI5ZTc2YWRiMDBkOTIifQ"
+        },
+        {
+          "resource": "repo://src/utils/scheduler.py#L85-L88",
+          "version": "repo-lines-v1:sha256:319d3e30491c270a162fb09ad8bfd970337a021f7f2aac1409e8a52850067b4f:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZGU0ODNkNzMxMGE4MzBkNGU5ZTg2MDU0Yjc5MjUxMWMzNjg3ZDJiZjE3OGNlYWYyODVlMTNhYTkwYTJjODIzNCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMzNhMWViYmUzMjM0ZjAwZThjNDg4NWE0NGQ3YWRiMGU1ZGY5N2M4YjZkYzcxZDBhYmViZjQwNTE5NzNkM2U1NyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNDA4NzYwOTc2M2JjMDI0MWU5MzNhODE2ZTUyNjQ3NWRiMDI1YzYwOTIzNWU3NDE1M2NhYmU2YzZlMWM1MzQyZiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNmE4ZWI1YjEzMmU1MDJmMzUxOTYzY2MwMTNlOTNkN2MyNzMyYWMyNTMzMWNhNmQzNTM5ZjNmMzJhZTI1MzJlZiJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_cab3d5def9b44d6da3f7217028967d40",
+      "statement": "Condition evaluation executes each non-empty condition_script line through execute_shell_script with a 30-second timeout in the project work_dir, and only when every line exits 0 does the rule fire; any non-zero exit or exception skips the fire and retries on the next interval tick.",
+      "evidence": [
+        {
+          "resource": "repo://src/utils/scheduler.py#L59-L78",
+          "version": "repo-lines-v1:sha256:6a974d2fef3717e42c64c5ccce321b6f0e73228c6a2ef9a86c5dd50099f662f3:eyJzZWxlY3RlZExpbmVDb3VudCI6MjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjdjZGRlNzBlYzEyOGRjMDJiNDhhOWQ1ZmVkMWUyZjI3MGIxYzY1M2E4ZjQ5ZDM1MDliYTA1MDgwZmE4YzViYzMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjBmMDg2OGQ4NjJlNTk2ZTFmYTBhMGE1ODc4YjA1MGVlYWZjNmUzNGQwZTE2MmJlMzhjNmFmM2IxY2JhY2U4ZmMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjgxOGI3OTE3YTJlNTBmMmNhYzM2YTMwYTJjY2IxMDQ2MjI1YTQ2ZjI4ZDkxNGJkNGFmYWIwOWNmNDc0ZTEwODMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijc0ZjU0YzY1NTExYWY0NjFkZmJhYjc4MTU4Njg4MjIyZjY4OTljMmE2ZDdjZjc4OWUzZDRlZjhlNThlNzkyZTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_ecc23550b1894d33b26abfe2d39f61dc",
+      "statement": "When a rule fires, execute_automation_command splits the bound command script into lines with params set to an empty dict (no ${placeholder} substitution from runtime arguments), submits it through the shared submit_task engine with actor_type=automation and actor_id equal to the automation id, and stamps last_run_time with last_run_status=running.",
+      "evidence": [
+        {
+          "resource": "repo://src/utils/scheduler.py#L23-L56",
+          "version": "repo-lines-v1:sha256:59efbea35ea44958bb5caa86c051151c8c156e9a5afcaf4d4f84faa6e251bfdb:eyJzZWxlY3RlZExpbmVDb3VudCI6MzQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU3ZmNjYWUxMmQ0ZDE0NmEzOThlNGE0ZGUwZjBiZTI2NjkzNWFkNjVjMGU2ZWYzZTJmMDFiNzUwZTQzZmJiNTYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjlkOTgwYTM0MTdmZjYxNmMzMzI4NzJkYWU5MTkyMjYwNmZkYThmM2ZjYjMwZGM5ZTAwODlhZTAwYzE0MzJhZWMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjIzZjhkNTJkOWExYWJkMDcxYjI2MDQxNzA0NGM4Mjk3YjVhMWI1YWZhOTNmNzkwYmM5MzdjMzVmMjMxM2Q3ZTQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjAwZDM0NGMwYjk0OTA4ZjkxMjIwN2Q1YjM1NDllMmU1NDg1ZWRlMzMxNzI2ODNjMTNiZDI5ZTc2YWRiMDBkOTIifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_3ecf4864fa604f6a87eb580678e6ebc5",
+      "statement": "Automation REST routes list rules for any logged-in user but restrict create, update, delete, and toggle to admin-role JWTs via get_current_admin.",
+      "evidence": [
+        {
+          "resource": "repo://src/apis/automation.py#L45-L136",
+          "version": "repo-lines-v1:sha256:5b6ab795ad43505ae6489008c7b0b4e0905626955f60e1fe7d369b6fa9ef94be:eyJzZWxlY3RlZExpbmVDb3VudCI6OTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjVmZDJiNjgzN2NjMzM4NjZlYTRjNTNmZmEwZWY1NjY1Njk3ZDU1MTU4NGU2NzRlMDA4MmQzMWMxZGY1MGJhYjMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjJhOWY4YzJiYzdhMTQxYTAyMmFmM2ZlYjhhYjUwMDhlYzI1NzU3ZWYyNGFjZDA0OWY1MDg5YTc0YjdjOWFlODEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImI2YWQyMzM1ZDM5NGEwMTE2NjAyYjcyMGNiNzJjNDdmN2NiNDk5YTM3MzM0MzMzMmEwNGU4OTRjMDE3MjkxMmIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_62335601c7984c8faa9ae1f0b4d381b4",
+      "statement": "The MCP manage_automation tool gates every delete and any create/update that carries a condition_script behind the two-stage confirm_token flow because condition scripts are periodically executed for real by the scheduler, while toggle applies immediately without confirmation.",
+      "evidence": [
+        {
+          "resource": "repo://src/tools/mcp_manage.py#L850-L851",
+          "version": "repo-lines-v1:sha256:4bbb27de69f1e25866a57dd68cbc41ebf8520d30932fc23e0e0811332ba373ee:eyJzZWxlY3RlZExpbmVDb3VudCI6MiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNzA4ZThiMjVmYzFmMzk5MzYxOGJiMDJhODYzMDZiMDNhMDA2YjlmNjZiMDE1YWFiMzAwMzM2M2Y0ZjViODk2YyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZjc0OGQ5MWQ5N2U2Y2FhZTg5Y2M2MjY4ZTc4MTkzODJjYTc5ZDc2MjQwMDAzMDhmN2YyYzQ0YTZhZDEzYjBhYSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMjdkMDQyOGJjNTJjMjg3ZDA4MTY1NzFiZTkyYjliZmZlMTJiYTg1MjUxOThjY2I1NDk0MzY1MmZlNWZiNzk3YiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTY1NWE1NjU4Mjc2MDQ3YThhNDdlOGNhYmJlM2I5ZmQwYzg0YzFhZDVlNDRhMTU3MDBmMjk0Zjc0NzdiYjViYyJ9"
+        },
+        {
+          "resource": "repo://src/tools/mcp_manage.py#L900-L913",
+          "version": "repo-lines-v1:sha256:bcd15ae213ca32c50326d25597779547991464897d7b52e0c8bb862b85c78691:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjM2YzM0MzAzOTM2ZDkwYzQzYmIwZWQyNGNjZTI1MDlkNTE5YjlkMWFhMzlhYWE4MWZiZDZjNjQ0OTZkZjlmZTIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU5Y2U4NDUxMzIxZjk4MjZmNWQ2OTczZTQ1OTA4ZTc2ZDczNjk0N2M1MTU5NTc0ZGMwMmIyZjZmMTdmNTUyMjUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImIwZDNlNjgwODc5ZWZkMGFiNjBmZjk3ODA4MzMyYjY2OTIwNDJlZmQ3MmEwZTc4MjkyZThjOTlmY2VhZDMyZmMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQyZjYzMmM4YTgyZDM5OTE0NWVjNGU5ZDM3N2NiYTNiNTFmNTBhYjdlMDk0ZmE4ZDczZWI3NDVjOTg3ZGRhMDUifQ"
+        },
+        {
+          "resource": "repo://src/tools/mcp_manage.py#L984-L991",
+          "version": "repo-lines-v1:sha256:7f455abdef5e3f9c31067bd7ed2946ab6a52fdbe58a718371af4a26631aff588:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZjA0MjFkYzNlMWMzNWQ5ZjRiMWVhNDdmYjg5ZWZhN2VjZjJiM2UzOTZiZTdkNzI0YTU3MTkzZGU5M2JiNTI5YSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiM2UxMmE0NzRkMGE3NjVjNWMxNTY0YmQxODFmZTIzNmZkNGMwZTkzMDQ1MTcwNDNmNTcyZmVjMzVjYWUyODU0NiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNTUxNWU0MTA1NDc5NGEzMWFjYzE2YjRjZGU4NmFlYWVlZDZkYzlkYTljMTMzNTVkZDFlMmY4Njk0ZWYxYTk1YyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMDJlMGZhMmE4ZTU0MmEzMjFhMWE1YTVlYWI4YjgzZjM5ZGI3NDcwNWI3M2M2NjQ0NjBiNjE1NDhkZWYzYmYzZCJ9"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.5.2",
+    "at": "2026-09-23T02:41:19.131Z"
+  }
+}

@@ -1,0 +1,130 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:c60aa619cc5ed973f88109ccd1cf66df3ffa9da0c98a707f5cfa5db287c5b87c",
+  "claims": [
+    {
+      "id": "claim_95ca28e9567a43df90c3a37676010249",
+      "statement": "MCPAuthMiddleware guards paths starting with /mcp or /api/mcp by extracting an API key from X-API-Key, then Authorization Bearer, then query token/api_key, returning 401 when absent, and authenticating by matching the key's first-8-character prefix against active api_tokens rows and bcrypt-verifying the full key before storing the row in the current_mcp_token ContextVar for the request duration.",
+      "evidence": [
+        {
+          "resource": "repo://src/middlewares/mcp_auth.py#L11-L65",
+          "version": "repo-lines-v1:sha256:6cbf7847aa61a20f38cce74891183d27b783d64b682302864fdffac2ef783cc1:eyJzZWxlY3RlZExpbmVDb3VudCI6NTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI1ZjZiZGNkZTk3NjgzZWI4MDk3NDBiNWZlZWYxYWUyYWIzYTZkMTRjNjAxMTg0N2MwMGY2Mjc5NTYzZjM3YjAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFmZjU3ZDlhNzRlMjdhNWQyN2JjYTEwOTYwMDBhYTNlYmM2OWQyOGNlMDE1MDkzNDZlZTRmMDdiZTAxMWVkZWEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijc5NTNmZDllOTA4ODZlZTEyNzYzNTBlYTZiZDViZjg5ZTMyMDZmYjYzYmFiNGIyMTJhODdmOGIwM2E4OTA0NzAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_fb6e377e99a848f584a420a38316dd1e",
+      "statement": "The scope model defines ops:execute, resources:read, and resources:write, and API tokens whose scopes column is NULL or unparsable fall back to the single default scope ops:execute rather than receiving full access.",
+      "evidence": [
+        {
+          "resource": "repo://src/utils/context.py#L27-L43",
+          "version": "repo-lines-v1:sha256:f70c36b9692bed66eb986066a52c4f6edc9f59cd4a687c95449f43f2690db27e:eyJzZWxlY3RlZExpbmVDb3VudCI6MTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjUyMDA1OWI4N2M2NDU3ZjA1M2RlM2UxNGYzMzg1MjgwNGEzODRhZTRkYTUzNjY0MmU5MzgyNTMxMGY4N2UzMDYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQwZjFkZGVhYWUxYTdiM2RiZWU1ZDNiNjQyNzZmMGYzZjgwZDQyNWYzYjIwNzYzYTRjYTE3NmE4ZmIwYTU1YjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImZkN2JkMmI0Y2M3NjdiZjA5ZmU3YjQ0ZDQ3ZGQzYWI4ZGZmMTMzZmM0MTIwNmEzYTIyMTE5Mzk1YzAwMmZjNzkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjlkNDIxMjMyZmI5MTEzMTVjYjZmNjY1ZjY2MTU2NmNiYjg0NjU5MzQxZmFkZmQ2YzgyMjQ5OTk5YWIyZDgwMzMifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_58a01ff69c1943c7962cef98b0705b01",
+      "statement": "Project authorization is independent of scopes: allowed_projects stores a JSON array where null grants every project and check_project rejects any project name not in the list, and every project-scoped MCP tool invokes this check before acting.",
+      "evidence": [
+        {
+          "resource": "repo://src/tools/mcp.py#L125-L130",
+          "version": "repo-lines-v1:sha256:da272a8efacad26dc809bdda6ae86f7b4e2b5ddfcca855cd9fd27747023b7ab6:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiOTdjYzU4ODdkYWJiOGNmODg3YjRiM2YyZThhNjEwYzU0OGMzODJjNDAxYzZlN2RjZGE3OGY3MWI2Y2Q1NGI4MSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDMwYTc1MWJiNmEwYmUzODg0MGM2M2U1MWI5ODE3MDMyZmQ1MWFiMTQzZjQwZTEyMzFjNGY3MTQxOWM4NzBkYSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiN2NkYzNlZWQzMGUyYzExNTc5OGU5NGRiMGRmZTA3YWJiYmY3MDhhNjU5YTM4ZTY4Zjc2YWNhMzVkMzRmZWVjYSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTJlYmU4ZDIzMTQzNDQ4NzcxNzZkOTNjNmYxNjIxZmUyNTE5NmEwZDY0ZTc3MWI4MTA3MDZlYzU3MTRkNGQ4YyJ9"
+        },
+        {
+          "resource": "repo://src/utils/context.py#L11-L24",
+          "version": "repo-lines-v1:sha256:17d486b4867e7225b5e01bf2830710bedf35c2f120816bc1c766ad6970baaa9f:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFlMzgwYzdiYjQxZjUyOTEyNzlmMzU1ZjkwMjY5YTQ0NWVlMjBhYjgxMGNkYWQyOTBjZTI2YTNiYzA2NGYwNzMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE5ZjVkNDliMTViOGU1YzYwYmE4NTU5ZDI0ZmI0ZDAyNDA0Njk2ZjhhYTY0NzcyM2RhOTZkZDIwMzhhNzA1ZDIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijk4YzJiYTVjMGZlMWM1NDMwNzcxN2Q4N2RlMGM5OWI2ZDBmOTZlNWQ1NjQzZGI1YTJkMWI4MDA1YzQ3NzAxOGYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImU5NmZmYTU0NzgxYmRiMDQzZDc4MWQ5MzAyNzJlMTI5NmFlNjM1ZjEyYTQ4MGJmMDZlM2YxYmFiYjFlYjQxNTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_ee908e8404bc4217a056fbe104e43385",
+      "statement": "Console sessions use HS256 JWTs signed with JWT_SECRET (default dev-ops-mcp) that expire after 30 days; get_current_user verifies the bearer token and loads an active user, while get_current_admin additionally requires the admin role for mutations.",
+      "evidence": [
+        {
+          "resource": "repo://src/utils/auth.py#L16-L64",
+          "version": "repo-lines-v1:sha256:8049f703938741bd34fcdcebf353231c51fa01ce5f0014418d335c3a0c16371c:eyJzZWxlY3RlZExpbmVDb3VudCI6NDksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU5OTdmMzkxYjVjYmI5NmE5YzIxZDM0YmE0NjI5NjQ1YjJlM2ZhNTczZjk2NDE4Yjg0MDE0NDY3NTAxNDZmMGUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjEwNjEyYjUxZDg4ZTM5OGFmZjY0OGM1NWE2N2RiZWJhYzE5YTA4MGI0YmM3NmE0NTYwZjVkNzc0YTI4ZGZjNTciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjJiYTNjYTg4OWEzOWZlNWNhMzdlZGU1OWI4OTgxNzA3OTY5NjY3MTMwMmJlMTNiMjk4ZGMzNzE2MzhhZmU1ZTkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQ3YTcxOWM5ODFkYTJkY2U0NzdlNjVlOTQ0MDAyNTI3M2NmODQxNzgwYTNjYTdlYTk2MDkwZDI2OWEyYzFkZDAifQ"
+        },
+        {
+          "resource": "repo://src/utils/jwt.py#L13-L30",
+          "version": "repo-lines-v1:sha256:0bbe5a4c813a769ab6662ea2950d2c283cb01b4fab3b1473e4cd6ec9511cdc10:eyJzZWxlY3RlZExpbmVDb3VudCI6MTgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRkY2YzOGZkNDA5MzRhNWRlZDliZmQ3OWU1ZjAwOThhYmZjMGVmYTJhYmQ3YmE1YWZjNWRkMjJkZGU1ZmUzMDYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjllYzk0OTUwZmIwY2E3NTVhYTdiOWNlZDg2OGZhMzdkZmEyMzNiNzk5OTcyMzM0NjhkNjY0ZjYzZDYxOTA5OWIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjdmMTY1NjRiYjQxZWMwOWY3NzE0OGIyMTRkNTFhZDIzYzhlYmI3OGIzZTRjZjFlMWNjMjk4Y2JhNDcwZTI0MmEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_fb3758bd894c46b4b8281471f097507b",
+      "statement": "Confirm tokens for MCP manage writes live only in process memory with a 300-second TTL, are consumed exactly once, and are bound to the action string that created them, so a restart silently invalidates outstanding confirmations without any persisted cleanup.",
+      "evidence": [
+        {
+          "resource": "repo://src/utils/confirm_store.py#L16-L52",
+          "version": "repo-lines-v1:sha256:764a12de20d19c185644a6643419cb835555a855b5de4ebaa8ed642b9c9f3f41:eyJzZWxlY3RlZExpbmVDb3VudCI6MzcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZlNjExOGNjN2RmYmZlNWVlNGMzMTU5ZDgwOWNlNWEyMzlhMDk5M2UyNDY1NWQ5ODE5ZGM0MTkxNTk1Njg5YWUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI2NmUzZjc5ZmJiYjBhY2VkOWQxNjA5YTA1Mzg4NWM0Y2JlMDJiYjFjYTAxYTljNGJlOWMxNTA3MmI3MTAxOWUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImZlNmE4ZjkwNTJhMjk4YTI0NjAxNzNhZDgwYmJmMGRlZGQyZDcxYTE5Y2NlZTc3YjE3MDc2ODA1NTQ2MDQ5MWIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_7501465406ae4db2a23ed75501a26563",
+      "statement": "API keys are generated as 64-character hex, stored as a bcrypt hash for verification plus an 8-character prefix for lookup, and additionally Fernet-encrypted with a key derived from SHA-256 of API_KEY_SECRET — which raises RuntimeError at import time if the variable is unset.",
+      "evidence": [
+        {
+          "resource": "repo://src/utils/security.py#L16-L41",
+          "version": "repo-lines-v1:sha256:99fb9535ba5a73eb24fefc83c72114dbee0bfcfb1eb790c703a06735fa2f157b:eyJzZWxlY3RlZExpbmVDb3VudCI6MjYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM3MDViMGMwY2Y3ZjAxZmZlOTc0ZTdkMDU2OWQ2MzcyNWMzYTFjMjIyNzQwNTFjOGIzYmM1MmNhODQyMDJiOWUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjBmZmUyNWNlM2UwM2YzNmI1MWEzZGE4NTJjMGY5MDQyMTk4MzgxZDExYjhmZmY2MjZkYzNlMWQxMTIzNWM3MzciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImZhNGI4N2M0ZTUwYjAzZDMxYmVhMTMwNWQ3ZTZkY2IyOTljMTJmY2RiNDQ0ZDVmZmY1OWUzOTkwMzdiYjY3MDciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImJiMTQyZDdkNzE4OGNmMmVhMGU3NTE3YmRkOTY5Njk1OTA4ZjU4MTlkNDg2NmRiYWJiZDg1YWNjZWU1Njg2MGUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_afb4967eb1024f0ca1ab88aba09bf640",
+      "statement": "mcp-init.sh creates a password-locked devops user, generates an ed25519 keypair under /root/mcp_keys, installs it in authorized_keys with 700/600 permissions, and writes a visudo-validated sudoers whitelist limited to docker, git, systemctl start/stop/restart/status/is-active, journalctl, mkdir/chown/chmod, and at — with NOPASSWD ALL left commented out.",
+      "evidence": [
+        {
+          "resource": "repo://mcp-init.sh#L38-L157",
+          "version": "repo-lines-v1:sha256:3164a1cf6c88da1ced83497119b35712dcce8ff644f76983dd55af7f51c1bbfc:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIwLCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiJhNzExNDJhOWU3MDNiNzhiNjYyZDI5Y2ZhN2I0ZmQzZTg0NDIwZWVjOTg2NTcwZjNmM2E5MDQ3ZDQ2MTMxYjk0IiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiI2YTlkZTM0NWEzNzAyYjY3ZjRjMDI2YmUxM2VlMzIyOGQxZGIyODA2MzdhOWNhOTE1YTg3NjdlYTc0NGNhZTFjIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiJmYTQxMmJjZTk4YjUwZWRjMDgxMDFjNmY5YmFiMzlmOWY5NGZiZmRjOTlmY2IwZjA2NWI5ZmRlYThlNjE2MjZhIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiI0ODc1ZmU0ZGI5ZWRhNDdhNWU1OGQwM2RjYTVkNjJmZWRhY2YzZTRhYzNiMDhlOGIwYjY4MjhiYTVlNTZlOGQ2In0"
+        }
+      ]
+    },
+    {
+      "id": "claim_01e79ceef1dc4ef68a0733846c66b2e8",
+      "statement": "The host SSH private key is bind-mounted into the api container read-only at /root/.ssh/id_rsa and is only consumed by local ssh -i subprocesses; no MCP tool or REST endpoint returns key material to callers, so AI-held credentials remain limited to scoped API keys.",
+      "evidence": [
+        {
+          "resource": "repo://docker-compose.yml#L9-L11",
+          "version": "repo-lines-v1:sha256:e04fe5db13b38e711e4042f9921c22cc371baffd599ab0fa3381b663fa0ca0e1:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiM2FlZDQyMTZjMTZmNjExNWNlZTNmZDhmMGNiZDU0NjRhMWZlZWNlNTM1YzkwNTcxZTJhNjM4ZDdiYmIxZjY0YSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYTM5MGMwOTIyNWM2Mzk5M2Q2NGI2OTAwNjY4M2Y5OWVhMzM3NGYzNTkxODFiMzMyODg2NWJjZjZkZjk0MDIwZiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiOTNkZmFlYTRkZThiNzE1ZjBiODBkNzk1MTJiYWQ1NzE4OGJmYWZkYzIxYTk5YjRhNjllMDFhNDUxYmMyMzc4ZCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMmEwMDBiMzA1NmRkMDY4NzUwZTc2YzJkOWFlN2ZiNmQ0MTFkYTFhNjQ2MDY0OGY5NzI2NjEyMTExMmUzOGQyZCJ9"
+        },
+        {
+          "resource": "repo://src/utils/executor.py#L32-L49",
+          "version": "repo-lines-v1:sha256:a19dbad13890720aa765cde0023165b0edb3bde5f81536b0a0d64982f62331d5:eyJzZWxlY3RlZExpbmVDb3VudCI6MTgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRmMjc5ZDg1YmI0MzQxNzQ2YWYzODdhY2Q3OWMwMDMwYTU1M2ExNjZlMjk5OWExMTRhNjdhN2VhMTY2YzJlMzQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM5MjIwNGM2NWY1MDJkYzE2NDU0YjYyNDA4NTZhOWFiN2FkZTAwM2E4ZTlmODYzMzNlYzBiN2M5ZTQwOTQ5MWQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjM2MzMwYTMyYTdkZjlmN2NjNTUxOTc5ZWU0MzIyYmQ4MjMzNDk5OThmNzA3ODk2OGU3MzBmZGNjNWY3YTA5ZDAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjM2OTdhZmVjZjBmZTMwZDYwMTQ3YzIyNjQyMGMwN2E3MTE3ODQ3NzI2ZTM2MmQ3M2QyZTQxZTUxYzUxYjg3ZDYifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_5b22105e0d5f4d3a918e83722fbb01f6",
+      "statement": "API key and user administration deliberately has no MCP tools, so an AI key cannot create, regenerate, or broaden credentials — only JWT console users can manage keys and users.",
+      "evidence": [
+        {
+          "resource": "repo://README.md#L299-L311",
+          "version": "repo-lines-v1:sha256:4dd6edeeac08c44e83d48ac0f7f87cdddef258702df04124022f44fcec870bac:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjMwM2ZmOGEwYjA4MWM3NGJlZDJmYTM0MmQ5ZDAzMzFiZTA4ZjRjZTIwYzFhNDFlMjQ0MjIzMTI5ZDUwZmMyZmYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZiNWQwNWViYWZjZWVmMzczZDNjN2E4ZTkyZTUyMDQ2ODIyMzBlNGMyYmIxMDM2MDdhYTAzN2FjMzE2OTYyNGIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjgzZTBkZWY4NzU1MDBhNGNkZDJmZjE5ZmY4NzE4ZWY3MjBlMWY3YjE0OWExNDRiNmJiMWQ3ZDI0MTZiZmUzODciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImVkYTAwYjdkYmQyMTZhYWExYjhkZjAxYzkyMWU0ZTAzMjBmM2U4OTMwYjY0YzAyMzBkZmEwNzRmZjNmMmRmODAifQ"
+        },
+        {
+          "resource": "repo://src/main.py#L51-L61",
+          "version": "repo-lines-v1:sha256:22d29b268d0d41d25e5c3008bd8ad063ef9fc672d515011a4da25b76623c7360:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijk0ZGFiYTBkMDZlOTU1NzM1NjdmYTcwZTljODA1YjYxMmEyMTAwMjA4NzNiNzY3NTdkOWY4MjU3NWEyNTkxMTIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFjZDM3MGU3MzBkMTFlY2U1ODM4OTE4ZTJiY2FjYTYzMDljMGUzN2IyMWUxOWNjZDcwZGQ2YzBhYzBkNTkzMDMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImFmYjY3NWMxMTFlZTNhZThkOWFmY2M0Yzc4OTk1YmQwOTc5N2U0MDYzM2E2NGE5NjdlYmFmY2NmNDNlYWM4NWYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjM4MGU3Mzk5Y2ZkY2I3NmM1ZmFlNmI5YzAwNjRmYzQ1YjA4Y2ZjMWYyODEzMDJmYjYxZWY5OTE5MzM4YzNlMDAifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_22f2045b7e8a419e996faa42745c1894",
+      "statement": "MCP execute_action enforces the high-risk requires_confirm gate by returning a requires_confirm payload without enqueueing until confirm=true is supplied, while REST execution endpoints skip this check — making it an AI-facing control layered on top of admin-only console access.",
+      "evidence": [
+        {
+          "resource": "repo://src/apis/task.py#L150-L158",
+          "version": "repo-lines-v1:sha256:84ae4d735c392c4b41c0bab883955315212eb248faf89330dfc8789fa65b6b2e:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNjVhMjU2OTQxNTAwOTc5NDUzMzllM2ExMjQ5ZGY3MTVlM2I1YWIzNDRmNTEzZGM5ODJjODhjNGI2ZjE4Y2M1ZCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYjUzYTZiNmU4NGVlMmUyZDBiMmIxNzRlMDY4YTk3NDlkN2JiYmJlNDAxNDczNDExNDFhMGQ4NDBlMTI3MGZkNiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiOGI5NzRkYTQwODYzMmE0YWE3ZTJhZTgwYjg2MDM5MWEzZGNkODIxMWM3OWVjYWQ3Y2E4ZTk1MTI4YjAwMTgzMiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMjI4NTg4NmE0MTQ1NjkxMTljNzljMWIyNGYyNjEwNGIxYzBmY2JhMjg4YTVmNzllZGIzYTJkYjJmOTlmMTJlNCJ9"
+        },
+        {
+          "resource": "repo://src/tools/mcp.py#L144-L151",
+          "version": "repo-lines-v1:sha256:f2190b75f8abfe4ef451b6b8725a08420a107725125b96e58cf7425ae6f34969:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNDM4ZjRjY2Y1ZmNiNGNlYWE1NDY1NzVlZWM2Zjk4NWIyM2MyNmVhMWY5MmFiM2Q0NTQ5NjA0NzIwZjA0MTllZSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMjZiZjg1MzQ4NTRiNzcxZmU0ODg3ODAxOWRjYTlmYzY2ZmNmNzBlM2E1NDJkY2U2MzYwMDRjZTMxMDg1NWFkYSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNjlmNGM4OWU5YWU0Y2U5NDRjMTYyYWRlYzc4NDIxM2U4M2Y0MWJjMDM5MDIyNDU1NWRiNjI3MDdmMWY4MjM0MSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMjAxNDkyM2RmMzEzY2RlZGQwMWUwMGIxODNmYzFmNzQyY2Q3NzAwMGY4ZDgzZDljMTM0M2RmNjc0YTQ1OTMzNiJ9"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.5.2",
+    "at": "2026-09-23T02:41:19.131Z"
+  }
+}

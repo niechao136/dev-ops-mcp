@@ -1,0 +1,120 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:d627d71e72ccf264d8846b73cc7a8e73c8508e43cc74b28613359bc11fee471a",
+  "claims": [
+    {
+      "id": "claim_c3b0fcc4b89f406f88eae570437d648e",
+      "statement": "FastAPI is created with root_path=/api and ten routers are included (api_key, auth, user, project, audit_log, dashboard, public_command, task, terminal, automation) plus the FastMCP app mounted at /mcp, with a CORS middleware allowing all origins and MCPAuthMiddleware applied globally.",
+      "evidence": [
+        {
+          "resource": "repo://src/main.py#L36-L61",
+          "version": "repo-lines-v1:sha256:2f1aedd1ba05406a8021283f9421da3ea20906143e9d63cf45d786c446e51af0:eyJzZWxlY3RlZExpbmVDb3VudCI6MjYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY0MDViYzVhZmIwYjZhZjllNTEyNzUzNGQzZDJlOWIyYmQxOTIwMTBkNDk0OTdiYmU4MTIxMzJmYjIxOTZjZGEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFjZDM3MGU3MzBkMTFlY2U1ODM4OTE4ZTJiY2FjYTYzMDljMGUzN2IyMWUxOWNjZDcwZGQ2YzBhYzBkNTkzMDMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImJlYTkzMjJmMzliOTNiZDU5ZDUzNzQ1MDA0NWExNmVkYjBhNGI2OTkyMDFjOTBmMzFmZjYwZTU5NjAyNGVjNTYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjM4MGU3Mzk5Y2ZkY2I3NmM1ZmFlNmI5YzAwNjRmYzQ1YjA4Y2ZjMWYyODEzMDJmYjYxZWY5OTE5MzM4YzNlMDAifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_0a522ce8f13040f7bf2c4c5571cb297f",
+      "statement": "All REST responses use either DataResult (data, status 1/0, msg) or PageResult (total, data, page, size) envelopes defined in schemas/api.py, where status=0 signals logical failure often with HTTP 200.",
+      "evidence": [
+        {
+          "resource": "repo://src/schemas/api.py#L26-L36",
+          "version": "repo-lines-v1:sha256:4c8523643a3ae20d98020435cf4aa039e0aa6343046c1da8078fea7b5a7dfa9e:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQyNzIzM2E2NWEwZjgxZmU1MTViY2I4OTE2MzE3YTY4MTVkNDJmMWRmNjkwMTdmY2NiZTUxZTQ0ZmQ4NDMwYTgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjVhMGQzMjZiZGE0NTc0ODZkZDg3OGY0OWU0MGEwMDdjNzI0ZjRhMjkxY2ZlZDEyMDY1YzY1ZjcwZTM0NTFiMzAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjZjY2U5OTU0YzVkN2I5NDJmZGE0NzM4MzYxMGZiY2U4ZDVlZjZmYmUwNjNkYTQ5ZDhlNmM0YTRkZjg2NzI3MDYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_21a188e13b354a87958fa4a1ca930eb3",
+      "statement": "REST authentication is JWT-based via get_current_user (Authorization Bearer, loads active user) with get_current_admin additionally requiring role=admin for mutations; API-key auth is a separate get_api_key helper used mainly for MCP.",
+      "evidence": [
+        {
+          "resource": "repo://src/utils/auth.py#L16-L110",
+          "version": "repo-lines-v1:sha256:3d1ef9ff8d5c8304e454e5afeddfaa8ec7c71193c3ae4796325c547f6a767693:eyJzZWxlY3RlZExpbmVDb3VudCI6OTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU5OTdmMzkxYjVjYmI5NmE5YzIxZDM0YmE0NjI5NjQ1YjJlM2ZhNTczZjk2NDE4Yjg0MDE0NDY3NTAxNDZmMGUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE1OGQ3Y2QxNmYyMDA3MWVhMDQxZjhmMTM4MjIzZGYwZjU4OGJhODJhZjYwY2JmN2M3MjQ0ZGRjNWU5ZTIxMTAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjJiYTNjYTg4OWEzOWZlNWNhMzdlZGU1OWI4OTgxNzA3OTY5NjY3MTMwMmJlMTNiMjk4ZGMzNzE2MzhhZmU1ZTkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjdlYjcwMjU3NTkzZGEwNmY2ODJhM2RkZGE1NGE5ZDI2MGQ0ZmM1MTRmNjQ1MjM3ZjVjYTc0YjA4ZjhkYTYxYTYifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_a474f16544ed4e00b1206c1e647ba046",
+      "statement": "GET /api/tasks/{task_id}/stream is an SSE endpoint that polls task status every second, emits incremental log chunks as data: events, then a terminal {status, end:true} frame, with Cache-Control no-cache and chunked transfer headers for the nginx gateway.",
+      "evidence": [
+        {
+          "resource": "repo://src/apis/task.py#L109-L147",
+          "version": "repo-lines-v1:sha256:baf304801a3d954593bc56d8964d5137b4eb6f10379abb9be74ee65bb510ad25:eyJzZWxlY3RlZExpbmVDb3VudCI6MzksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNhNTdlNmI5YjAxMmVjMjM5Yzc0NmM0NjhkNjQ4N2UyOWIzOWVmOTVlOTg3NDA1MzJjYzIzOGJjMTlmNjc4MWUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM5MjIwNGM2NWY1MDJkYzE2NDU0YjYyNDA4NTZhOWFiN2FkZTAwM2E4ZTlmODYzMzNlYzBiN2M5ZTQwOTQ5MWQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjYyMmViNjNlY2VjMDEwNGU0NWUyMmM5ZTA4YmEzNDk4ODE1MWU4Y2M4ZTlmNTNhNTMwOTMyOGZkNzkyOWQ3YzQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjBlNjUxMGQzZjM3ZTJlMzM5MmEzNTJkZGNjYTRjOGJlOWNhOWRhODhjOTYxZmJhYTE4YzJhMmJmYmRkMTMwNmIifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_4697af7801cc49cc8ec94cbce40eaa45",
+      "statement": "POST /api/tasks/execute accepts project_name/action/params, rejects when the project is locked by a running task, merges command default_params into ${placeholder} substitution, splits the script into non-empty lines, and submits with actor_type='human'.",
+      "evidence": [
+        {
+          "resource": "repo://src/apis/task.py#L150-L229",
+          "version": "repo-lines-v1:sha256:26d071c7d7c64d522d8085d9533db572db8dfa5da602ffc97b1ab547c3c7bc28:eyJzZWxlY3RlZExpbmVDb3VudCI6ODAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY1YTI1Njk0MTUwMDk3OTQ1MzM5ZTNhMTI0OWRmNzE1ZTNiNWFiMzQ0ZjUxM2RjOTgyYzg4YzRiNmYxOGNjNWQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZmMTk0NDY3NTJjMzNjMTgxZWE5MjMyYTc5NWJlZmYxNWJjM2ZlZWRkMmE1ODA4N2IzZjVjMzNlZWI2MmU5OTIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjhiOTc0ZGE0MDg2MzJhNGFhN2UyYWU4MGI4NjAzOTFhM2RjZDgyMTFjNzllY2FkN2NhOGU5NTEyOGIwMDE4MzIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_dd2e038d4d9449d58625a82661052d4a",
+      "statement": "GET /api/tasks/{task_id} supports log_offset to return only the incremental output_log slice plus next_offset for cheap polling, mirroring the MCP get_task_status contract.",
+      "evidence": [
+        {
+          "resource": "repo://src/apis/task.py#L22-L41",
+          "version": "repo-lines-v1:sha256:ea16379b1545e5c0399fe07fc8994286537174c72a65ce9b6489b895180f75b9:eyJzZWxlY3RlZExpbmVDb3VudCI6MjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNhNTdlNmI5YjAxMmVjMjM5Yzc0NmM0NjhkNjQ4N2UyOWIzOWVmOTVlOTg3NDA1MzJjYzIzOGJjMTlmNjc4MWUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijc0Yzc0MGFjMmMxOTRjMTUwZmFlOWU4YThlMzJiNzRkMDkwMTBkZWY1NDQ5MGQyZTA2OTdkMWU3MDcyZjYzMjQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjhlNmNkMjRmMmVjMWVmNGJkMzhiYzBkZjAxYjhkNThjMjE2ZGI2MDYzOTlhZTNkMGJhNDQ4NDkzNGQ0MTE2YzIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjNlMjFhMWFhYzhlZDkyMjkwZWMwZjQyNjg5Yzc5Y2JmYjQ2NjJhYjBkMjdmYmIyMzA4ZTg3NTNmY2I4MzUwYTkifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_ee7a861e91674ff2a88e5d51b30b4710",
+      "statement": "The terminal endpoint is a WebSocket WS /api/projects/{project_id}/terminal that accepts a JWT via query token or Authorization header, closes 1008 on missing/invalid token or unknown project, and has no HTTP REST counterpart.",
+      "evidence": [
+        {
+          "resource": "repo://src/apis/terminal.py#L32-L70",
+          "version": "repo-lines-v1:sha256:ee1b043fd0009f12330a9523c8682cd5f595e5970dba33e9e3fe9374e070c329:eyJzZWxlY3RlZExpbmVDb3VudCI6MzksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjBhNWFiYzdhMDcxOTFmMzlhMTE5YmMzNTI2ZTgxZTc3YjJhNTFmM2E2NGI1MGJjMzA3Mzk0YzJlZDkwMTQxODUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImNiMTg0NGZhZDI3Nzc4N2MzZjhkZjViMzQxZWNmNzIyM2Y1NTQ5Yzg0ZjI3MmUxOTdjYjE0MTI2ZjAyYzc3NjgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImMyZDVhNGM2N2FlYjNiNDAxNTJhMTk0ODdhMTUxM2YxNDM5M2IxZmJmNjkxMzA2MDcwMjQ2NGJjZDdkY2Q2Y2IifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_a971261e6ee44c7d916e038cc527d3c8",
+      "statement": "The api_key router is entirely wrapped with Depends(get_current_admin) and exposes create, list, detail, update, batch delete, count, get_key (decrypted retrieval), and regenerate endpoints.",
+      "evidence": [
+        {
+          "resource": "repo://src/apis/api_key.py#L15-L311",
+          "version": "repo-lines-v1:sha256:7db37f52cd9345e5d11ba32bd01c70e71faa5d3ac00e6899846b93c4c000e46a:eyJzZWxlY3RlZExpbmVDb3VudCI6Mjk3LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiI1ZmY3NTBiNGNlMjQ3ZDM2NmZiNGMwMWUyZmM5YjRiMmU3YmNkNDMyZTgwOWI0NmM3N2I5OTRkOTk3ZDMzZGRiIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiI3MjNiYWQzNGQ2YWNjZjQ0ZTdlMjMzZTU4YzQ1MmFjNGQ3Y2NmOWRkNWY5OTI2MWFiMGZjMGIwY2QwMjcwMzU5IiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiI4MWFlZWEzMmRmMjU3MDQ4NDY3MWQ3NTg1MTM5MmM3ODE1NWFlNTlhY2I0ZDJhMmJhOWU0MzdiNjc1NGNhMzI3IiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiI1NDQxNmM1ZWNhN2U4ZTM4MWQxNTIyOGZiMTgxMjc1MGNkMTNiMTg1NjI4MTlhZGMzNDhhOTAxZTkyMjQyMDk5In0"
+        }
+      ]
+    },
+    {
+      "id": "claim_09f89fc92fca43478999345c7efc3a1f",
+      "statement": "Audit log list endpoint filters by keyword/actor_type/action_category/status/target_project and translates between API-facing actor_type values user/api_key and DB values human/ai in both directions, resolving actor_name from users or api_tokens.",
+      "evidence": [
+        {
+          "resource": "repo://src/apis/audit_log.py#L46-L87",
+          "version": "repo-lines-v1:sha256:a409d5733b093e034210d156c9e3c9c22553e1fb651693d623a464135ef92b2b:eyJzZWxlY3RlZExpbmVDb3VudCI6NDIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU0NzRhMWRkODQ2OWYxMjZlNTUwNmE0NmE1ODZhNTgwNWFhYzc0YTEyYjRhZWY2MWJiZDU3Yzc4ODEzZDlkZTkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjVjYjA1NTFhZGNlNzI0MWM1YjEzOWQ2NDJlYTk3OWRkOWIzOTRlMGJjOWIyOTY1NTJhNWZmZTRhM2Q1NWFlMTciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjUwMGI4ZDI5ODhiNDBlNzAzOGFkMTU0N2QwOTc1ZmJjMWU1MTJhMTJkN2U2NThhZDUxNWJiNTM5YjgxMDkxNmMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjYyMDMzNTQ3YWEyMmI0MWFjYTMxN2FiYjhkODkyMTljMjIxZjE5OTU5YmM0NTgzNGZlNGE1NjRkYTU3OTJiNWMifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_0ee81488554b41b89b52289f9fea60c2",
+      "statement": "Public command import endpoints (POST /public_commands/import and /batch_import) are available to regular users (not admin-only) so templates can be copied into projects without elevated role.",
+      "evidence": [
+        {
+          "resource": "repo://src/apis/public_command.py#L152-L209",
+          "version": "repo-lines-v1:sha256:2fe8c2ba4802377d2e1d50e3868188479e6934c730fae1b5430f83747566a048:eyJzZWxlY3RlZExpbmVDb3VudCI6NTgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU2ODZmYjI3MDFiOWZhNzQ0Y2YxY2QxNzJjMDllNjViYzkwZDJkMjI3M2ZmZTA1ZmUzN2QxM2FlMWZlNGViYzciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjJhOWY4YzJiYzdhMTQxYTAyMmFmM2ZlYjhhYjUwMDhlYzI1NzU3ZWYyNGFjZDA0OWY1MDg5YTc0YjdjOWFlODEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImIwY2U0ZWExZDdhYjBjM2U4M2Q3MWY4Yzg1Y2M5MGJmNzA3YzJhNzg2MDYyZGQwNTgyOGE3ODZiZmNhMDEwODkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_8ce60ba15d934e3481c6b578122d0fc2",
+      "statement": "GET /api/health performs SELECT 1 and returns healthy/unhealthy JSON without authentication, serving as the compose-visible probe for the stack.",
+      "evidence": [
+        {
+          "resource": "repo://src/main.py#L64-L83",
+          "version": "repo-lines-v1:sha256:697136c66025d09da1818570e36b46d2cf69effd95de85ad25b546e11e1e50b6:eyJzZWxlY3RlZExpbmVDb3VudCI6MjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjMwMzlhY2FiYTIyZWMwNWEwNjQ4OGUwNTQzMzg0MTY4Mjk2Y2QyYWI4ZmE0YzdjNDc3NTMxMmM5MDZhMmJmYjYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjgyNTFiZmFiY2ZiNmQ4OWZkOWY0ZTNiN2JjNGExNzRmZDkwYzk5ODE4NmU0ZmRlMmM4ZmEzNGU2ZDVjMjkzYWEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjJjMTMzNDM3MzM2Y2NkZGQ0YzY2OTVjMDU3MmJiZThiMTE2ZThiNGEwMDUzNWI2OTgzY2Y3ZmI2NGQ3NTA4NGEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImU5ZjdmN2FhMTYzMDU2N2MxYjVlNjY0NGUyMWNiZWM4M2E0MzkzM2RjNWIwZGEwZDkwY2Q1M2JhNDhlOTEwZDIifQ"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.5.2",
+    "at": "2026-09-23T02:41:19.131Z"
+  }
+}

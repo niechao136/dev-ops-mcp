@@ -1,0 +1,150 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:ea51e3bfdf23c2e04f0e6a778921a3279cd64085f37ce24979154b92b2be4546",
+  "claims": [
+    {
+      "id": "claim_800ab0b54f3d455bb7458dd00b989ba8",
+      "statement": "Login stores the JWT in cookie dev-ops-bot-token with a 1-day expiry via js-cookie, after which every ApiService request attaches Authorization: Bearer, and useAuthCheck redirects unauthenticated users to /login or authenticated users away from /login.",
+      "evidence": [
+        {
+          "resource": "repo://web/hooks/auth-query.ts#L29-L53",
+          "version": "repo-lines-v1:sha256:91827f91e2c1cc90a79180b2ac8503f35a6173b8416cc12ec82901c4566b258c:eyJzZWxlY3RlZExpbmVDb3VudCI6MjUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQ2YzFhNjhiYmVhNzQ3ZjhlYzNjYTliODhlMWFiMDRjY2U1OWQzMDhkNGJlMjNiYTY5ZDY1Y2VjOWFkYjNmZTciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjA5ZjkzMDgzYzE5NzEyMWI5ODI3MDBiYThhZmFiZDE3MjJjZjFkM2U3NDA0NTA5ZTgwZWZhMjcyNDdmNjJmMDciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://web/services/api.ts#L25-L40",
+          "version": "repo-lines-v1:sha256:79e64b2e073138fef7f465789402eae0bbb01f5644bbf01cd0f7fd9b995cdbd8:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijk3ZTczMWQ0YTQ4MDdiZmI2YTE1ZjhjNjZiZTMxZWE2OGEwN2I4NzU0YTU5ZmFiYzUyNTMzNmJkNGJkZTdmZWYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE0MTlhNmRjYzA0ZTIxM2EzYzdhNzdhNDU2YjAxZTc2ZDFlZjc4Y2QwMGJiZWMxZDhmODE0NThmZTkzZWRjNTYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImI2ZjQ4MGY0M2M3ZjU2NjQ1ODVjMGNhNTA2MTFkNGE0MGEwNzdmYzMxYTM5YTVmODI1NWY1NTc0NmE4MDY4NWUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjEyOGNjZGFhOTAzOWFkMGYzOGVkMjk4MDlhNDYyMTVkNzIwZTRlZmMwZWI3ZDBkZDVkODgyODJjYjZmNWU3ZWUifQ"
+        },
+        {
+          "resource": "repo://web/utils/cookie.ts#L33-L45",
+          "version": "repo-lines-v1:sha256:23981ac1946e04d3f932adb646e8022da3995538d372942dfb020fe7c2a65aea:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVmYzgzYmFjYzE1YjFhYmZlZDM4YjYwZWM0MWM3NzY4ZTQwMDYwMTQ5ZTk4ZTYzYjk1YjdlZTZhODE5YThhYmQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUyMmZhYTUzNWJkMmVhM2Q1MmU3NDFlZDQ1NDQzNWI3ZmU0OWU4MzU4NmU5NDNkOThkODJiYmZiMjRkMWY1YzUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImIzNzliMjY0OWM1N2NkNzNiYjQ4Y2VmODA2N2QzNGI2ZTA1NWViYjUyMjc4ODU0ZmQyOGVlODZlZWU4NzNlOGIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImZmNjk4ZGNhMzU0M2FhYzRmZWU1ZmQzMzRkMzM3ZjlkZjQ5OTE5NzM0MjJlYTMyMTQxOTg2OTMzYzIyMmUzNTcifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_e2cda06a639b46a384c7cac6f16051b5",
+      "statement": "The frontend stack is Next.js App Router with React 19, MUI 9, TanStack React Query 5 for server state, Zustand 5 for auth/paging, react-hook-form + zod for forms, and notistack for toasts — all declared in web/package.json.",
+      "evidence": [
+        {
+          "resource": "repo://web/package.json#L11-L42",
+          "version": "repo-lines-v1:sha256:58f3ef7ff9c819e1f10e985704773d94b6730819b4f9ed3df4429ae0fc1760e6:eyJzZWxlY3RlZExpbmVDb3VudCI6MzIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImJhM2I0NjlkOWUwOTc1NzIyNDY2NjczNGM5ZWY3YjI1NGQ4ODUzNGY1ZDViYjcwOTg5NjA4MDVjNTUzZGMzMDciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI3ZTU3ODhkNWQ5ZDczZDI0YTgxZGJjMGE1YTc0YmZhODJjOWMzYjNhZjk5ZTUyYWY3OTZlOTBiNDY4YThhM2QiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjQzM2I3YjhhYWQwZjIyZmUzZGNiM2JjYTE4MDQ5YmZkMWEyZTYyY2IzNjFiY2ZhNzJhODg2OGFiZWM3NTMxMTgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_9ec15cd385eb4846b1c4840939f78b2d",
+      "statement": "The browser reaches the backend exclusively through NEXT_PUBLIC_API_URL (default /api) so all fetches, EventSource, and WebSocket URLs go through the nginx gateway rather than the api container directly.",
+      "evidence": [
+        {
+          "resource": "repo://web/Dockerfile#L14-L15",
+          "version": "repo-lines-v1:sha256:8472ff2664a3c04e518e89a38444ec4bcc936ef88de8bafc3451302fd470203c:eyJzZWxlY3RlZExpbmVDb3VudCI6MiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNjM2Y2Q4ODA0MzI0M2E0MGE5MjQzZGFiNzAyNzk1ZDU0YjYyOGQ1NzM0ZGQ0YWFkYzE1MDc4MmUxOGI1NmVmNSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiODgwMWE1ZTJlZmE0OTdjM2U4YTFiYWY4M2NjNWUyYTE5NDNjYzQwOThmNGIzNWQzYWU5MWFmMWVlZDhmZDI4NiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMTY3ZGM0OGY2N2IyNTIzMjUwZmZkYjQ3ZTlhYzFiYmJmYzBkMDU5MWJjMDUyNzMyZDIwNjE1ZDU4Yzk5ZjkwNSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZDJmMjVlZTA2ZmI5NzEyZDY1YjIxYzc0NzMzNDNlZTM5NGMwMzNjZWNlODZlNzMzNTRhYTNmZDc1ZWI4MzVjZSJ9"
+        },
+        {
+          "resource": "repo://web/services/api.ts#L15-L15",
+          "version": "repo-lines-v1:sha256:efc2764db349692f3ed268f5d34efc17a7dfbd5adc94621faae6800666c78434:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZWZjMjc2NGRiMzQ5NjkyZjNlZDI2OGY1ZDM0ZWZjMTdhN2RmYmQ1YWRjOTQ2MjFmYWFlNjgwMDY2NmM3ODQzNCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZWZjMjc2NGRiMzQ5NjkyZjNlZDI2OGY1ZDM0ZWZjMTdhN2RmYmQ1YWRjOTQ2MjFmYWFlNjgwMDY2NmM3ODQzNCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMjU5NzczZTM1ZDY3YzM3NmYwMWEzNmJjYzkzODNjM2I5M2Y2MGQ3ZDMwMzkxY2FlM2Y1YWYxZjZjNzIzZmIxMiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNGU5MmU2NjczYzE4OWUxNjQ2OGExNTFjZTU1MGQyZWVkZDgyMDFjZDQxNTc2MWY0YmNlNWQyMzMwNWU3Y2NlNiJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_ed9b53d99514487fbd61960b957bc68f",
+      "statement": "useTaskExecution submits via POST /api/tasks/execute then polls GET /api/tasks/{id}?log_offset every 2 seconds, appending the returned output_log delta and advancing logOffsetRef to next_offset until a terminal status clears the interval and fires a status toast.",
+      "evidence": [
+        {
+          "resource": "repo://web/hooks/use-task-execution.ts#L21-L155",
+          "version": "repo-lines-v1:sha256:ced3619ae82a4961ca571de6c1e1c8e136ff9b4e59b50d28466b4aac2dc8e305:eyJzZWxlY3RlZExpbmVDb3VudCI6MTM1LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiIyZTM3NmRjYTZhNzQ2MTIzMDMwNDg5YjYxMDg2M2ExZjg3ZjA2NjJlNTg5OGM3NzAyYjY0NTBiNWRlMWRiMWUxIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiJlN2Y5ODhkYmY5NjE4MzNjNzFiNGYwZmM2NDFiMWY2ZThiZDMwMDE3MmY2ODc4ZmNjY2I5MzM3MjNjYjIyYTE1IiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiJiNTU0Y2U2ZTI1NDg0NDgyNWUxNjI4YTFlY2MwZjljMTM2ZTY0YzgwNDA0MTk3MWYxNTNlZWQ1OTAzNmUxNjM2IiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiI4YmE3OTgxY2MzODllZjg4NzZlZDBmNWFkNWIwMjdiZTQ4ZTRjNDk1OGZmNTJjMjI1ZDIyNjdlNjBjZmQ5ZWU1In0"
+        }
+      ]
+    },
+    {
+      "id": "claim_f4954bf852e141beb187492d89175a40",
+      "statement": "An SSE alternative exists in ApiService.subscribeTaskStream which opens EventSource on /tasks/{id}/stream?token=<jwt>, parses terminal {status,end} frames, and closes on error — but the primary UI execution hook uses REST polling instead.",
+      "evidence": [
+        {
+          "resource": "repo://web/hooks/use-task-execution.ts#L101-L155",
+          "version": "repo-lines-v1:sha256:7565251e73568e15534d1a700864a8c489e91aeced4a062f8542b7fc8295175b:eyJzZWxlY3RlZExpbmVDb3VudCI6NTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI0ODNkOGQzNWZiMDBiZGRkZDE1M2VlYTQzODA2ZmUxYjM5NTZmMzc4NTBlMzAzNDFhZWNiMGQ0MDc0MTA1M2UiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU3Zjk4OGRiZjk2MTgzM2M3MWI0ZjBmYzY0MWIxZjZlOGJkMzAwMTcyZjY4NzhmY2NjYjkzMzcyM2NiMjJhMTUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjJhODExNDE0ZmUyZTBhODViOGRmZmU4YTk3YTAzOWJkNGY2YjRiMmQ4OGM3ZmZhZTRlZTg0NTFmZDJlODFmOTEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjhiYTc5ODFjYzM4OWVmODg3NmVkMGY1YWQ1YjAyN2JlNDhlNGM0OTU4ZmY1MmMyMjVkMjI2N2U2MGNmZDllZTUifQ"
+        },
+        {
+          "resource": "repo://web/services/api.ts#L453-L483",
+          "version": "repo-lines-v1:sha256:57d1f80532545a3b39e681f81181af646d4f585786b7540f4ad616e2a77890e4:eyJzZWxlY3RlZExpbmVDb3VudCI6MzEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjcxZmQ3YzBjMTRmNjBjMWQ1YmQ0MTcwOGRmMDc3NDM5NDY1MWY2MTRkNTQyN2RjYWU5NmJiYTBiZmQzOGUxY2UiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjcxMzQ1MTgwMTA1YjBjNjZhNzdkYWQ1MWJiMzc5MDFhMzczMmM5NjU0YmE0ZGUzOTgxZjgxZTE4MTc1MjQ4YmYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjA2ZWMwY2RjNmQ3NGFhYmZiZWQzMWE0MThmNzhmYTYxYmUwMTNiYjdjYzg5NGYwN2E4OGM5NmEwZWM4OTg4ZjEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjdhMzgyOTIyMTk0MzlmOTY0OThkNTViMjAzMTE5NzVmYzY5MzM5ODZhMDhlMjRmOTMxMDgyYmFmYTZmMGU3ZjYifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_450c279d011049328856c1a2338a2953",
+      "statement": "TerminalPanel builds a WebSocket to ws(s)://host/api/projects/{id}/terminal?token=<jwt> with the JWT in the query string, streams xterm.js onData to the socket, sends \\x00resize:cols:rows on fit, and is only mounted on the project detail page for interactive human use.",
+      "evidence": [
+        {
+          "resource": "repo://web/app/projects/%5Bid%5D/page.tsx#L18-L18",
+          "version": "repo-lines-v1:sha256:7cd00dbb53e8d674b49d06755404a3dcc10a6a35ad3097efffcb4a87aee8719a:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiN2NkMDBkYmI1M2U4ZDY3NGI0OWQwNjc1NTQwNGEzZGNjMTBhNmEzNWFkMzA5N2VmZmZjYjRhODdhZWU4NzE5YSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiN2NkMDBkYmI1M2U4ZDY3NGI0OWQwNjc1NTQwNGEzZGNjMTBhNmEzNWFkMzA5N2VmZmZjYjRhODdhZWU4NzE5YSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNTkwNWY5Nzk4MWYyYjA5NjMwZmMzOWNiZTQ4MDI2MDdkNDViMzVmMjEyMDA0N2U0M2U1ZTFiNzZiMmRkMzcyOSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNzM4N2ZlYzdmNzdmOWJjNzAwYmZmZmQwMmRmN2JlNmQ2NDA2NTI3NTE4NGUwYjJiYjM3N2JlZTYxMmJhNGUyZSJ9"
+        },
+        {
+          "resource": "repo://web/components/terminal-panel.tsx#L71-L136",
+          "version": "repo-lines-v1:sha256:7795f4424807e1d3a1444cc0a0f351a3738e4aaa445c004d8d2da55580f20283:eyJzZWxlY3RlZExpbmVDb3VudCI6NjYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFkMGY1MDRkM2FiNWIyMWYzZmNlODY4Njk3M2E4NDJmMWU0NTY3NzYzMDQzYjAwYTNlZDFjMjRmZDZmOTU4YzciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImMxYTJiNjVlMTM0YzBhZGQ2ZjgzMzRmZGY2ZWFkZWI5MjgyMGEzMjI4NzE3YTI1NDg2MmUxOWEwNzI1ZjM1ODUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImYzNmJmYzhkNGM1MTkxNzM4OTEwMWEyZmZhNGZhN2RjYjkzNjQ5YzI4MmI0ZmI5MDM4MmZiMDljZmUwMWE0YjQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjAyYzdkODk0MTc3NThhNmZmMzNhMTk0Y2RkMzYxMWIyZGYzNWFmZGFhMmYwMzgyZTJmNGYyN2U0OTE3NmJiMzIifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_8a166b16d3774e4eb71c49421d4ccd74",
+      "statement": "Entity pages map to dedicated React Query hooks (use-projects, use-api-keys, use-audit-logs, use-users, use-public-commands, use-project) where mutations invalidate the corresponding query key to refresh lists after writes.",
+      "evidence": [
+        {
+          "resource": "repo://web/hooks/use-api-keys.ts#L1-L40",
+          "version": "repo-lines-v1:sha256:f0073b78f101634e602834a97865a14cad44dce360565518639d36ce1bc6f311:eyJzZWxlY3RlZExpbmVDb3VudCI6NDAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImIzMWViN2FkMzVkYWVkMDM2YWU3YWRkZTU1Y2VkM2RmMDBiNTM1YTcyYzBhZjRjMTk0MTNjZjIyYjdjYTQzMzQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjhkZDc5ZWMwZDM3YjgwY2VjMjBkZDE2Mzc0MjBkYWJlMDA1Y2VlYTEyZjcxZmFhZjJiYmNlYWIyNGE4YjY3N2YiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjIyZTdmYzA2YTk5OGJlM2JiODk1ZTQ4MzMyY2IwYmJlYTEyZTlmNmZhY2Y2MDIzYTk5YzdlMmVkZjhlNjM0NDAifQ"
+        },
+        {
+          "resource": "repo://web/hooks/use-audit-logs.ts#L1-L40",
+          "version": "repo-lines-v1:sha256:01d409fd32bd4f3a1905f8f9d03ae79b74b7d34a8a416a483718da89d263c121:eyJzZWxlY3RlZExpbmVDb3VudCI6NDAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImIzMWViN2FkMzVkYWVkMDM2YWU3YWRkZTU1Y2VkM2RmMDBiNTM1YTcyYzBhZjRjMTk0MTNjZjIyYjdjYTQzMzQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI0OGU2ZDNmNDYyODUwZGU3MjAwNzVhNDliNzE4NDIxNTFmMmI5OTcyMjVmMWJhYjcwYjgyZWRkZDM3YmU0NTkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImNmODYwOWI1NjNlNWNmYWMyNTg0OTBjODUyYjNiY2RmZTI4N2MwYTk2ZjlkMTIxMjU5YWVkMTE3ZmRiODk4OGIifQ"
+        },
+        {
+          "resource": "repo://web/hooks/use-projects.ts#L1-L30",
+          "version": "repo-lines-v1:sha256:9f5b46a7934293f4a4c2d2ff0cad1654577f97d10066c7adbde9df20ed80f229:eyJzZWxlY3RlZExpbmVDb3VudCI6MzAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImIzMWViN2FkMzVkYWVkMDM2YWU3YWRkZTU1Y2VkM2RmMDBiNTM1YTcyYzBhZjRjMTk0MTNjZjIyYjdjYTQzMzQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjdlMmI1ZjQ3MzA3YjcwOWIwMjlkYzQzNTVhNTI5YjVlMDE1ZmE3M2E4M2EyY2MwNzY5ODlkOTE1YTFlN2I5NmMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjE2NTY4NjBhNmU2ZmFkMzQxMDRhOTdhM2FkYjY3YmIyMDI4MjI4YmM1NTUyNmU2YmVkMTVjZmQ0YWRiY2I5MTcifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_67314b72341049efbb764f99839e4c46",
+      "statement": "Zustand stores hold auth state (token, user, isAuthenticated, isLoading with initializeAuth reading the cookie) and shared paging state with the devtools middleware.",
+      "evidence": [
+        {
+          "resource": "repo://web/stores/auth.ts#L17-L78",
+          "version": "repo-lines-v1:sha256:6b5e628e790f3a02ae8eb13a32274a2673d034d0b3ecb1acb7a05a75be8d0880:eyJzZWxlY3RlZExpbmVDb3VudCI6NjIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjllYjcyMzMxODVkNTUwMWYyM2Q0OTRjNjEwZTcyMzEyOWJhZWUyOWRhYjdiMWUwYWZhOWZmNzlhYmJmNjcyZTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjViNzQxZDJjMDhlNmY1MTBiN2U5YTI2NGYzNzhmOWNlMDA0OWE1MDRlMGU3ZWY1ZDY3Y2QzZWE4MTNmODU0NzQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjA5ZjkzMDgzYzE5NzEyMWI5ODI3MDBiYThhZmFiZDE3MjJjZjFkM2U3NDA0NTA5ZTgwZWZhMjcyNDdmNjJmMDciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://web/stores/paging.ts#L1-L2",
+          "version": "repo-lines-v1:sha256:06f2f1c5c45e5799dea67a8a3ed0325dbd673a82236103b6197c562970e3d200:eyJzZWxlY3RlZExpbmVDb3VudCI6MiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZTgyNjc1NmNjMTQ0N2JiM2UwOTkwODk3ZDI1MjBhMDQ4Yjc3M2FkYTE5NjJjYWQ4OGM0NTljZGQ3MDRmMmQ5ZCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMzJlNTQ5MTFkMjk3MmViMWYxNzdmOWE5Zjc0MGE2NGI0ZjNlMTc5MTI3NWRmYTJhNmQ0ODJkNzI4Y2QyZGViYSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjAsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZWYxZWVmNDc4MjE0NzM1MDk4ZjlkNzg4ZGMwNjM2ZWFkOTY2NGIwODdlYjQ0YzVlOTI1YThkMjk1MTRhZDYzMiJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_0c435f55aa494651b88ba4aca070ca94",
+      "statement": "The terminal WebSocket channel is human-only and bypasses the task queue, project lock, and AuditLog entirely — it is a direct paramiko PTY bridge distinct from any MCP or REST task execution path.",
+      "evidence": [
+        {
+          "resource": "repo://src/apis/terminal.py#L32-L140",
+          "version": "repo-lines-v1:sha256:390a1898318029251c4f35e7cd46c6e660a93e7f3aa7c5a3bf2ddba3ffe6c34f:eyJzZWxlY3RlZExpbmVDb3VudCI6MTA5LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiIwYTVhYmM3YTA3MTkxZjM5YTExOWJjMzUyNmU4MWU3N2IyYTUxZjNhNjRiNTBiYzMwNzM5NGMyZWQ5MDE0MTg1IiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiJjZTg0OWQ0NzU0ZDI4YTJhNDZhMWM2YWZjYWMzNGM1M2U1NzMyZWMzZjhmYjZkMmRkYjEwNDZhODVmZWY5NmY2IiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiJjYjE4NDRmYWQyNzc3ODdjM2Y4ZGY1YjM0MWVjZjcyMjNmNTU0OWM4NGYyNzJlMTk3Y2IxNDEyNmYwMmM3NzY4IiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MCwiZm9sbG93aW5nQ29udGV4dEhhc2giOiJlM2IwYzQ0Mjk4ZmMxYzE0OWFmYmY0Yzg5OTZmYjkyNDI3YWU0MWU0NjQ5YjkzNGNhNDk1OTkxYjc4NTJiODU1In0"
+        },
+        {
+          "resource": "repo://web/components/terminal-panel.tsx#L84-L136",
+          "version": "repo-lines-v1:sha256:b7868219a4b2e62ea56c91d5636e261939b5c71c6152e380bc2064cb55f226f0:eyJzZWxlY3RlZExpbmVDb3VudCI6NTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjkwMDFlNWFkMjg4ZGZkMzcyYTU1MzExNjBjZjUwNGVlMTZmOTdmZWM2ZTA3ZDliMmExMDljOTg4OThkMmY0ZmQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImMxYTJiNjVlMTM0YzBhZGQ2ZjgzMzRmZGY2ZWFkZWI5MjgyMGEzMjI4NzE3YTI1NDg2MmUxOWEwNzI1ZjM1ODUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImZiYTY0ZDNjYjU0ZTQ0ZDk0YzEzZTAyZDAxZjg5MjZmZmU2YWEzMjlkMGM2OTYxOWE2ZjdiNzJkZGVhODgyZmYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjAyYzdkODk0MTc3NThhNmZmMzNhMTk0Y2RkMzYxMWIyZGYzNWFmZGFhMmYwMzgyZTJmNGYyN2U0OTE3NmJiMzIifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_fd5c54fc376548abbcb01487c80cb7c5",
+      "statement": "Console mutations rely on JWT role gates (get_current_admin) rather than the MCP scope/confirm_token system, and audit rows from UI actions are recorded as actor_type=human while MCP actions are actor_type=ai.",
+      "evidence": [
+        {
+          "resource": "repo://src/services/audit_service.py#L5-L29",
+          "version": "repo-lines-v1:sha256:863a9b1eb024f74897b500370322007fbb6fb774d6eb7629dc31450bb5d07135:eyJzZWxlY3RlZExpbmVDb3VudCI6MjUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjgzYzBjZjFlYmVmMWRjNzM3ZmZkOTYyZDI3NmE2ZTdiODE4ZDYxMzNlY2JkNDZjM2I1MTYwNTZiODkwMDNjMWEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY4MzA4OWZhYWM1NWZkMmE3NzdlMTgyMzQzNzA1YWQ5MjM5ZGIyMjZmODZjMzU2OGI0YjQwZTA0MzU4MTlmNjIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjYzMDZiMzcwNWQ5MDkwMzQ5ZjJmODM4ODU0NDMyZWJjMmQ1NWZiN2M5ZjAyMWFmZGU5Y2NkMzlhNjM3OTJiNDAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQzY2E2YTMwZTM1NmIwNTM0NjFjMzY4ODdkMzY5ZTZlZGIyM2JmZmVhNjE2MGEzZGU5YzE2ZWJkNDBiNGFhOGYifQ"
+        },
+        {
+          "resource": "repo://src/utils/auth.py#L57-L64",
+          "version": "repo-lines-v1:sha256:383a06a483419b3d4e44c59a5ae2daa487ce7ef659ea06a938fecee76f30a48b:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiN2RjZDUwYmNhOGJiMjUyYzhjYmUzMjQ2MGU4MGQyMTk5YzYxMzljODA0MTg5ODQwNDI5NTNmMWJjNzIxNjdjZiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMTA2MTJiNTFkODhlMzk4YWZmNjQ4YzU1YTY3ZGJlYmFjMTlhMDgwYjRiYzc2YTQ1NjBmNWQ3NzRhMjhkZmM1NyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYjZhZDIzMzVkMzk0YTAxMTY2MDJiNzIwY2I3MmM0N2Y3Y2I0OTlhMzczMzQzMzMyYTA0ZTg5NGMwMTcyOTEyYiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNDdhNzE5Yzk4MWRhMmRjZTQ3N2U2NWU5NDQwMDI1MjczY2Y4NDE3ODBhM2NhN2VhOTYwOTBkMjY5YTJjMWRkMCJ9"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.5.2",
+    "at": "2026-09-23T02:41:19.131Z"
+  }
+}

@@ -1,0 +1,122 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:9477b479554e57470d00e9022112671a3eeaf6331ea8a287cf106eb6dbae47f2",
+  "claims": [
+    {
+      "id": "claim_3990bb4e31bd4ae9881d1774d25652b1",
+      "statement": "DevOps MCP exposes curated server-side ops actions as MCP tools for AI assistants alongside a Web console for human configuration, with the stated split that humans define and confirm while AI executes, and without giving AI any SSH credentials.",
+      "evidence": [
+        {
+          "resource": "repo://README.md#L1-L18",
+          "version": "repo-lines-v1:sha256:4b83170bf7b980525a2ed96972822637606d0a615ad4c4875865e9d82ef05f1d:eyJzZWxlY3RlZExpbmVDb3VudCI6MTgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjJlM2Y4NzA1N2Y4MmE1Yjg4MDEwNTgxMzBlM2MyOWYyN2ZhOTFlMzk3YjZmZmFjNTczYzAxNDNmYTIxMTllNjEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjdlYzU2OGVhZGRjYzQ4NDAyNmYxZTMyYWYyMmM3NWYzODUzNjJjZjJjNWMxZGQ5NjhjMDU5MmY1NzE5NTgzMzAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjgzZTBkZWY4NzU1MDBhNGNkZDJmZjE5ZmY4NzE4ZWY3MjBlMWY3YjE0OWExNDRiNmJiMWQ3ZDI0MTZiZmUzODcifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_1a73248b8c9e4b2a9f045d5e639c5edf",
+      "statement": "The compose stack runs exactly three containers on a bridge network — api, web, and an nginx gateway — and only the gateway publishes a host port (10096:80), keeping api and web internal.",
+      "evidence": [
+        {
+          "resource": "repo://docker-compose.yml#L1-L61",
+          "version": "repo-lines-v1:sha256:dc038399cc005970df4c06f99be5a984d9ee0cfdf9ab79773ad4cb3f6fe85808:eyJzZWxlY3RlZExpbmVDb3VudCI6NjEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZjZmVlYWJkODk2ZDhlYzU0OGQzOWI0NzUyNGEzOGFhZDU5MWM3ZGZlMWRhYzQzNGJkYzBhZDIzNzAyZDlmZDgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFlZGUyYzhjODFlYzAzODdlNjcxYTc1MzRkZWJmZTkzMGZmODFjY2YwNzVjMjIwZWU2YmM4ZWMyYzc0MTI0M2QiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_a36f01ccaeed4266be8537b3627e005d",
+      "statement": "nginx routes / to web:3000, rewrites /api/mcp and its subpaths to api:8000 with proxy buffering off and 600-second read/send timeouts, and proxies /api/ to api:8000 with buffering disabled and chunked encoding preserved for SSE and WebSocket traffic.",
+      "evidence": [
+        {
+          "resource": "repo://nginx.conf#L5-L58",
+          "version": "repo-lines-v1:sha256:a2c3be17c6e1805595e78ed6ffd7a4e7ec41cc3b515ae6474654b97814c3420c:eyJzZWxlY3RlZExpbmVDb3VudCI6NTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjIzZjcxNzY5ZDQxNTFlZWZhNjcxODFiZWIwMjQ4NjNmN2FhNGE4MGMyZTMyMzc5NjEyMjYyN2RhNGM1ZGRiMGIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE0MTlhNmRjYzA0ZTIxM2EzYzdhNzdhNDU2YjAxZTc2ZDFlZjc4Y2QwMGJiZWMxZDhmODE0NThmZTkzZWRjNTYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQxOWQ5NGY2ZGUyNGE1NjE3NTFiYWU3MDMzYjA3ZjFhMDk0YjE0ZWM2YzM4NzU0YTFiY2NhMGQ2YmRhODM5ZTMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQxMGIzNmFhNzRhNTliY2Y0YTg4MTg1ODM3ZjY1OGFmYWYzNjQ2ZWZmMmJiMTZjMzkyOGQwZTkzMzVlOTQ1ZDIifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_c8541ed85fdb41c6a16da627cdce0f4b",
+      "statement": "The FastAPI app uses root_path=/api, installs CORS and MCPAuthMiddleware, includes ten REST routers, and mounts the FastMCP HTTP app at /mcp so the public MCP endpoint is /api/mcp, with a /api/health route that checks the database via SELECT 1.",
+      "evidence": [
+        {
+          "resource": "repo://src/main.py#L36-L70",
+          "version": "repo-lines-v1:sha256:48418a623a0bbc3363e20981ca0c3bc8c5cf6a04c4b21ef5efb5f2f638d82714:eyJzZWxlY3RlZExpbmVDb3VudCI6MzUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY0MDViYzVhZmIwYjZhZjllNTEyNzUzNGQzZDJlOWIyYmQxOTIwMTBkNDk0OTdiYmU4MTIxMzJmYjIxOTZjZGEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ3YjY0NWM1MDZkZjUyZjYzMGQ2ZTRlNzQwYTczODBjMGQ2MjliZjMzZGM1OGY2MTQxODk2MzYwMDkwOWQwMGQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImJlYTkzMjJmMzliOTNiZDU5ZDUzNzQ1MDA0NWExNmVkYjBhNGI2OTkyMDFjOTBmMzFmZjYwZTU5NjAyNGVjNTYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjcyMTI4MTFiZjhiMGI3ZDI4NTk5NTVjOTQwYTZkN2Y4MzcxZjYxZjJkMjQ3YWE5YjRiOGVlYTBjMzZiMTQ0YzAifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_01dde91fde2f4e0d82f9208c8eff6039",
+      "statement": "Application lifespan startup runs init_db() to create and seed the database and start_scheduler() for automation jobs, and these run together with the MCP app lifespan via combine_lifespans.",
+      "evidence": [
+        {
+          "resource": "repo://src/main.py#L25-L36",
+          "version": "repo-lines-v1:sha256:0ed74c780f9e0f7c405c828b3227c7f073d52bb7bb1ad6ea4e4efd42c3b97929:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNiY2M0NDVlYmQyMGQ1ZGYyYjlhMWY3M2JjODdmNjQyZWQ1MTcyYmFmNzc3NzAxNzJhNTczNzJhMTQxOGVlOWMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY0MDViYzVhZmIwYjZhZjllNTEyNzUzNGQzZDJlOWIyYmQxOTIwMTBkNDk0OTdiYmU4MTIxMzJmYjIxOTZjZGEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjBjNDYzMDZhNGIxMDM2MzY3OGEzMzQxODI0ZTQ4NzhlMDU0MDI4Yjg2NzUzOTcwYTA2MzExYjE2ODMxMjZmNGIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjAxOGE5OGNiMGEzYmE0ODEzOTZlM2U5OWQ2YzlmYWY0NjhlM2FkZjg0ZjU4YWFmMGJlMDI5YzEyNjAxNmZjYjYifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_41e793c009884ca5bae7e58bdc69e37a",
+      "statement": "The MCP server is a FastMCP instance named devops-node-<suffix> (from MCP_NODE_NAME or the hostname) exposed as an HTTP app, with seven ops/observation tools defined in mcp.py and additional manage tools registered from mcp_manage.py.",
+      "evidence": [
+        {
+          "resource": "repo://src/tools/mcp.py#L24-L27",
+          "version": "repo-lines-v1:sha256:e0a48b33547634a59f44b277e2ad1e0e8f2b4407579d5c4a69fa546e7385a7be:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMTAxNDQ2NGU4OTNkMGNkNTMyYTFkZWI5MDJiMTQ1ZWE5Zjk4NjJjMWE1OTEzYTVmYWUyMzg5NTIzOWY0OTQ4MiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDk1Yjk5YTc3ZjI1NzBhZmQ1MDU4NDJhYTA3NDgyOWY1YTRiMzVjN2NlYjNlNjA2OWM2MTQ4NGZjZjY4ZjFmNCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiN2YxNjU2NGJiNDFlYzA5Zjc3MTQ4YjIxNGQ1MWFkMjNjOGViYjc4YjNlNGNmMWUxY2MyOThjYmE0NzBlMjQyYSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTk2ZmZhNTQ3ODFiZGIwNDNkNzgxZDkzMDI3MmUxMjk2YWU2MzVmMTJhNDgwYmYwNmUzZjFiYWJiMWViNDE1NSJ9"
+        },
+        {
+          "resource": "repo://src/tools/mcp.py#L38-L388",
+          "version": "repo-lines-v1:sha256:de1d052baa3a9782495945c5e98d3f005a41583b15871c3dc460e36ef65e5618:eyJzZWxlY3RlZExpbmVDb3VudCI6MzUxLCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiIwZTI1MzgyZjI4NzY2OWM0MWQ4OTIzYmI3ZmE1NzlkOGMyNGE1M2UwOGIwYjkxYzM2MDI5MDkzY2IxY2RkNGY4IiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiIwY2FkZjg0M2U0ZWMwNWJiZTU2ZmEyNjQ5OWEzMGYxMjVhODRmNzA4NDk3YmE3MWI0MDQxMTEwMjAwYWEwOThmIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiJlMzZjZmJiNDg1OTI1YmRjMWY1ZjJkMjgxOGZhMzk2YTViMDZkNmVmOTUwMDc0NGJiNWI0MGIyZmVkZWJiMDI1IiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MSwiZm9sbG93aW5nQ29udGV4dEhhc2giOiI3ZWI3MDI1NzU5M2RhMDZmNjgyYTNkZGRhNTRhOWQyNjBkNGZjNTE0ZjY0NTIzN2Y1Y2E3NGIwOGY4ZGE2MWE2In0"
+        }
+      ]
+    },
+    {
+      "id": "claim_bc91a41a40e84bb096a6f0be056f1a7c",
+      "statement": "The api container reaches the host over SSH using host.docker.internal (host-gateway) and a host SSH private key mounted read-only at /root/.ssh/id_rsa, rather than mounting docker.sock or installing a host agent.",
+      "evidence": [
+        {
+          "resource": "repo://README.md#L49-L72",
+          "version": "repo-lines-v1:sha256:f0eb6afa0d9e501d41efc897563024066f44989deaa8c5428674bad3e49dd88c:eyJzZWxlY3RlZExpbmVDb3VudCI6MjQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNjOWY4NzEyYmNiNTIwOTFjNTI5MjVmZjcwMTRiZWVhOTJlNWYyOGY1OTI0NDJmYjc2OTY4YjkyY2YzMGQwMWUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVjZWQyZWFmZjI2MzhlMjIwMWVhMDhlNWE5Yzg0OTJmYTMwNzFiMmExYTdjMGFlNDA5N2Y1ZTM4YjUxY2NjM2MiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjgzZTBkZWY4NzU1MDBhNGNkZDJmZjE5ZmY4NzE4ZWY3MjBlMWY3YjE0OWExNDRiNmJiMWQ3ZDI0MTZiZmUzODciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjIwZjQ4M2QzZjU2YjU1YmY3MGVmYjUyZWFjMDBjZWM3ZTdiMjI3NDJmNDY3NzllZDA5OTZmZGNlOWQwNDEyZDYifQ"
+        },
+        {
+          "resource": "repo://docker-compose.yml#L7-L11",
+          "version": "repo-lines-v1:sha256:4551a75287bc693604be0186937fef000a22d41d180fb873d274c2fc37d7c388:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMTFkYjhmNTgxNmViZjI2YWNhMWNjODM2OGY4OGIyNmE3N2RmODFkZDNiODc4MjgwMzBlZTNjZmY4ZjNjMWY0MSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYTM5MGMwOTIyNWM2Mzk5M2Q2NGI2OTAwNjY4M2Y5OWVhMzM3NGYzNTkxODFiMzMyODg2NWJjZjZkZjk0MDIwZiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMDQ2NzBlMWQ4MTFmMGU5ZDU0NDBiMDUxOTQ0NTA0MmU4Y2QwZGZiN2MxYmRmMWEwMjM4YmE5ZTlhZjEwYTM4MCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMmEwMDBiMzA1NmRkMDY4NzUwZTc2YzJkOWFlN2ZiNmQ0MTFkYTFhNjQ2MDY0OGY5NzI2NjEyMTExMmUzOGQyZCJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_dc7946081d434d9aab45373e854a106a",
+      "statement": "execute_action refuses to enqueue work when the target project's asyncio lock is held, returning the currently running task id so callers retry or cancel instead of running concurrently on one project.",
+      "evidence": [
+        {
+          "resource": "repo://src/tools/mcp.py#L132-L134",
+          "version": "repo-lines-v1:sha256:fa7865b0dfe072c2c1e61d1b587a65d4976f4072df151f66cad3f44a8b94e5ea:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYzgwZmFjZTkwYjAzM2UzNTUzY2VlZTQ5ZWVkMTcxNmExZWNhZGQzYzg4MWEyZmU1YWM1MDcyNmI3Y2YxMTM5OSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZGQyMDZlNzg4MjE1MDg3ZjM4ZWEzMzM0NzQyYzE4NDQzNmZmMTJjMTdiYWJkOWU5ZWRmZTRmZTFkZTkyZTkyMSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZGM3NjI3OTQ5MTdiNWI0MTE4MDY1NTNkNDMzZTkxYzBmZTEyZDNlYWUzY2RkMTQwNTZkOTlmYjZhYTQ5NmZkMyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiOTQxZWQ3NjkxY2E0YTVjZGRmZmY2MDNlY2ZiYWZmNDQ3NDZkYTQ1ZjE3MTBjMjgwMGMxNzkwYjQ0Y2I5MmY1OSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_04cd50aeea714906a8154dc4631aceba",
+      "statement": "static/server.js is an unrelated legacy Express application that no compose service or Dockerfile builds or references, so it is not part of the running product topology.",
+      "evidence": [
+        {
+          "resource": "repo://docker-compose.yml#L1-L57",
+          "version": "repo-lines-v1:sha256:0bb4074cffa32e65a571ca36432aed18bd11bb62c875a0fd36d8f24c5f10a78c:eyJzZWxlY3RlZExpbmVDb3VudCI6NTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZjZmVlYWJkODk2ZDhlYzU0OGQzOWI0NzUyNGEzOGFhZDU5MWM3ZGZlMWRhYzQzNGJkYzBhZDIzNzAyZDlmZDgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAwMTI3YWZmZTY4ZTFjNzEyMjBiNmQ0Y2Y3OWE1NTZjM2U0MDk2NGJlMDI3YmE5MDcyYzFkYTUyY2MzMWM1NzUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjBkZmM2ZmQ5NzRjZjhiYzkzYTJlOTA4MDU5YTJiNWU4ZmJlY2NlNmI4MjkwYWY4MzBjYTM3Nzc2ZmFiNGNkMTIifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_c2bb6755acb44b109c064cd6eda5186a",
+      "statement": "Local development serves the same FastAPI app with uvicorn on port 10097 in reload mode, distinct from the containerized port 8000 behind gateway port 10096.",
+      "evidence": [
+        {
+          "resource": "repo://Dockerfile#L48-L48",
+          "version": "repo-lines-v1:sha256:7eb70257593da06f682a3ddda54a9d260d4fc514f645237f5ca74b08f8da61a6:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiN2ViNzAyNTc1OTNkYTA2ZjY4MmEzZGRkYTU0YTlkMjYwZDRmYzUxNGY2NDUyMzdmNWNhNzRiMDhmOGRhNjFhNiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiN2ViNzAyNTc1OTNkYTA2ZjY4MmEzZGRkYTU0YTlkMjYwZDRmYzUxNGY2NDUyMzdmNWNhNzRiMDhmOGRhNjFhNiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZTFmZjJiNDRiMTIyNGY4ZWYzMTM5MDJhNWE4MjY3MGY4Y2M3ZmZmNTViYmFhYzdmOGJhYzg5ZDAwMzA3NzZhNiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjEsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYjY5NjkwNTVmMzdlMmM5YjI3OTVmOTcwMWE3ZDY0NjBmNGYzMzEyNTBjNTI1MzMyODUwMWVkNjA1YWNjODIxOSJ9"
+        },
+        {
+          "resource": "repo://src/main.py#L86-L87",
+          "version": "repo-lines-v1:sha256:2874d85c75367860e49404975a144ca80cb821a615d15e5a5efd50d4d3424247:eyJzZWxlY3RlZExpbmVDb3VudCI6MiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZjU5Y2VkMGNiY2Q3NjRhNzRkMDM3ZmM1NWRmYTU5ZTM5ZDk4NTNmMTU3OTU3ZGU5ZThjMDlmM2VjYWJiOWZiNyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYTcyNGQ2Mjc0MjRhZTQ1OTY1OTFjZTQ1MTdmZjQwN2ExOGRiMDJkMWUxN2FjMmU0NzVkNzkwZWNmY2MzY2ZlZSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNjFmOWZmZDk3ODU3ZjVkMTcxZjI1YmFmNDRmZWMzODYyZDNhNTg1YTc0OWJjOTQ0YWNmMmUyOGFiNmExYjZhYyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjAsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSJ9"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.5.2",
+    "at": "2026-09-23T02:41:19.131Z"
+  }
+}

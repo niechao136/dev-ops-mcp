@@ -1,0 +1,130 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:6a573dfa2236e41d1b96e490b4ee03756f7e59f2b2b2c2c0e4efd16cf4a7517e",
+  "claims": [
+    {
+      "id": "claim_e84ba777a3b44ff588053b4953c48633",
+      "statement": "Configuration is read per-module via load_dotenv and os.getenv/os.environ.get at import time (db, jwt, security, executor, ssh_client, mcp) rather than through a central settings module, so environment changes require a process restart to take effect.",
+      "evidence": [
+        {
+          "resource": "repo://src/dbs/db.py#L22-L49",
+          "version": "repo-lines-v1:sha256:282753cef597e249acf9bb967eff0df22e4b0f339c2765f5248123374164e3b8:eyJzZWxlY3RlZExpbmVDb3VudCI6MjgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRlYjRhN2JmOThjMDE2OTA4OGUwOTMzYzRkNDhhZjA2MjNiNzRiNzM2YmRiNTY1YTUwYTYxNmEwYzA2ZjE1NjMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijg5NjJlNGRmN2EzNGNjNzg3YmU1NGI0YWZhNjRiNzNmYjY2Y2Q0NmNhYmU1MDBiZTQ4NmQ3N2JmYWYwMGJjZTIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImJhY2M0MDEzNDY0YmI3NmQwM2IwNmJjM2EzMGI4MTg1ODFkOGZiYjYzMGQ2MDUzYTk3YjI5MjcwNDUxZjEyNWUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImM3NTU5ZTc1MDM0ZDRhYzIyN2U3ZGQwMWE1Y2E0M2UyZTFhOTcwN2JmMmQ3ZDM4NTc4MzE2ZmQ2MjU5MGFhNjMifQ"
+        },
+        {
+          "resource": "repo://src/utils/executor.py#L9-L15",
+          "version": "repo-lines-v1:sha256:45474591ec957ddd8d85bf3a953ae584979c64d34ddad4040dc339b1dad5f4c7:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZGViNGE3YmY5OGMwMTY5MDg4ZTA5MzNjNGQ0OGFmMDYyM2I3NGI3MzZiZGI1NjVhNTBhNjE2YTBjMDZmMTU2MyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNzgwY2UxMzNhZWJiYWIxNmY4OWM1OGJjOWQzODc2NThjOGRmYmFjOTkwNGU0MmI5MDNlMDhjMWM0MTdmMjlmZiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiOGNkMjg3MjM5MGUwMTAwYzMxNjgyMTM2OTU2MGM0MzMxMjc2YTA4YmNmMDFmNjkyZmQyNDc0NTcyZmMzZGE5MiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiOTQ0NzBmZDhlMThmYTEyODE4NzA3NDEyY2ZjYWQ4MjAyNTEyMjgzMjk0YjBhNzFiNjJiMzhkM2ZlNzk5ZTA2MiJ9"
+        },
+        {
+          "resource": "repo://src/utils/jwt.py#L10-L13",
+          "version": "repo-lines-v1:sha256:d912d1a12cae4e61b1a4ffdb1f2f21a0461deb91717ea5720e8ea2ea2a766fbb:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZGViNGE3YmY5OGMwMTY5MDg4ZTA5MzNjNGQ0OGFmMDYyM2I3NGI3MzZiZGI1NjVhNTBhNjE2YTBjMDZmMTU2MyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNGRjZjM4ZmQ0MDkzNGE1ZGVkOWJmZDc5ZTVmMDA5OGFiZmMwZWZhMmFiZDdiYTVhZmM1ZGQyMmRkZTVmZTMwNiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYjdlN2I2YzVkODBlMGE3ZDA1MDY0NmZlODFhZGVjZTcyOWExMTNhZmE4YTE1YjkzOTE5MTNhY2ViYzhmODVmZCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiN2FlNWFlMTRmYmZlMDdmYTM2Y2I3ZjI1YTFkY2M2YWM1ZDVjY2ExZjU2N2UxMzNlNzExYTgyNWY5NjBkNzhkNiJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_0a765062876d466abf90ec300a4f81e2",
+      "statement": "API_KEY_SECRET has no default: get_fernet_cipher raises RuntimeError at security module import when it is unset, which aborts application startup before the server can bind, making it a hard deployment requirement unlike JWT_SECRET which silently falls back to dev-ops-mcp.",
+      "evidence": [
+        {
+          "resource": "repo://src/utils/jwt.py#L13-L13",
+          "version": "repo-lines-v1:sha256:4dcf38fd40934a5ded9bfd79e5f0098abfc0efa2abd7ba5afc5dd22dde5fe306:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNGRjZjM4ZmQ0MDkzNGE1ZGVkOWJmZDc5ZTVmMDA5OGFiZmMwZWZhMmFiZDdiYTVhZmM1ZGQyMmRkZTVmZTMwNiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNGRjZjM4ZmQ0MDkzNGE1ZGVkOWJmZDc5ZTVmMDA5OGFiZmMwZWZhMmFiZDdiYTVhZmM1ZGQyMmRkZTVmZTMwNiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiN2YxNjU2NGJiNDFlYzA5Zjc3MTQ4YjIxNGQ1MWFkMjNjOGViYjc4YjNlNGNmMWUxY2MyOThjYmE0NzBlMjQyYSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiN2FlNWFlMTRmYmZlMDdmYTM2Y2I3ZjI1YTFkY2M2YWM1ZDVjY2ExZjU2N2UxMzNlNzExYTgyNWY5NjBkNzhkNiJ9"
+        },
+        {
+          "resource": "repo://src/utils/security.py#L31-L41",
+          "version": "repo-lines-v1:sha256:d202c977c048f9cca081a1224deb2afac906dbf42be079906d335da90056d56d:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQwMzgzMDU0MDEzNTA0MjNiZTg5NzE2ZDUzOTk3ZGE2YjUwOTRhMTQxZjI5YzM4OWYyNDM3MTU1ZjFiNWIzY2EiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjBmZmUyNWNlM2UwM2YzNmI1MWEzZGE4NTJjMGY5MDQyMTk4MzgxZDExYjhmZmY2MjZkYzNlMWQxMTIzNWM3MzciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjZkYzVhZjBlNDMzNDc2MDZkNTIwY2M5ZWU5NzliMjI0YjUxMjhmYzM4NWVhMzk1ZWUyNjJmMDdlZDljMWZjMzciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImJiMTQyZDdkNzE4OGNmMmVhMGU3NTE3YmRkOTY5Njk1OTA4ZjU4MTlkNDg2NmRiYWJiZDg1YWNjZWU1Njg2MGUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_82c8f06991f7480f92477fc25fc39c6d",
+      "statement": "ADMIN_USERNAME/ADMIN_PASSWORD seed the console admin (defaults admin/admin@123) and DEFAULT_API_KEY names the seeded MCP key token_name (default 'default') rather than supplying key material; the actual key is generated and printed once during init_db.",
+      "evidence": [
+        {
+          "resource": "repo://.env.example#L1-L7",
+          "version": "repo-lines-v1:sha256:7f54af3be5396b3870bff24b04c3644126edb7fbe2f7115664eb9b11782a8483:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYjhmZWJmODE2NGFlMjI2NDk0MmVlZGFiOTBlMmM2ZTcyYTllNmY5NjIyZTI5MmRhYjk0MmM3ODE3ZTI5NjJlOSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNmY3MTJmY2ExZDk5NzUwY2VmYWM4NzdiODZjN2JkY2UyZDE2MjgyZGExYzg4YzUwZjgzNjViZmQ2NzJjZjI1YyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjAsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiOGVlZmI5OTY2MjU2MTRiODc5ZDBjMzhmNGI3ZmZhN2M0ZjM3NDk4MTYzNWViODRhYzFkNzQwNDIwNzA2NTU2YyJ9"
+        },
+        {
+          "resource": "repo://src/dbs/db.py#L47-L99",
+          "version": "repo-lines-v1:sha256:390a1905584b0b71f4adb13c9d3ff7300867b025c5ffa1da3c7747ac8e5ad37a:eyJzZWxlY3RlZExpbmVDb3VudCI6NTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFjMmYxYjhkMWM4OTczNDI2NDAyMWQ0NWE2MGU5YmY0YzI3MzQ4MWYwYjlkNWNmM2RkNDQ4ZDRlNmU5ZGQxMTIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZjNDFlOTYzMTJiMzZjMzFlYjM5MjMyYTE0Y2E1ODg2NWRkZTU4ZDUyNGMyNDA0ZjZlZjc5M2M4MWNkOTQ1NzEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImI3NjM4NDRhZTllNDkwZjJkNDhiMDkzMWFjYzE4ZWM2ZmM2YzFjOWFjZDZmOWNhMWRjNTIxZDcwMWZhNjQzOTciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImVjOWFkNzM0YjE1MGQyZDFlYjlhMjIxOGRkZDBhNDI3YTU5YmMzNjM1NWIxZjc4NjhkOWNlNDAwYmJmYzliZmIifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_d09ac0aa06ce4d00b4bfb221b7f89f29",
+      "statement": "HOST_SSH, HOST_SSH_PORT, HOST_SSH_USER, and HOST_SSH_KEY are read independently by both executor.py and ssh_client.py with matching defaults (host.docker.internal, 22, devops, /root/.ssh/id_rsa), so the batch and terminal channels always target the same endpoint unless one module's import order sees a different environment.",
+      "evidence": [
+        {
+          "resource": "repo://src/utils/executor.py#L12-L15",
+          "version": "repo-lines-v1:sha256:0c70b3a4c8ec03aae7cf150a04dbde5c6de46aeecf791d9a80d6ab0609001f01:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMDU1ZjAxMzdjOTQ0NGZlNTlmODY4NjExZDZkNTJjMmFiZWIxMWYwNjkyMmQ0YTgzNmM4ODU3Y2Q3MTNmY2I2NCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNzgwY2UxMzNhZWJiYWIxNmY4OWM1OGJjOWQzODc2NThjOGRmYmFjOTkwNGU0MmI5MDNlMDhjMWM0MTdmMjlmZiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiN2YxNjU2NGJiNDFlYzA5Zjc3MTQ4YjIxNGQ1MWFkMjNjOGViYjc4YjNlNGNmMWUxY2MyOThjYmE0NzBlMjQyYSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiOTQ0NzBmZDhlMThmYTEyODE4NzA3NDEyY2ZjYWQ4MjAyNTEyMjgzMjk0YjBhNzFiNjJiMzhkM2ZlNzk5ZTA2MiJ9"
+        },
+        {
+          "resource": "repo://src/utils/ssh_client.py#L12-L15",
+          "version": "repo-lines-v1:sha256:5779ebf382e8ffe1857317ae93afe5442c38047b102923e812113eef7aa306dc:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNGIyYmI5MDAyYzZhMDAyNzY2NDY2NjgwOGY3ZjhjMzdjYmZhYjEyOTMwNjJhY2FjNmJmMzRmNmI3MTZjZGFlMiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNWIzNjZmMWM5ODkxYjU2MTEzYTIyM2RmYmU0ZjdmNTMwYjllN2M5NGRkNTdlNjcxYTM3YzU3NGU0YWE3N2QxZiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZmQxMDU2ZTVjYTZkZjhmZWY2YjBjZjQ1OWFhMDAxYjcxMDNhMjRlZTAwOWY4NDU4MDgxYmI4ODQxMDJlYjUzNSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTVjMWM0NjJlMmEzOWQ3NDc1OWY1ZTFiMTI2Zjc2ODNhMmI3MzAxMThlMThmNTEyMmIwOGNlZGVlYjY1MGUyMyJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_b47b0f2662bf4bddb9bdec601b6425b2",
+      "statement": "MCP_NODE_NAME optionally sets the FastMCP server name suffix devops-node-<name> and falls back to the hostname when unset; it is not listed in .env.example.",
+      "evidence": [
+        {
+          "resource": "repo://.env.example#L1-L12",
+          "version": "repo-lines-v1:sha256:1c9d3713f04cc74b697a113dba7ac60ce3c0ffc72fbeefc8e004bce7c11b8a12:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI4ZmViZjgxNjRhZTIyNjQ5NDJlZWRhYjkwZTJjNmU3MmE5ZTZmOTYyMmUyOTJkYWI5NDJjNzgxN2UyOTYyZTkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZiM2Y1OThjMzA4YWNlY2ZjYzBjYTNjNTAwMzRiZTA2YmQ5NWQ3ZmIxYWU5ZmVjNWQ4NmVlNmEyYTM5ZjQwYjciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://src/tools/mcp.py#L24-L27",
+          "version": "repo-lines-v1:sha256:e0a48b33547634a59f44b277e2ad1e0e8f2b4407579d5c4a69fa546e7385a7be:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMTAxNDQ2NGU4OTNkMGNkNTMyYTFkZWI5MDJiMTQ1ZWE5Zjk4NjJjMWE1OTEzYTVmYWUyMzg5NTIzOWY0OTQ4MiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDk1Yjk5YTc3ZjI1NzBhZmQ1MDU4NDJhYTA3NDgyOWY1YTRiMzVjN2NlYjNlNjA2OWM2MTQ4NGZjZjY4ZjFmNCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiN2YxNjU2NGJiNDFlYzA5Zjc3MTQ4YjIxNGQ1MWFkMjNjOGViYjc4YjNlNGNmMWUxY2MyOThjYmE0NzBlMjQyYSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTk2ZmZhNTQ3ODFiZGIwNDNkNzgxZDkzMDI3MmUxMjk2YWU2MzVmMTJhNDgwYmYwNmUzZjFiYWJiMWViNDE1NSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_458e592fe73f4603afeb2a2ca7521a14",
+      "statement": "docker-compose injects DATA_DIR (default /app/data) into the api container but no Python module reads it — db.py and migrate.py derive the data directory as Path(ROOT_DIR)/'data' from path.py's walk-up, leaving the compose variable inert.",
+      "evidence": [
+        {
+          "resource": "repo://docker-compose.yml#L12-L14",
+          "version": "repo-lines-v1:sha256:2a000b3056dd068750e76c2d9ae7fb6d411da1a6460648f97266121112e38d2d:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMmU2OGM5NjcwYWM0OGIzM2U0YzJlYmMxYzE1NTEyMjNmMDA3OTdmNWI3ODBmZWNjMjVjM2UwZjJjNzlhMmNjMSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZjJhODRiZTYzM2ZmY2NiODcwNjQ4MTJlNDg5YThmZjVhNGYwZjFhMGFjYjhlM2ZlMTg1NGRjZDEwZTJiZTQ0MiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZTA0ZmU1ZGIxM2IzOGU3MTFlNDA0MmY5OTIxYzIyY2MzNzFiYWZmZDU5OWFiMGZhMzM4MWI2NjNmYTBjYTBlMSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMmMyMzM4OGI0NzI1ZjdjNTZiNzRjM2JmMmIzZDdmZTRmMmEzMjA0ZDIzODNmOWNiYWNmMGU4ZWQ2ZWYwZTc0NCJ9"
+        },
+        {
+          "resource": "repo://src/dbs/db.py#L25-L27",
+          "version": "repo-lines-v1:sha256:3ef65ca8293ba969ba83f51ee48beee3fc4c1706c1977e34bc049b4678d16d0f:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMjQ5NjdiYjJjYTFmZTEyMGQzOGQ1MWRjYjhhN2JkOTAyMjAwMWYwZDVjNmVkYzZkOWE1NGJiMmFjMmVmZDNkOSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYTdkOTBjYTMwZmE2YTJiYjQ3NDgxZTlmMjZiYzcwYjRiM2Y2ZTBmNDE1NTllOTk3Y2IwYzY3ZGMyN2VlMjUzNSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiN2YxNjU2NGJiNDFlYzA5Zjc3MTQ4YjIxNGQ1MWFkMjNjOGViYjc4YjNlNGNmMWUxY2MyOThjYmE0NzBlMjQyYSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMmM1ZTM5NzI5NTVlOWZjZDdmMDM4MDdjYzk3MGI3MjY1NDU0NWY5YWE1NGVmMjAyZDY5NzM0NTU4MzFkMzM5NCJ9"
+        },
+        {
+          "resource": "repo://src/utils/path.py#L4-L7",
+          "version": "repo-lines-v1:sha256:8d67af5bfdeea76b679ec798b8239864ffc07192cf47e9aa50f4823dc0955ab0:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNjIxODljNzI5MjAyMjM1MDRiMGYwMzYwYWYyOTBiM2QwNDQxZjBmYzYwYjM3Zjk0NjFmMTNlZmFmZWQ1YWUzMCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMjJmMjkzNzI5YTNmNTIwNzI4ODY0MWRmNjI5MTdlYjUwM2I2OWVjMjVlODJkMDc1YzFlYTM4ZGE1MzhhNzFkZSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMmIwYTA0MzVhN2E0ZDc1NGY2Y2ZkYjI3YTBjMDY0NDRiNjUyYjY2YTY2OTVhZjkxZDdiOTNlNmM0NTBmMTYwOSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjAsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_ba1ced52a34448e4b327b63afbc737a0",
+      "statement": "The web client base URL comes from NEXT_PUBLIC_API_URL with fallback '/api', baked in via Docker build ARG/ENV so the browser always calls the gateway /api path rather than the api container directly.",
+      "evidence": [
+        {
+          "resource": "repo://web/Dockerfile#L14-L15",
+          "version": "repo-lines-v1:sha256:8472ff2664a3c04e518e89a38444ec4bcc936ef88de8bafc3451302fd470203c:eyJzZWxlY3RlZExpbmVDb3VudCI6MiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNjM2Y2Q4ODA0MzI0M2E0MGE5MjQzZGFiNzAyNzk1ZDU0YjYyOGQ1NzM0ZGQ0YWFkYzE1MDc4MmUxOGI1NmVmNSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiODgwMWE1ZTJlZmE0OTdjM2U4YTFiYWY4M2NjNWUyYTE5NDNjYzQwOThmNGIzNWQzYWU5MWFmMWVlZDhmZDI4NiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMTY3ZGM0OGY2N2IyNTIzMjUwZmZkYjQ3ZTlhYzFiYmJmYzBkMDU5MWJjMDUyNzMyZDIwNjE1ZDU4Yzk5ZjkwNSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZDJmMjVlZTA2ZmI5NzEyZDY1YjIxYzc0NzMzNDNlZTM5NGMwMzNjZWNlODZlNzMzNTRhYTNmZDc1ZWI4MzVjZSJ9"
+        },
+        {
+          "resource": "repo://web/services/api.ts#L15-L15",
+          "version": "repo-lines-v1:sha256:efc2764db349692f3ed268f5d34efc17a7dfbd5adc94621faae6800666c78434:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZWZjMjc2NGRiMzQ5NjkyZjNlZDI2OGY1ZDM0ZWZjMTdhN2RmYmQ1YWRjOTQ2MjFmYWFlNjgwMDY2NmM3ODQzNCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZWZjMjc2NGRiMzQ5NjkyZjNlZDI2OGY1ZDM0ZWZjMTdhN2RmYmQ1YWRjOTQ2MjFmYWFlNjgwMDY2NmM3ODQzNCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMjU5NzczZTM1ZDY3YzM3NmYwMWEzNmJjYzkzODNjM2I5M2Y2MGQ3ZDMwMzkxY2FlM2Y1YWYxZjZjNzIzZmIxMiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNGU5MmU2NjczYzE4OWUxNjQ2OGExNTFjZTU1MGQyZWVkZDgyMDFjZDQxNTc2MWY0YmNlNWQyMzMwNWU3Y2NlNiJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_3105c900e46649e79a1565e6f0458d75",
+      "statement": "Compose delivers .env to the api service through env_file while local development depends on each module's own load_dotenv() call finding a .env file in the working directory.",
+      "evidence": [
+        {
+          "resource": "repo://docker-compose.yml#L3-L6",
+          "version": "repo-lines-v1:sha256:e33b652e3da9c92e152cf4d9cfa03ef1fa0490da20922e4f89d975e30ec03752:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNzg5YjIyMjQ4Njk4Y2ZjYmY0YzQwM2QwODBjNDViZWMxOTViOWI5NWFjMTRiZDczMjBjYzgxMGJiZjU4MTE0MyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMjYzZDQwNmQ1NzJjMWJmNWI1MzFhMDMyMGE0NzMwM2EzZjM0MjY5OGJlYzA5MTAwZmZiN2E0YTgzZjNkZGU1OSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjIsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMWU0MDE5ZGNhYmFlZWNlMDViODhjZmVjZWFkMGZiNDNjMTk3ZjA0ZDhjN2E0MjQwZjBhY2U2NGJkZGY2NzUyMSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZjdjMDZjMTllNGI5YmE4NGZiNzJkODBjMzAxMzIzYTFmZjM1ZmMxMjVmYTQyMTlkNGI1Mjc0ZDRkYjEwMDg1YiJ9"
+        },
+        {
+          "resource": "repo://src/dbs/db.py#L22-L22",
+          "version": "repo-lines-v1:sha256:deb4a7bf98c0169088e0933c4d48af0623b74b736bdb565a50a616a0c06f1563:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZGViNGE3YmY5OGMwMTY5MDg4ZTA5MzNjNGQ0OGFmMDYyM2I3NGI3MzZiZGI1NjVhNTBhNjE2YTBjMDZmMTU2MyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZGViNGE3YmY5OGMwMTY5MDg4ZTA5MzNjNGQ0OGFmMDYyM2I3NGI3MzZiZGI1NjVhNTBhNjE2YTBjMDZmMTU2MyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYmFjYzQwMTM0NjRiYjc2ZDAzYjA2YmMzYTMwYjgxODU4MWQ4ZmJiNjMwZDYwNTNhOTdiMjkyNzA0NTFmMTI1ZSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYTMzMzUxNGEzZjIzNGVlMmE4YmE2OTQ1ZmI4ZmE5YTdmNjA5NDUxZGE5ODNhMzMyMjVjZTA5MDhjMWZiMDIyMCJ9"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.5.2",
+    "at": "2026-09-23T02:41:19.131Z"
+  }
+}

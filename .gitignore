@@ -7,3 +7,4 @@ __pycache__
 .opencode/
 .trae/
 openspec/
+.github/workflows/

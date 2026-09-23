@@ -1,0 +1,92 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:da0073b400fbc1c2274aa72b754ce86df3c65a0ad568471cfd0d68278fb0b4da",
+  "claims": [
+    {
+      "id": "claim_0e03c3603ee641dfa30e4c89d0e7d1ae",
+      "statement": "First boot is: sudo bash mcp-init.sh, copy .env.example to .env and fill secrets, then docker compose up -d --build — the api container CMD runs migrations before uvicorn so schema setup is automatic.",
+      "evidence": [
+        {
+          "resource": "repo://Dockerfile#L48-L48",
+          "version": "repo-lines-v1:sha256:7eb70257593da06f682a3ddda54a9d260d4fc514f645237f5ca74b08f8da61a6:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiN2ViNzAyNTc1OTNkYTA2ZjY4MmEzZGRkYTU0YTlkMjYwZDRmYzUxNGY2NDUyMzdmNWNhNzRiMDhmOGRhNjFhNiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiN2ViNzAyNTc1OTNkYTA2ZjY4MmEzZGRkYTU0YTlkMjYwZDRmYzUxNGY2NDUyMzdmNWNhNzRiMDhmOGRhNjFhNiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZTFmZjJiNDRiMTIyNGY4ZWYzMTM5MDJhNWE4MjY3MGY4Y2M3ZmZmNTViYmFhYzdmOGJhYzg5ZDAwMzA3NzZhNiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjEsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYjY5NjkwNTVmMzdlMmM5YjI3OTVmOTcwMWE3ZDY0NjBmNGYzMzEyNTBjNTI1MzMyODUwMWVkNjA1YWNjODIxOSJ9"
+        },
+        {
+          "resource": "repo://README.md#L107-L120",
+          "version": "repo-lines-v1:sha256:37f06fc2d141bfb92a6dc58670ae7b8814d5a98bcfdafbdd08b38f68943ba6fc:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM1NDc5YTFmMTQ4OWJjZjMwOGNlZDM2Zjk3NDgxYTM4ZTQ3NjU0YzdjNGE1OWMwMjMyYmQ0NTM5NjgxMzljMjQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjdlYzU2OGVhZGRjYzQ4NDAyNmYxZTMyYWYyMmM3NWYzODUzNjJjZjJjNWMxZGQ5NjhjMDU5MmY1NzE5NTgzMzAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjgwOGQ5ODlhY2Y2YTZjZjgxMzk5ZWNkMzYxNzRhZWM2MDZhOTNjM2RlODZlZjkyYTk4ZjdhNWQyNTNjNzRkOWMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjA3MGRmYjYzNmU1MDA0YWQ0Y2Q0ZTFjOTgzZTY3ZWZjMGJhMTQ2OTExYzYzMGYwZTU1MmUyYTNiZWViOGY1ODcifQ"
+        },
+        {
+          "resource": "repo://docker-compose.yml#L1-L61",
+          "version": "repo-lines-v1:sha256:dc038399cc005970df4c06f99be5a984d9ee0cfdf9ab79773ad4cb3f6fe85808:eyJzZWxlY3RlZExpbmVDb3VudCI6NjEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZjZmVlYWJkODk2ZDhlYzU0OGQzOWI0NzUyNGEzOGFhZDU5MWM3ZGZlMWRhYzQzNGJkYzBhZDIzNzAyZDlmZDgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFlZGUyYzhjODFlYzAzODdlNjcxYTc1MzRkZWJmZTkzMGZmODFjY2YwNzVjMjIwZWU2YmM4ZWMyYzc0MTI0M2QiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_c8142f4fa82845e38e0b570af4d1578f",
+      "statement": "The single published entrypoint is host port 10096 (gateway), with the MCP endpoint at /api/mcp and Swagger at /api/docs behind the same port.",
+      "evidence": [
+        {
+          "resource": "repo://docker-compose.yml#L39-L61",
+          "version": "repo-lines-v1:sha256:25ea77afe0cf07c886e382d4be19aaa1488c178913fb524912b25df69eeafb6f:eyJzZWxlY3RlZExpbmVDb3VudCI6MjMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjdkOGQ2YTZiMzYxYjA1NzY3OGJhMjA4MTJhY2ExZjFkNjdkMmZiMjQ5ZWM5ZGRlYzgwOTAyNDU3MDcwYzc2MzEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFlZGUyYzhjODFlYzAzODdlNjcxYTc1MzRkZWJmZTkzMGZmODFjY2YwNzVjMjIwZWU2YmM4ZWMyYzc0MTI0M2QiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjE4YzE4MGY0ZDAwY2IyYmQ5YTk5NGIxNDVjNDE2ZjViZWIyOTQ4ZDk4ZTQ1YzkwZjM1NDMzYzBmZmIzOWE3ODQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://nginx.conf#L15-L34",
+          "version": "repo-lines-v1:sha256:1142a846aa014bdcbc67e01a3f96ace6a9188cf55d5f0b24ab0db23c9098c9f1:eyJzZWxlY3RlZExpbmVDb3VudCI6MjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQwNWFhNWYzZGIwMDJjN2VlZDYyOTdhZWY5ZjY1MTVlMDUxZWU1NTIwZTdmY2EyNmIyMTFmZDNkNTFiN2Q2ZTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE0MTlhNmRjYzA0ZTIxM2EzYzdhNzdhNDU2YjAxZTc2ZDFlZjc4Y2QwMGJiZWMxZDhmODE0NThmZTkzZWRjNTYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjBhNTlhZTNjMDM5OTU0ZGY4MGY3ZWNjMDM3ZDk1ODZhYjIwNzY2ZjkzNGY1YWFhYzAyMWYzMzcyNzU1NjczMjUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImJhNjk1NGMxYTBlYWM3ZTlhYzk4ZTFiYWYzNjBlNjA5ZDYwMmRjNGUzYmNiNTZkZDAyNDYzZjJlZmZmMGYxMjMifQ"
+        },
+        {
+          "resource": "repo://src/main.py#L36-L36",
+          "version": "repo-lines-v1:sha256:f405bc5afb0b6af9e5127534d3d2e9b2bd192010d49497bbe812132fb2196cda:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZjQwNWJjNWFmYjBiNmFmOWU1MTI3NTM0ZDNkMmU5YjJiZDE5MjAxMGQ0OTQ5N2JiZTgxMjEzMmZiMjE5NmNkYSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZjQwNWJjNWFmYjBiNmFmOWU1MTI3NTM0ZDNkMmU5YjJiZDE5MjAxMGQ0OTQ5N2JiZTgxMjEzMmZiMjE5NmNkYSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYmVhOTMyMmYzOWI5M2JkNTlkNTM3NDUwMDQ1YTE2ZWRiMGE0YjY5OTIwMWM5MGYzMWZmNjBlNTk2MDI0ZWM1NiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMDE4YTk4Y2IwYTNiYTQ4MTM5NmUzZTk5ZDZjOWZhZjQ2OGUzYWRmODRmNThhYWYwYmUwMjljMTI2MDE2ZmNiNiJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_5e9530d2410a415196a82f846932da79",
+      "statement": "The wiki is organized into architecture (how it is built), concepts (domain vocabulary), workflows (end-to-end traces), reference (lookups), operations (running it), integrations (host SSH boundary), and testing (verification gates), with this quickstart as the entry point.",
+      "evidence": [
+        {
+          "resource": "repo://README.md#L1-L50",
+          "version": "repo-lines-v1:sha256:6e7c753f987dd4ca1b8365cccdaa78a2b27df5291afb67ef82763cd1aa9f09b9:eyJzZWxlY3RlZExpbmVDb3VudCI6NTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjJlM2Y4NzA1N2Y4MmE1Yjg4MDEwNTgxMzBlM2MyOWYyN2ZhOTFlMzk3YjZmZmFjNTczYzAxNDNmYTIxMTllNjEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjdlYjcwMjU3NTkzZGEwNmY2ODJhM2RkZGE1NGE5ZDI2MGQ0ZmM1MTRmNjQ1MjM3ZjVjYTc0YjA4ZjhkYTYxYTYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjVmZGNkN2U3YzdjZjA1YzY5YjZhNTljOGFjZDk5YzUyZmZmM2RhNmFkY2ViNGRjMzA1OTdiNWE1MzU3NjA2MDgifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_1c1c2f0b47744fadb3215252efcba7db",
+      "statement": "The platform is a self-hosted system exposing managed projects and shell commands to both a web console (JWT) and AI clients (MCP API keys), with three compose services and SSH as the only host boundary (no docker.sock, no agent).",
+      "evidence": [
+        {
+          "resource": "repo://README.md#L49-L72",
+          "version": "repo-lines-v1:sha256:f0eb6afa0d9e501d41efc897563024066f44989deaa8c5428674bad3e49dd88c:eyJzZWxlY3RlZExpbmVDb3VudCI6MjQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNjOWY4NzEyYmNiNTIwOTFjNTI5MjVmZjcwMTRiZWVhOTJlNWYyOGY1OTI0NDJmYjc2OTY4YjkyY2YzMGQwMWUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVjZWQyZWFmZjI2MzhlMjIwMWVhMDhlNWE5Yzg0OTJmYTMwNzFiMmExYTdjMGFlNDA5N2Y1ZTM4YjUxY2NjM2MiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjgzZTBkZWY4NzU1MDBhNGNkZDJmZjE5ZmY4NzE4ZWY3MjBlMWY3YjE0OWExNDRiNmJiMWQ3ZDI0MTZiZmUzODciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjIwZjQ4M2QzZjU2YjU1YmY3MGVmYjUyZWFjMDBjZWM3ZTdiMjI3NDJmNDY3NzllZDA5OTZmZGNlOWQwNDEyZDYifQ"
+        },
+        {
+          "resource": "repo://docker-compose.yml#L7-L11",
+          "version": "repo-lines-v1:sha256:4551a75287bc693604be0186937fef000a22d41d180fb873d274c2fc37d7c388:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMTFkYjhmNTgxNmViZjI2YWNhMWNjODM2OGY4OGIyNmE3N2RmODFkZDNiODc4MjgwMzBlZTNjZmY4ZjNjMWY0MSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYTM5MGMwOTIyNWM2Mzk5M2Q2NGI2OTAwNjY4M2Y5OWVhMzM3NGYzNTkxODFiMzMyODg2NWJjZjZkZjk0MDIwZiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMDQ2NzBlMWQ4MTFmMGU5ZDU0NDBiMDUxOTQ0NTA0MmU4Y2QwZGZiN2MxYmRmMWEwMjM4YmE5ZTlhZjEwYTM4MCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMmEwMDBiMzA1NmRkMDY4NzUwZTc2YzJkOWFlN2ZiNmQ0MTFkYTFhNjQ2MDY0OGY5NzI2NjEyMTExMmUzOGQyZCJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_9f5e2c17025c462aaf82d047e547e9be",
+      "statement": "Common first-boot failures map to specific pages: missing API_KEY_SECRET aborts startup (Configuration), MCP 401 means disabled/wrong header key (Security), missing resources:write means default ops:execute-only scope (MCP tools), and requires_confirm needs the two-call pattern (AI operations).",
+      "evidence": [
+        {
+          "resource": "repo://src/middlewares/mcp_auth.py#L49-L53",
+          "version": "repo-lines-v1:sha256:add11bf13bcfdfdb9a10eb631252eb45598a0929ff6a935d65f0310327454c1e:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNmQ2YmUyMDU1ZjQzN2I0ZTkzNTQ5MGFjOTdhNWY1Y2U4NjJiNmEzMjRlZTdiMmM4YWU2ZjJhNWM0NDU1MDU2YSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZTljZTg0NTEzMjFmOTgyNmY1ZDY5NzNlNDU5MDhlNzZkNzM2OTQ3YzUxNTk1NzRkYzAyYjJmNmYxN2Y1NTIyNSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNDMyN2E0Yjk3ZTllZjc3MTIzMTgwMzk0YmU5MmIyMzQ4Y2FkMDE3ZmQ2YThjOTIzOWQwNjkyYmYzZTUyNjM2YiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMGU5YmFlNjU3ODczY2RjYjJkZjdkZDdlYjA5ZTE1ZTc5MDg5OGYwNDVmYzY5YzA0MThlYzMyNDIwM2VlNDJjYiJ9"
+        },
+        {
+          "resource": "repo://src/tools/mcp.py#L144-L151",
+          "version": "repo-lines-v1:sha256:f2190b75f8abfe4ef451b6b8725a08420a107725125b96e58cf7425ae6f34969:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNDM4ZjRjY2Y1ZmNiNGNlYWE1NDY1NzVlZWM2Zjk4NWIyM2MyNmVhMWY5MmFiM2Q0NTQ5NjA0NzIwZjA0MTllZSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMjZiZjg1MzQ4NTRiNzcxZmU0ODg3ODAxOWRjYTlmYzY2ZmNmNzBlM2E1NDJkY2U2MzYwMDRjZTMxMDg1NWFkYSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNjlmNGM4OWU5YWU0Y2U5NDRjMTYyYWRlYzc4NDIxM2U4M2Y0MWJjMDM5MDIyNDU1NWRiNjI3MDdmMWY4MjM0MSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMjAxNDkyM2RmMzEzY2RlZGQwMWUwMGIxODNmYzFmNzQyY2Q3NzAwMGY4ZDgzZDljMTM0M2RmNjc0YTQ1OTMzNiJ9"
+        },
+        {
+          "resource": "repo://src/utils/context.py#L30-L32",
+          "version": "repo-lines-v1:sha256:b98fdecce204c276dc03771a61cff690c39d9fef8cbf5828dad74350b235e552:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZmY2YzM1OTI0MjE3ZDRiYWY2YTQzOGFjNTdlOGU4MWM3Y2Y5ZGRlYjVmMDhjZGExMzBiOGI5NWRlYWY4MDhjYSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYTg2ZWJhZjg0OTNlNThkOGIwYjAxMGFmODg3OWZjNjFhOWQ5Mzk2YTViYzI4ZDFiMmYxNTc2NjA0ZmJiZjllNyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYWI3ODJlOTcyZTg4NTY2NGFkYWJiYjUxODFkMGIyNWZhMmRjODFlN2VjYzA1N2MyZTRkNzc5ODQ1ODA5MTczOSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNjRiYmY5MWE5ZDQ2YjdkYjM4Y2Q1ZTM3MTY4YjZjOTY1MTMyNjFhNmNiNjZhMjc5ZWVmODYxZGUyYmQ3NzMzMiJ9"
+        },
+        {
+          "resource": "repo://src/utils/security.py#L31-L41",
+          "version": "repo-lines-v1:sha256:d202c977c048f9cca081a1224deb2afac906dbf42be079906d335da90056d56d:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQwMzgzMDU0MDEzNTA0MjNiZTg5NzE2ZDUzOTk3ZGE2YjUwOTRhMTQxZjI5YzM4OWYyNDM3MTU1ZjFiNWIzY2EiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjBmZmUyNWNlM2UwM2YzNmI1MWEzZGE4NTJjMGY5MDQyMTk4MzgxZDExYjhmZmY2MjZkYzNlMWQxMTIzNWM3MzciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjZkYzVhZjBlNDMzNDc2MDZkNTIwY2M5ZWU5NzliMjI0YjUxMjhmYzM4NWVhMzk1ZWUyNjJmMDdlZDljMWZjMzciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImJiMTQyZDdkNzE4OGNmMmVhMGU3NTE3YmRkOTY5Njk1OTA4ZjU4MTlkNDg2NmRiYWJiZDg1YWNjZWU1Njg2MGUifQ"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.5.2",
+    "at": "2026-09-23T02:41:19.131Z"
+  }
+}

@@ -1,0 +1,142 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:1138f7280e86cba89a7e16511b2957eace82a51e750d6108640445d0a6542bbb",
+  "claims": [
+    {
+      "id": "claim_f5c3e68cc7ed486c9638fa47fd45e072",
+      "statement": "MCPAuthMiddleware guards paths starting with /mcp or /api/mcp, extracting the key from X-API-Key, then Authorization Bearer, then query token/api_key, and authenticates by matching the first-8-character prefix against active api_tokens rows before hash-verifying the full key and storing the row in the current_mcp_token ContextVar.",
+      "evidence": [
+        {
+          "resource": "repo://src/middlewares/mcp_auth.py#L15-L55",
+          "version": "repo-lines-v1:sha256:3d26104bba699446f01114434bacaa502d20ab19af9bd77c0e9cd9b9ab97238d:eyJzZWxlY3RlZExpbmVDb3VudCI6NDEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZhN2JiZmQxZTUwN2EwMmFhMjVhYjU2NDBiMmU1MWVjNmZjNDQ3YjJmMGNkNjAyZTIwODVmYTk5Njg3MzJmYjkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQwM2I1ZjRiMDgzODdlZGUxYjUwNTA3MzUyMGU2NjA2M2E4MWY4ZWZmOTg1YjUxODA0MTg4N2JmNjk5MGE0NGMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImI5YjcyYmMyM2RlYzgyYzI2NTUwNTliYjJjNDYxMjBkNzFjNTZmYzBmYmZhYzY5NjUwYmY2MDBlNDc2OWIxZDkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImVjMzU5N2Q2ODFkYzM4NjFhM2UxYTVlY2FiNDkyNjBlNWM1NWY2NzQ2NWU2NzIwYzkzOGZkYjIwMTA3ODM5MzEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_5e8af2d4f99e4787b1c63614d68e2b49",
+      "statement": "The FastMCP app is mounted at /mcp with FastAPI root_path=/api, so the externally reachable MCP endpoint through the nginx gateway is /api/mcp, and the server is named devops-node-<MCP_NODE_NAME or hostname>.",
+      "evidence": [
+        {
+          "resource": "repo://src/main.py#L61-L65",
+          "version": "repo-lines-v1:sha256:2440b2772c7aa8dbab84169e3cfecbbbfe44d1dda18d4c5c5e488396fbe6a69b:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYWNkMzcwZTczMGQxMWVjZTU4Mzg5MThlMmJjYWNhNjMwOWMwZTM3YjIxZTE5Y2NkNzBkZDZjMGFjMGQ1OTMwMyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMWY5OTQxODliY2ZlNGQ3ZTc2MTg2ODVjZDYzMjkxNjhiNWQ3ZWI1ZjI1NjNiYWNjYTI0MmY4ODM1MzcxMTgxYSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiM2M4NzEzNjI1MDI2ZThkYzI3NDdiNzlmYTgzODliY2E5MGM2OGEzM2MyZThhMDlkZjNjN2Y5NzNhN2ZiYTU0ZiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiY2I4M2VkODY1OTRkN2IwYzE1MzE4YzI1YTEwZWQ3NDZhODViMjlhNDAxYzlhY2QzYjRmZTQ3ZmNkYWI1N2RkZSJ9"
+        },
+        {
+          "resource": "repo://src/tools/mcp.py#L24-L27",
+          "version": "repo-lines-v1:sha256:e0a48b33547634a59f44b277e2ad1e0e8f2b4407579d5c4a69fa546e7385a7be:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMTAxNDQ2NGU4OTNkMGNkNTMyYTFkZWI5MDJiMTQ1ZWE5Zjk4NjJjMWE1OTEzYTVmYWUyMzg5NTIzOWY0OTQ4MiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDk1Yjk5YTc3ZjI1NzBhZmQ1MDU4NDJhYTA3NDgyOWY1YTRiMzVjN2NlYjNlNjA2OWM2MTQ4NGZjZjY4ZjFmNCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiN2YxNjU2NGJiNDFlYzA5Zjc3MTQ4YjIxNGQ1MWFkMjNjOGViYjc4YjNlNGNmMWUxY2MyOThjYmE0NzBlMjQyYSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTk2ZmZhNTQ3ODFiZGIwNDNkNzgxZDkzMDI3MmUxMjk2YWU2MzVmMTJhNDgwYmYwNmUzZjFiYWJiMWViNDE1NSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_39e3db6fde81481fa7e2cd99a2b6b35c",
+      "statement": "Two independent permission gates apply: scopes (ops:execute, resources:read, resources:write) defaulting to ops:execute when the column is NULL for legacy keys, and allowed_projects where NULL means all projects — enforced via require_scope for manage tools and check_token/check_project for project-scoped tools.",
+      "evidence": [
+        {
+          "resource": "repo://src/schemas/api_key.py#L8-L44",
+          "version": "repo-lines-v1:sha256:27dccf1e5162997767aedf37c02709ee6a415800c94c0b080320cd614b34a5bb:eyJzZWxlY3RlZExpbmVDb3VudCI6MzcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE4NmViYWY4NDkzZTU4ZDhiMGIwMTBhZjg4NzlmYzYxYTlkOTM5NmE1YmMyOGQxYjJmMTU3NjYwNGZiYmY5ZTciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImIxYTQ2NjFkMDZmZjQ1ZTA3NGYyYTliYjkzNjM0YmEyZDgzMjA5NzljNThkN2FhMGFhNTZmZWVjOTM3Yzc5MDIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjcwYTA0MmNlMTNiYjVhZjdhMzY0Y2EzNzg3ZjU4ZWYxNjRiZmY2MGU2Yzk3Nzc2ZTM3NmExNmY4OTA1ZDI0ODciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImNjMDNkOWNmZGQxNDZhZjM4MTFlYWIxOGFhMDkyMmUyNDJiMzc2MjFhNzg4Yjk1MDAxZWIyMzc4MmY3YjliOWQifQ"
+        },
+        {
+          "resource": "repo://src/utils/context.py#L11-L59",
+          "version": "repo-lines-v1:sha256:5f2442763306ceeb64b4dde1bf703013329dd368bb3f046fff1e98bc93ac4601:eyJzZWxlY3RlZExpbmVDb3VudCI6NDksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFlMzgwYzdiYjQxZjUyOTEyNzlmMzU1ZjkwMjY5YTQ0NWVlMjBhYjgxMGNkYWQyOTBjZTI2YTNiYzA2NGYwNzMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjExMzA2ODlmNjk1ZTA1MjhmNzRkNmIyYjZkNjE5NTY2M2U2MDg0OWViM2Q3MGVjYTEzMjU3Zjk4NmNjZGNmOWIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijk4YzJiYTVjMGZlMWM1NDMwNzcxN2Q4N2RlMGM5OWI2ZDBmOTZlNWQ1NjQzZGI1YTJkMWI4MDA1YzQ3NzAxOGYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjdlYjcwMjU3NTkzZGEwNmY2ODJhM2RkZGE1NGE5ZDI2MGQ0ZmM1MTRmNjQ1MjM3ZjVjYTc0YjA4ZjhkYTYxYTYifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_171e1ce8adef4ec6a85afdfe88bfe0ee",
+      "statement": "execute_action returns requires_confirm without executing when the target command has requires_confirm=true and confirm is false, requiring an explicit user confirmation before a second call with confirm=true; it also rejects submissions while the project is locked by a running task.",
+      "evidence": [
+        {
+          "resource": "repo://src/tools/mcp.py#L101-L165",
+          "version": "repo-lines-v1:sha256:dfe8ee5b1cb51590d7a3a8d0d5d8d970a5bdd784d8e11c432b08d5049d795038:eyJzZWxlY3RlZExpbmVDb3VudCI6NjUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjBlMjUzODJmMjg3NjY5YzQxZDg5MjNiYjdmYTU3OWQ4YzI0YTUzZTA4YjBiOTFjMzYwMjkwOTNjYjFjZGQ0ZjgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZhNTBlZGNiMDA4YjQ2MjdlZDJiMTdhMTkwNGRmMWM3MGYyNmI0NDg1MGI1Y2VlNjU5ODlkZDQ3MjEzZDAwYTciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjEwYmRjM2ZhZTVlOGMzYzUwNTFkYzM4MDM5MGIwY2JhZjVjMzU0ZTgzY2IxYzkzZjc4NWNhYzc3M2IyNzZhNDUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImU5NmZmYTU0NzgxYmRiMDQzZDc4MWQ5MzAyNzJlMTI5NmFlNjM1ZjEyYTQ4MGJmMDZlM2YxYmFiYjFlYjQxNTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_7e052ce7a9594b23b2e0d92d84193b0b",
+      "statement": "Manage write tools use a two-phase confirm_token: the first call returns a change preview and a one-time 32-hex token with a 5-minute TTL bound to the action string, the second call with the token persists the change; tokens live in process memory and are invalidated by restart.",
+      "evidence": [
+        {
+          "resource": "repo://src/tools/mcp_manage.py#L86-L121",
+          "version": "repo-lines-v1:sha256:f68cb5149ba4a3eb30a16f517ab03aa58d9aefff31f528092f95b6ff55f594ab:eyJzZWxlY3RlZExpbmVDb3VudCI6MzYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjJmMDZjZWY3N2JiODhkOGZiMTk0NjcyYWRlZWU2ODU5MzkwNjE2MjY1NjM3NGIyYzc5NDk1MzJiMzBkMjA5NTYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImExYjYxOTU5OWQzYjQ2OTAyNDZjNTU2Yjc3ZDdhNDY3ODBmMjBkYzRkYWUxYTM1MDA4Mzg4YTA1OWE0N2U0YTYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijk1NWZkMWVjZGY2MWI3OTJhNjBlMTUwNGVlZjlhNjE5ZmE3MGNjMWVhNDI0ZGMwZmNhYTk2NWMwMjQ3YjkxMTQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImU5NmZmYTU0NzgxYmRiMDQzZDc4MWQ5MzAyNzJlMTI5NmFlNjM1ZjEyYTQ4MGJmMDZlM2YxYmFiYjFlYjQxNTUifQ"
+        },
+        {
+          "resource": "repo://src/utils/confirm_store.py#L16-L52",
+          "version": "repo-lines-v1:sha256:764a12de20d19c185644a6643419cb835555a855b5de4ebaa8ed642b9c9f3f41:eyJzZWxlY3RlZExpbmVDb3VudCI6MzcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZlNjExOGNjN2RmYmZlNWVlNGMzMTU5ZDgwOWNlNWEyMzlhMDk5M2UyNDY1NWQ5ODE5ZGM0MTkxNTk1Njg5YWUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI2NmUzZjc5ZmJiYjBhY2VkOWQxNjA5YTA1Mzg4NWM0Y2JlMDJiYjFjYTAxYTljNGJlOWMxNTA3MmI3MTAxOWUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImZlNmE4ZjkwNTJhMjk4YTI0NjAxNzNhZDgwYmJmMGRlZGQyZDcxYTE5Y2NlZTc3YjE3MDc2ODA1NTQ2MDQ5MWIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_139de3fd76b04407b1b58ca4d8c3f0d5",
+      "statement": "Confirm-token is mandatory for every delete operation, any write that supplies shell_command (manage_command and manage_public_command create/update), and automation create/update that supplies condition_script, while project create/update, automation toggle, and public-command import_to_project execute immediately.",
+      "evidence": [
+        {
+          "resource": "repo://src/tools/mcp_manage.py#L456-L473",
+          "version": "repo-lines-v1:sha256:940f89c5d4b1124c543d9d34194a3ffc4a903363cc77dbb9fd435dee95eda364:eyJzZWxlY3RlZExpbmVDb3VudCI6MTgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjcxMzdlMDhlNmUxYzgzZGNiZWRhMTcyNmRjMjE5NjExNmNmMTUxZTg1OGNlZjk4ZTZhYTU3NzZlZmI4ZTkyMzQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY2ZjlkN2YxNWVlOGQ2MDhiZDdmY2NhNDI1NTcyN2Q5ZTZhZDY3NWFlYWEzYTM1YjdjYTQwZGQ5YTBkMzg5MzAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImFlNWUyMTQwYThiNWY2M2M2YmFkMTQ1NDdmNjhjODJlMGY3Y2Y5ZmUyNGM4ZWYyNGRkNTNhOWY4YzA1N2IwODEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjI3MmU5MDU5NWQ5N2JmYTM2OGQ0ODk5NzM5MDNiMWUyMmUwYzdjMzc4Mjk3ODY0ZDlmNGRjYTNiOWYwNTY1MjAifQ"
+        },
+        {
+          "resource": "repo://src/tools/mcp_manage.py#L545-L641",
+          "version": "repo-lines-v1:sha256:baf2a821156420b6c29efbd5966fdee6d8026a84fe191683cd8b6f7eb7ca952f:eyJzZWxlY3RlZExpbmVDb3VudCI6OTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjM2YzM0MzAzOTM2ZDkwYzQzYmIwZWQyNGNjZTI1MDlkNTE5YjlkMWFhMzlhYWE4MWZiZDZjNjQ0OTZkZjlmZTIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRlNjhmY2QzYmE5ZmNiOWRkNmEzZmM1ZDFhZjg1MGEwOGFlYWQ5ZjRiMWE2YjAxYTY2YTIxMDBmNWU0NzQ0OGMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjQ3ZmI0MTBlNmE4NzZjYTFiYzg4NWIyZGVjZmUzZjc4NjZmNDgwMWEwMzFjZjkwZGNjOGZmMjBiNDc2YWQ1NTgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjZjNGQ5ZjBkOWY1MDM2ODgzYzUxYjYyMTdjM2RiNDI1MTdkODkyM2I1NmRmYzdhNmVlMWE3MzgzYTIwMDViNDEifQ"
+        },
+        {
+          "resource": "repo://src/tools/mcp_manage.py#L900-L1012",
+          "version": "repo-lines-v1:sha256:32c65b16d972fb1d3e7a42d721600ec987be5993bc8fcfb9d01cbb008fec45a4:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEzLCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiIzNmMzNDMwMzkzNmQ5MGM0M2JiMGVkMjRjY2UyNTA5ZDUxOWI5ZDFhYTM5YWFhODFmYmQ2YzY0NDk2ZGY5ZmUyIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiI2NzdhNTA1MjE1NzA1Y2E1NjM0MjI3YTFlMGJjM2I5MWFiOTBjOWNiNjc0ZjJiNGE4NzVjZWY5YjQ2ODRmMjY2IiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiJiMGQzZTY4MDg3OWVmZDBhYjYwZmY5NzgwODMzMmI2NjkyMDQyZWZkNzJhMGU3ODI5MmU4Yzk5ZmNlYWQzMmZjIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiJjMWI2OTY4NzhjMzJkOGUyOGQzYWFkNjQ0OTQwOTQwYTU3NzQzZjgyN2Q3OTZiMGU1NDg4YjBmNGMxMDU2NWE4In0"
+        }
+      ]
+    },
+    {
+      "id": "claim_926b7cb2e2e948ceb2083a7fec2908c1",
+      "statement": "Ops tools in mcp.py are get_node_overview, execute_action, get_task_status (with incremental log_offset/next_offset), cancel_task_action, inspect_script_content, get_system_metrics, and query_audit_logs — gated by middleware auth and allowed_projects rather than require_scope.",
+      "evidence": [
+        {
+          "resource": "repo://src/tools/mcp.py#L38-L382",
+          "version": "repo-lines-v1:sha256:ad0f2a2f6c1b156cd3a99c56fc7230d03008f3759e3b8dbf42e3769c6255244c:eyJzZWxlY3RlZExpbmVDb3VudCI6MzQ1LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiIwZTI1MzgyZjI4NzY2OWM0MWQ4OTIzYmI3ZmE1NzlkOGMyNGE1M2UwOGIwYjkxYzM2MDI5MDkzY2IxY2RkNGY4IiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiI5YjUwNjRiYzBhMGVlMDNlZjFlZTNjZjA5YmY0OTU5NmYwMGRiZWM3OTk4ZmUyN2M3MjRjZTNmOGMwNjg3OGI5IiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiJlMzZjZmJiNDg1OTI1YmRjMWY1ZjJkMjgxOGZhMzk2YTViMDZkNmVmOTUwMDc0NGJiNWI0MGIyZmVkZWJiMDI1IiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiJlOTZmZmE1NDc4MWJkYjA0M2Q3ODFkOTMwMjcyZTEyOTZhZTYzNWYxMmE0ODBiZjA2ZTNmMWJhYmIxZWI0MTU1In0"
+        }
+      ]
+    },
+    {
+      "id": "claim_d2f3d60968fb4d8c87fd329c11e11ff0",
+      "statement": "Manage read tools (list_projects, get_project_detail, list_project_commands, search_public_commands, list_automations) require resources:read scope with page size clamped to 50, while manage write tools (manage_project, manage_command, manage_public_command, manage_automation) require resources:write scope and log each mutation to audit_logs with actor_type=ai.",
+      "evidence": [
+        {
+          "resource": "repo://src/tools/mcp_manage.py#L133-L1012",
+          "version": "repo-lines-v1:sha256:0e74b7f59037ffd5f462e733c253876a3575600f3f7c5c62ff044a1d47c8d5fa:eyJzZWxlY3RlZExpbmVDb3VudCI6ODgwLCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiJiMDU0MDNiMzc1ZTYzMzE2YzY0OGUzY2QxZDI2ODE4NTFlZWJjMGYwM2JmM2ZmNjQ3MDk5MTRkZjM3NTI0MWI1IiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiI2NzdhNTA1MjE1NzA1Y2E1NjM0MjI3YTFlMGJjM2I5MWFiOTBjOWNiNjc0ZjJiNGE4NzVjZWY5YjQ2ODRmMjY2IiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiI5YTIxODU1ZjJmODczMGIzN2ZjMThiMTcyYWUyNjRmZTBmZDc0YjQ1ODA0NTE0OGVjYTMzZTI5MzA5NjY3N2Q5IiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiJjMWI2OTY4NzhjMzJkOGUyOGQzYWFkNjQ0OTQwOTQwYTU3NzQzZjgyN2Q3OTZiMGU1NDg4YjBmNGMxMDU2NWE4In0"
+        },
+        {
+          "resource": "repo://src/tools/mcp_manage.py#L5-L18",
+          "version": "repo-lines-v1:sha256:17ad42c88c962c18bb62dddd082be6851e2df40257c5d2c98ebc0da779a44e46:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU4ZGE1ODQ3MjYyMzAxODBmNTg0MDE4M2M1MGFkMTIwZDA2N2Y5NGQxYzQ1OTU1OTEzYzBjYWQ2MWQxMDczNzUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU4MGQ0YmExYTE0ZTI4MGE2YTQ4ZWM3MmFiMDNlZTk1OWM3M2RmMWI4YzNiNjE4ODU3NWE2YWY0NDQwMzg1OTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImVkYTA1MDg0YzQ0MGNjMjNkNjBlY2MyZmY3MGY1NGY1OWY3OTcyZDY4NWZlYjRkN2VmMmE2OWRiODE4NDZlMzgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImMwYmU3MzM5OTIxNGRhZjhhMWQzOTBhMGU0ODE3ZTcyOTY5MzgwZTcxYWY5YTY1MmVlZmQ0NDQyYTQ0MjI0NjkifQ"
+        },
+        {
+          "resource": "repo://src/tools/mcp_manage.py#L62-L84",
+          "version": "repo-lines-v1:sha256:209bb90912efb2568fc8cc7f9f148339a5c2343ba9a194d08d19aa60a2c8c6c9:eyJzZWxlY3RlZExpbmVDb3VudCI6MjMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjM5YmYwOTQ0ZThkMjliZWE0NGUwNjBhZjcyNzQ3ZTA1Y2IzOTkwNDNkNDg0ZjFhZmJhNTNlYzAyOTliYzIzMDIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjdlYjcwMjU3NTkzZGEwNmY2ODJhM2RkZGE1NGE5ZDI2MGQ0ZmM1MTRmNjQ1MjM3ZjVjYTc0YjA4ZjhkYTYxYTYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQ1YTljZjk3NmI5NDBjMGMyZGJlYTEzYjdlYTVhZTlmZjY2MzAzYzI1ZjYxMDQ0MjAxZGUyYjBiN2VlNDJkYzciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjM4YmYxZGRjZjYzNTE0ZDc3YWM4N2I1MmExZGNmZTJmNzZmZjk0ZjA3ZjY1OGU2ODgyZjEzZjcyZDNiODcyYzYifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_96e697fbd71042f2a55f255a6407995d",
+      "statement": "Four devops:// MCP resources are registered — projects, projects/{project_name}/commands, public-commands, and public-commands/{name} — with project resources filtered by allowed_projects and public-command resources returning JSON without project scoping beyond API-key auth.",
+      "evidence": [
+        {
+          "resource": "repo://src/tools/mcp_manage.py#L1017-L1113",
+          "version": "repo-lines-v1:sha256:da661e27f6e667992462d55e588dc0c172c6703d71fc40d44ad9b8bc9aff5854:eyJzZWxlY3RlZExpbmVDb3VudCI6OTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjkwMGM5ZDdlYzhkODEyZDk3YjY5MGM2NTlmMjAzN2I2ZmJmNWNiNzZmODQ2ZTc0MTYwNzI5YzA1YWNjOTc4OGEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFiYzM2N2NhNDNhOGVmMThmYjlhYjg5ZWIyNjNlZDdjMTFmYzhiMjFmZmJiM2RiZTQ5ZmEyOTQzMjRkYmY2ZmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImVhZTUzZjg3MmNlNzA1ZDdhNDBlMTM2ZjlmNWMyODgxMzJkNTlkZDUxYzZhZDlmZjNhYmQzNzJhZmY3NWFjY2IiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_4c58f9e262184615aa8aa926584efce6",
+      "statement": "New API keys created without explicit scopes receive scopes=[ops:execute] only, so manage tools are unavailable until an administrator adds resources:read/resources:write in the console.",
+      "evidence": [
+        {
+          "resource": "repo://src/apis/api_key.py#L39-L57",
+          "version": "repo-lines-v1:sha256:b2d611508089a2d2b48a173a651fba59b7c4111ebdda7f41f6d1c156e7eba7ba:eyJzZWxlY3RlZExpbmVDb3VudCI6MTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRmYmY0NmIwMTUxNDZjOWQ1ZjAyNzgxMzI5NGU0YzA2ZDhjYzRkM2Q5M2UzMzc1N2Y4YzVmNWY5YjRhOTU0M2MiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQ4ZjdkMjFmM2ZmM2M5Zjk2Y2E4NGVkMWY2NjUxNGEwMjdmODFiZGZlYWQwNTdiOTAzMDQ3ZGI4YWYzZjE2MzAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjRmMDMwMzhjYjM5ZTQzOTJiODU1ZTE3YjY0MGRiZTlmYmRjNDI3MmNkMzE4YjFiZTE4ZjBjODYxYTUzNWNmNzIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjExMGNjZGEwYzE3NDM5M2Y5ZWZlMTEzMTNmYjEyYTJlYTcyMDM5YjUxMmMxZTA2ODE3NzlkNzc3YjNkMjkwZDcifQ"
+        },
+        {
+          "resource": "repo://src/utils/context.py#L30-L32",
+          "version": "repo-lines-v1:sha256:b98fdecce204c276dc03771a61cff690c39d9fef8cbf5828dad74350b235e552:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZmY2YzM1OTI0MjE3ZDRiYWY2YTQzOGFjNTdlOGU4MWM3Y2Y5ZGRlYjVmMDhjZGExMzBiOGI5NWRlYWY4MDhjYSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYTg2ZWJhZjg0OTNlNThkOGIwYjAxMGFmODg3OWZjNjFhOWQ5Mzk2YTViYzI4ZDFiMmYxNTc2NjA0ZmJiZjllNyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYWI3ODJlOTcyZTg4NTY2NGFkYWJiYjUxODFkMGIyNWZhMmRjODFlN2VjYzA1N2MyZTRkNzc5ODQ1ODA5MTczOSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNjRiYmY5MWE5ZDQ2YjdkYjM4Y2Q1ZTM3MTY4YjZjOTY1MTMyNjFhNmNiNjZhMjc5ZWVmODYxZGUyYmQ3NzMzMiJ9"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.5.2",
+    "at": "2026-09-23T02:41:19.131Z"
+  }
+}

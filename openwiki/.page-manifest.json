@@ -1,0 +1,110 @@
+{
+  "schemaVersion": 1,
+  "pages": {
+    "/openwiki/architecture/persistence.md": {
+      "pageVersion": "sha256:f3beef85afb72a651b19fa981bed87c38f34abefc952f424d1fdf5fca4d9a2af",
+      "completedBy": "opencode",
+      "completedRunId": "954f95ab-faab-4273-a94f-a7899282d8f1",
+      "gitHead": "96a4d8389dbf8621cc528c2a205cc0f82fe25cb4",
+      "sourceFingerprint": "sha256:6312e3b31adf7bac062f08948c3b448bb192de9785a1588acfb28b99a8c442e6"
+    },
+    "/openwiki/architecture/system-overview.md": {
+      "pageVersion": "sha256:9477b479554e57470d00e9022112671a3eeaf6331ea8a287cf106eb6dbae47f2",
+      "completedBy": "opencode",
+      "completedRunId": "954f95ab-faab-4273-a94f-a7899282d8f1",
+      "gitHead": "96a4d8389dbf8621cc528c2a205cc0f82fe25cb4",
+      "sourceFingerprint": "sha256:6312e3b31adf7bac062f08948c3b448bb192de9785a1588acfb28b99a8c442e6"
+    },
+    "/openwiki/architecture/task-execution.md": {
+      "pageVersion": "sha256:33037f23d05093364212a6fb7aeb3c32dcbb34984ac65312d3014ad42466e536",
+      "completedBy": "opencode",
+      "completedRunId": "954f95ab-faab-4273-a94f-a7899282d8f1",
+      "gitHead": "96a4d8389dbf8621cc528c2a205cc0f82fe25cb4",
+      "sourceFingerprint": "sha256:6312e3b31adf7bac062f08948c3b448bb192de9785a1588acfb28b99a8c442e6"
+    },
+    "/openwiki/concepts/automation.md": {
+      "pageVersion": "sha256:dec42a3b56fc1ecfb04b844ff0959cb70047d757da8fa10bf5d824e01ae646fa",
+      "completedBy": "opencode",
+      "completedRunId": "954f95ab-faab-4273-a94f-a7899282d8f1",
+      "gitHead": "96a4d8389dbf8621cc528c2a205cc0f82fe25cb4",
+      "sourceFingerprint": "sha256:6312e3b31adf7bac062f08948c3b448bb192de9785a1588acfb28b99a8c442e6"
+    },
+    "/openwiki/concepts/projects-and-commands.md": {
+      "pageVersion": "sha256:d2ddc3e0000e05ab7b1f3c82f824e93f51501c99a0961b6968cbf88cd1d5e307",
+      "completedBy": "opencode",
+      "completedRunId": "954f95ab-faab-4273-a94f-a7899282d8f1",
+      "gitHead": "96a4d8389dbf8621cc528c2a205cc0f82fe25cb4",
+      "sourceFingerprint": "sha256:6312e3b31adf7bac062f08948c3b448bb192de9785a1588acfb28b99a8c442e6"
+    },
+    "/openwiki/concepts/security.md": {
+      "pageVersion": "sha256:c60aa619cc5ed973f88109ccd1cf66df3ffa9da0c98a707f5cfa5db287c5b87c",
+      "completedBy": "opencode",
+      "completedRunId": "954f95ab-faab-4273-a94f-a7899282d8f1",
+      "gitHead": "96a4d8389dbf8621cc528c2a205cc0f82fe25cb4",
+      "sourceFingerprint": "sha256:6312e3b31adf7bac062f08948c3b448bb192de9785a1588acfb28b99a8c442e6"
+    },
+    "/openwiki/integrations/host-ssh.md": {
+      "pageVersion": "sha256:8e6d45baeb0099bf137aae4c6e7cbe6a99a79c0a0e0d666e599c627e50e75eef",
+      "completedBy": "opencode",
+      "completedRunId": "954f95ab-faab-4273-a94f-a7899282d8f1",
+      "gitHead": "96a4d8389dbf8621cc528c2a205cc0f82fe25cb4",
+      "sourceFingerprint": "sha256:6312e3b31adf7bac062f08948c3b448bb192de9785a1588acfb28b99a8c442e6"
+    },
+    "/openwiki/operations/configuration.md": {
+      "pageVersion": "sha256:6a573dfa2236e41d1b96e490b4ee03756f7e59f2b2b2c2c0e4efd16cf4a7517e",
+      "completedBy": "opencode",
+      "completedRunId": "954f95ab-faab-4273-a94f-a7899282d8f1",
+      "gitHead": "96a4d8389dbf8621cc528c2a205cc0f82fe25cb4",
+      "sourceFingerprint": "sha256:6312e3b31adf7bac062f08948c3b448bb192de9785a1588acfb28b99a8c442e6"
+    },
+    "/openwiki/operations/deployment.md": {
+      "pageVersion": "sha256:815172fcdd166d220d5d73a0cd61cc62166ebf18becf040a35995042282a5f8a",
+      "completedBy": "opencode",
+      "completedRunId": "954f95ab-faab-4273-a94f-a7899282d8f1",
+      "gitHead": "96a4d8389dbf8621cc528c2a205cc0f82fe25cb4",
+      "sourceFingerprint": "sha256:6312e3b31adf7bac062f08948c3b448bb192de9785a1588acfb28b99a8c442e6"
+    },
+    "/openwiki/quickstart.md": {
+      "pageVersion": "sha256:da0073b400fbc1c2274aa72b754ce86df3c65a0ad568471cfd0d68278fb0b4da",
+      "completedBy": "opencode",
+      "completedRunId": "954f95ab-faab-4273-a94f-a7899282d8f1",
+      "gitHead": "96a4d8389dbf8621cc528c2a205cc0f82fe25cb4",
+      "sourceFingerprint": "sha256:6312e3b31adf7bac062f08948c3b448bb192de9785a1588acfb28b99a8c442e6"
+    },
+    "/openwiki/reference/mcp-tools.md": {
+      "pageVersion": "sha256:1138f7280e86cba89a7e16511b2957eace82a51e750d6108640445d0a6542bbb",
+      "completedBy": "opencode",
+      "completedRunId": "954f95ab-faab-4273-a94f-a7899282d8f1",
+      "gitHead": "96a4d8389dbf8621cc528c2a205cc0f82fe25cb4",
+      "sourceFingerprint": "sha256:6312e3b31adf7bac062f08948c3b448bb192de9785a1588acfb28b99a8c442e6"
+    },
+    "/openwiki/reference/rest-api.md": {
+      "pageVersion": "sha256:d627d71e72ccf264d8846b73cc7a8e73c8508e43cc74b28613359bc11fee471a",
+      "completedBy": "opencode",
+      "completedRunId": "954f95ab-faab-4273-a94f-a7899282d8f1",
+      "gitHead": "96a4d8389dbf8621cc528c2a205cc0f82fe25cb4",
+      "sourceFingerprint": "sha256:6312e3b31adf7bac062f08948c3b448bb192de9785a1588acfb28b99a8c442e6"
+    },
+    "/openwiki/testing/verification.md": {
+      "pageVersion": "sha256:5c2d9d599ca644f64edaf957360415f3d3b677fde6224fdcc489b6b1c3b4aed6",
+      "completedBy": "opencode",
+      "completedRunId": "954f95ab-faab-4273-a94f-a7899282d8f1",
+      "gitHead": "96a4d8389dbf8621cc528c2a205cc0f82fe25cb4",
+      "sourceFingerprint": "sha256:6312e3b31adf7bac062f08948c3b448bb192de9785a1588acfb28b99a8c442e6"
+    },
+    "/openwiki/workflows/ai-operations.md": {
+      "pageVersion": "sha256:b221ae6fd3b9bd7d0ce0b45b8723ab342a9be884a92fa26be0b6e7aa03eaa326",
+      "completedBy": "opencode",
+      "completedRunId": "954f95ab-faab-4273-a94f-a7899282d8f1",
+      "gitHead": "96a4d8389dbf8621cc528c2a205cc0f82fe25cb4",
+      "sourceFingerprint": "sha256:6312e3b31adf7bac062f08948c3b448bb192de9785a1588acfb28b99a8c442e6"
+    },
+    "/openwiki/workflows/web-console.md": {
+      "pageVersion": "sha256:ea51e3bfdf23c2e04f0e6a778921a3279cd64085f37ce24979154b92b2be4546",
+      "completedBy": "opencode",
+      "completedRunId": "954f95ab-faab-4273-a94f-a7899282d8f1",
+      "gitHead": "96a4d8389dbf8621cc528c2a205cc0f82fe25cb4",
+      "sourceFingerprint": "sha256:6312e3b31adf7bac062f08948c3b448bb192de9785a1588acfb28b99a8c442e6"
+    }
+  }
+}

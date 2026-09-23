@@ -1,0 +1,118 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:d2ddc3e0000e05ab7b1f3c82f824e93f51501c99a0961b6968cbf88cd1d5e307",
+  "claims": [
+    {
+      "id": "claim_3270ffd949ba493197387068cedbee87",
+      "statement": "A project is identified by a unique name and a required work_dir, commands cascade-delete with it at the ORM level through relationship cascade=all,delete-orphan, and execution lookups only consider projects with is_active true.",
+      "evidence": [
+        {
+          "resource": "repo://src/dbs/orm.py#L53-L64",
+          "version": "repo-lines-v1:sha256:8770500392e933180be4c33a0ffd0a118af31522bc0ec73cfce3827bf495d862:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU1YzdkMDczM2YwMDc1MGQ0NGUzMzU3YTY3ZmRiYTg3ZjIwOTlkY2M3YzBkYWZiNTVmMGViZDUxNjhmZDliZTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjlmMDRlYWVkMzU0ZjRiMTcyZDk4ODNhOGI0NjMzNjNlYWEzYmY1NDgxNjQ1ZWUyNTc0Mzc1ZDBhYmQ4NTQ3M2EiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImFhN2RlYzY0ODFiOGE0ZGEwZGI5MWFlZjQ5MzAzNTM0MjljNmYyMTY1YmQ5MmY0MThlMWU3YzM5ZTNhNzUwY2UiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjI4NmYzNmZhODIxZWE1NjJlYWIyYTUxODY2MTJhNTIyZTg2YWNiZjFmMmExNGQ0OGE4YzA0Y2JjMzc1YjM1MjYifQ"
+        },
+        {
+          "resource": "repo://src/services/project_service.py#L306-L311",
+          "version": "repo-lines-v1:sha256:240aa4416d2ab69104fd46d80f500f718df662d24c6154c90a2ee1763af70336:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMmEzNzQ2MmM2ZThiYjUyNmNmODRhODFjZmY5YWEwOTExZjI1OGUwYWQyZmE3ZWVhYWEyMDFkNDc3ZGRjMGU4YiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNGRjOWM0N2U2MzMyMDhjZjgzOWU3YmNiZDAzYTljOTU4NzNkODliMGQ4NDM0Yzg0MjI1OTFkNjQ1MTFjODM4YSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMWI4M2ExNGE2M2QxOGMyZDk3M2I3ZDVmNzRmNTc5MDg1NDU1ZDUwODlkZWM0M2EwZjY0YjZhYWViNWI1OGFiMiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiODFjNTVhMjhkODRkNzJhNTVkNzlhNmUzZWZkMDU2YzQ0YWYyOTQ5OGU1NDZkYmMxZWY0NWVjNDNkMjE0OTI1OSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_a0cb25e54dbf4fd0848de15f523cddeb",
+      "statement": "At execution time call parameters merge as default_params first and params second (caller values win on conflicts), every ${key} occurrence is string-replaced from that merged dict, and the result is split into non-empty lines with the original script and params preserved in command_details for audit.",
+      "evidence": [
+        {
+          "resource": "repo://src/services/project_service.py#L320-L345",
+          "version": "repo-lines-v1:sha256:234af9ca98e280c65bb5e986a5b5e1dafea4c700cf27040678b007d61ee1ff60:eyJzZWxlY3RlZExpbmVDb3VudCI6MjYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE4M2RiNGY0MDk5ZTA5NmQ0OGIzZTU0MzYwNmFlMDc1MGRkMzk4OWRlZjZkY2QxMzZkOWU3MDM1NGExZDdlNmQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM5MjIwNGM2NWY1MDJkYzE2NDU0YjYyNDA4NTZhOWFiN2FkZTAwM2E4ZTlmODYzMzNlYzBiN2M5ZTQwOTQ5MWQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImU0MTU5ZjlkNGM4OTc0MzI0OWU0NGI1NWUzYWU2ZTk3ZTlkMTFlNTViNzAwMTA2OTlhOWRjYWRlYzk5YWU4YjIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_943c8ea61c914382b838bba1d10cc07d",
+      "statement": "Placeholder discovery uses the regex \\$\\{(\\w+)\\} via extract_placeholders so MCP overview and inspect_script_content advertise required_params to the AI before execution.",
+      "evidence": [
+        {
+          "resource": "repo://src/services/project_service.py#L45-L47",
+          "version": "repo-lines-v1:sha256:7ab5fd866199d75ad451a0aedc8e5b36187c526fc889ee4b33375100462e5aa1:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNTY3NzY4MmZlMThkM2NlMWIxMjQ1M2JkODZkN2FjYTY5NGI5MWU2NWQwYmY3NjhhMDQ4ODZkZGNkNDc1ZjIyNSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZWQ4YWU0ZmIwNDZlODVlNTFlZmE5ZGYwZWQ3NmM2MTA0MWYyMmQ3NDk3N2VkMzE1OTZjNjM1NjRhMWRjMTI0YiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZDgxMzU0NDBlYWM1MzU5ZDFhNTgwZjQ2NmQ5MzM3ZTY4M2IxMjQzNjAwMzgzMTcyNTgyODJiMzFiYTRjODllZSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTk2ZmZhNTQ3ODFiZGIwNDNkNzgxZDkzMDI3MmUxMjk2YWU2MzVmMTJhNDgwYmYwNmUzZjFiYWJiMWViNDE1NSJ9"
+        },
+        {
+          "resource": "repo://src/tools/mcp.py#L61-L66",
+          "version": "repo-lines-v1:sha256:1caab58c9687ca11aba6a3027f7f770f18a1f2279cc10bce9213380898c2f98b:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMjRmYTdlYjJiZjZhNmI0NGVmYjRmYzAyOGFjYTc3MzJlMGEwMDg1YjYxMjlkMDI2YTA3MTk0YzJlM2I2YTNjOCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMjY3OGJhZTcyNTY4ZjM1MjRiZmY2Y2UxNmIyMzNmN2MxNmUwNjBkODdlNjhjNjFiNjEyZjE2NjRiOTJkNmM2YiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiOWRiMjFhNjk4MTFiZWZiOTFkZWQ3YWIxN2FjNGY2OWYxOGM4MWQ5NjNkOTdjZThjMjRkZDdkZWNhYzBiNjBhMyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYTBmZTA2M2U5MzdkNDA0ODQ4YWY4MjhiZWZmYzViN2JiOGIzY2Y2MWM4NWNmYjk5ZGZiYTExMDYyZTc5M2U4NSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_f4e568c4eafd497393e98c15b4b70a25",
+      "statement": "When a command has requires_confirm set, MCP execute_action returns a requires_confirm status without enqueueing unless the caller passes confirm=true on a follow-up call; REST execution endpoints do not re-check this flag.",
+      "evidence": [
+        {
+          "resource": "repo://src/apis/task.py#L150-L219",
+          "version": "repo-lines-v1:sha256:3dd5f634927e4e84e6716a48a58c0151e324e329ffe6e155b0e37c2000b31cca:eyJzZWxlY3RlZExpbmVDb3VudCI6NzAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY1YTI1Njk0MTUwMDk3OTQ1MzM5ZTNhMTI0OWRmNzE1ZTNiNWFiMzQ0ZjUxM2RjOTgyYzg4YzRiNmYxOGNjNWQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjJhOWY4YzJiYzdhMTQxYTAyMmFmM2ZlYjhhYjUwMDhlYzI1NzU3ZWYyNGFjZDA0OWY1MDg5YTc0YjdjOWFlODEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjhiOTc0ZGE0MDg2MzJhNGFhN2UyYWU4MGI4NjAzOTFhM2RjZDgyMTFjNzllY2FkN2NhOGU5NTEyOGIwMDE4MzIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijg3MGFjYzkyMzcwYmQzMzRhODg0ZDg2MWUyNTNiYzRkYzc4MWU4M2MxNjQ3NWFlMDJkODMxMzFmZWEwODdhNWMifQ"
+        },
+        {
+          "resource": "repo://src/tools/mcp.py#L144-L151",
+          "version": "repo-lines-v1:sha256:f2190b75f8abfe4ef451b6b8725a08420a107725125b96e58cf7425ae6f34969:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNDM4ZjRjY2Y1ZmNiNGNlYWE1NDY1NzVlZWM2Zjk4NWIyM2MyNmVhMWY5MmFiM2Q0NTQ5NjA0NzIwZjA0MTllZSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMjZiZjg1MzQ4NTRiNzcxZmU0ODg3ODAxOWRjYTlmYzY2ZmNmNzBlM2E1NDJkY2U2MzYwMDRjZTMxMDg1NWFkYSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNjlmNGM4OWU5YWU0Y2U5NDRjMTYyYWRlYzc4NDIxM2U4M2Y0MWJjMDM5MDIyNDU1NWRiNjI3MDdmMWY4MjM0MSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMjAxNDkyM2RmMzEzY2RlZGQwMWUwMGIxODNmYzFmNzQyY2Q3NzAwMGY4ZDgzZDljMTM0M2RmNjc0YTQ1OTMzNiJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_69d12ffe69b4436f818cee3584661ba6",
+      "statement": "Each project may have only one health-check command: set_health_check clears any existing flag on sibling commands before setting the target, and quick health checks run each line with min(timeout, 30) inside a 35-second cap returning healthy, unhealthy, or unknown when unconfigured.",
+      "evidence": [
+        {
+          "resource": "repo://src/services/project_service.py#L268-L285",
+          "version": "repo-lines-v1:sha256:86a671e0548d63e5da07b43016769c5c33d123c5cfdddb41136af8914f5f7d8a:eyJzZWxlY3RlZExpbmVDb3VudCI6MTgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQ0M2Y2NDEwYmRiZDY5NjgxNjY3NmY4ZmViN2NmOWVhZjBiNGZhM2UxOTczODY2MGU0MmM1NmEyYmYxZmY5MDkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQ4MWFiYjFlOTFjMDQxNTk5ZTQzNzRkN2NkODIzZWJmN2ZhMmE4NTRmNjVhYWJjMzMxYThjZjQ0MzNkYmMzMDQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjgzZjNlODA4MzcyMWZmMTVhZDQxODgzYjI2YTA0M2QxMWY3MmZhNzhmNWIzNGJkMTk1YTI3MmQ4ZTJkNmYzZGYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImU5NmZmYTU0NzgxYmRiMDQzZDc4MWQ5MzAyNzJlMTI5NmFlNjM1ZjEyYTQ4MGJmMDZlM2YxYmFiYjFlYjQxNTUifQ"
+        },
+        {
+          "resource": "repo://src/services/project_service.py#L53-L82",
+          "version": "repo-lines-v1:sha256:809a80ee7f0dafe70e6e5f229fa359113d5ce2c72b8d5a5b5310b8ef60fd7132:eyJzZWxlY3RlZExpbmVDb3VudCI6MzAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjYxZGE5ZTQxNzU2MzgyZTQzZjJkOWU0M2U2ZGM1MjBlZTkxNGU1NzAxZTU2MDRjZTc0MTFlMjdmZjZkNjZkZDEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjlkNjI3ODdhN2NlMzExNGI1NWVkZDc4MjYwMjFjYmVjMDcyOGJmN2ZkMjJmNzUwYTdiYmI0NjAyYzY0OTczYWEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjkzZGVhNTIzZmZiMjBlZTQ5NDcxNTFkMzM2ZWVhMGY3MmNlYzMwOTcyNzZhMTZjOWExODk2MGFjYzU2NzJmMTAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjNkNDM0MTA4ODdkNjU2NzdlZjQ2ZTNjNzYwNDZmYzUyZWIzYmMzYTQzNWVkMTU2MTg4MTEwYzJhOTg5YTc2OTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_0df1ac0d7d914bddbf3486da01ba9580",
+      "statement": "Public command search lists only is_active templates, matches keyword against name/description/action_type, and ANDs comma-separated tag filters, ordered by updated_at descending.",
+      "evidence": [
+        {
+          "resource": "repo://src/services/public_command_service.py#L16-L49",
+          "version": "repo-lines-v1:sha256:cfe90239b5731e85b384bdd5372e034997dd35c87fc3998edc70f57aaadbc7e4:eyJzZWxlY3RlZExpbmVDb3VudCI6MzQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYzYmRmOWU2OTVlYWEwNjNhNDlmNjJlNTQ2NWVhOWZhNWRkNmE0MGJiY2M0YmM2ZGY3ZDU2ZDVjMzk5MTU1MDYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ1OGI2ODFhMzM2OGZiM2U0NTc1OGZjNzc0NzIwMDgwNzI0YmYwYWNmNzM2ODkyNjk5MGQ3MDJhYjM3NzYzYWQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImY1ODA0ZGY5NDRhYjdkNzQ2N2UzYjM3ODM2NTY5MjMxZDRlMzRjNjA4MjYyOTQ4NWM1MGJlMGM4MTVhYzJmZDkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImU3ZTQ0Mzg2MTRiZmI4YjE5M2JlNjIzZjhlODFmOTFlOGIxOGIwNTU1ODk3NzhiYWExMzhlMTRmMzlhNjA2YTIifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_4912a858b1b8442bbecb63544a6c155a",
+      "statement": "import_to_project copies a template's action_type, shell_command, and default_params into a new project Command (with optional description/timeout overrides) rather than linking it, so later template edits do not propagate; the MCP path additionally rejects imports when the project already has that action_type while the REST path does not.",
+      "evidence": [
+        {
+          "resource": "repo://src/apis/public_command.py#L152-L209",
+          "version": "repo-lines-v1:sha256:2fe8c2ba4802377d2e1d50e3868188479e6934c730fae1b5430f83747566a048:eyJzZWxlY3RlZExpbmVDb3VudCI6NTgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU2ODZmYjI3MDFiOWZhNzQ0Y2YxY2QxNzJjMDllNjViYzkwZDJkMjI3M2ZmZTA1ZmUzN2QxM2FlMWZlNGViYzciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjJhOWY4YzJiYzdhMTQxYTAyMmFmM2ZlYjhhYjUwMDhlYzI1NzU3ZWYyNGFjZDA0OWY1MDg5YTc0YjdjOWFlODEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImIwY2U0ZWExZDdhYjBjM2U4M2Q3MWY4Yzg1Y2M5MGJmNzA3YzJhNzg2MDYyZGQwNTgyOGE3ODZiZmNhMDEwODkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://src/services/public_command_service.py#L117-L155",
+          "version": "repo-lines-v1:sha256:cbf4efae9f0afdbc18438d5a0b75287ec237b6ae533f9cb1080baa61172bb7ba:eyJzZWxlY3RlZExpbmVDb3VudCI6MzksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM0OGUxMDVkY2E2MzJlNjcxZTc4Yzc4ZmY3YjJjNzQ3NzQ2YzY0YWI2MjE1ZDFiMjhkNzkzZjQ2ZmU1OWFhNWUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRlMTQyM2Q5MzQ0YWNlMGNkZTczMTQwM2NkMjE4MDAyZTY1YzAyOGEwZWUyY2VmOTc0YzU3ODkwNzc1OTRjMmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQ4Y2Q0MTQ3ZWY3YzI2N2ZlMTJjMjkzOTk0MDA5NWRhNmRlODIyMjcwYTczOWY3OWI2NzgwNTc4ZjE1YWQ1ZmEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_ee6a4adcb1e448deba762fe49152f22a",
+      "statement": "Project and command mutations over REST require an admin JWT, whereas template import endpoints only require any logged-in user, and both Web REST routes and MCP manage tools operate on the same project_service and public_command_service functions and tables.",
+      "evidence": [
+        {
+          "resource": "repo://src/apis/project.py#L172-L354",
+          "version": "repo-lines-v1:sha256:4ec23ddf362b7ab03bf9271e1f3a36f77701d738625d3ee09462538943a34f36:eyJzZWxlY3RlZExpbmVDb3VudCI6MTgzLCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiJmYjE3ZGZkOGVmNThiY2VkYzI1MzkzN2ZmOWUyZjM2MTJlYTE4MTMyNDM3NDUyOWEwNjhmZThjZmUxZjllMGMwIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiJlZTQ1ZjVkYTkwZGU0MTJmNzU0NTY3MzA5YzE0OTMxZGQ1Nzk2NWEzODMzODBlOTFkZjE2Yjg4ZTE4M2VlMzc0IiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiJiNmFkMjMzNWQzOTRhMDExNjYwMmI3MjBjYjcyYzQ3ZjdjYjQ5OWEzNzMzNDMzMzJhMDRlODk0YzAxNzI5MTJiIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiIxNzBiMTMxZmZlMWM1MzEyODFjNTljODRhMWM4YTA1NDRjNDU5NzY3NjAzN2Q5ZWQ1NGZlNTI3NDA5OWNkNDk4In0"
+        },
+        {
+          "resource": "repo://src/apis/public_command.py#L88-L176",
+          "version": "repo-lines-v1:sha256:a0151809fe1c8405aedb22772983dcec8a072a57ebbf1bdc99440b54fd9674c0:eyJzZWxlY3RlZExpbmVDb3VudCI6ODksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU2ODZmYjI3MDFiOWZhNzQ0Y2YxY2QxNzJjMDllNjViYzkwZDJkMjI3M2ZmZTA1ZmUzN2QxM2FlMWZlNGViYzciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjJhOWY4YzJiYzdhMTQxYTAyMmFmM2ZlYjhhYjUwMDhlYzI1NzU3ZWYyNGFjZDA0OWY1MDg5YTc0YjdjOWFlODEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjlkNDE1MjZkN2ZjYzIxNmZkOTliNzdkYzJkZjQyMzkzOTc4MjU1MTU0M2YzYzg4NTQ1MjhmNWMxYmEyMzNlODIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjNlMmVjODA3MDI4MTk4NmI4ZjRlNGMxYTdkOTExMDUyODUyNTVkZjI0ZDEzMzVjZTlhYWM2NWIxOGQ4NTc2ZTMifQ"
+        },
+        {
+          "resource": "repo://src/services/project_service.py#L1-L7",
+          "version": "repo-lines-v1:sha256:d19060570af16f4cdadba295d23cde0d43a910623f8c30823a3ea1adee37a313:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNDc1ZDQ1ODllOTFjYzhjYjk3NDg4OWRhYjAxZGUxNWRiMTU3NGNhMTBlZWM3MjkwYTEwOWJmNTg4Yzk0ZTAxYiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDc1ZDQ1ODllOTFjYzhjYjk3NDg4OWRhYjAxZGUxNWRiMTU3NGNhMTBlZWM3MjkwYTEwOWJmNTg4Yzk0ZTAxYiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjAsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZDM1MGEwNDhmYzVlNzNmYjUyMWMyNjJmN2EyY2RkMTQ4ZjgyYmFhNzFmODQ0MTgxNDA4MWMyNDlmY2YwMDQ5NSJ9"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.5.2",
+    "at": "2026-09-23T02:41:19.131Z"
+  }
+}

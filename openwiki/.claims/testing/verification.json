@@ -1,0 +1,110 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:5c2d9d599ca644f64edaf957360415f3d3b677fde6224fdcc489b6b1c3b4aed6",
+  "claims": [
+    {
+      "id": "claim_d12490adc09c4d70b62c3926ceedca9e",
+      "statement": "The repository contains no automated tests: no tests/ directory, no *.test.* or *.spec.* files, no pytest/vitest/jest/playwright dependencies, and no pytest configuration — verification is entirely manual plus static checks.",
+      "evidence": [
+        {
+          "resource": "repo://pyproject.toml#L7-L32",
+          "version": "repo-lines-v1:sha256:50af01d9c3df5f75eb6c95095b79938a08befcb97c7ceda49919387740741764:eyJzZWxlY3RlZExpbmVDb3VudCI6MjYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFkOTVmNWU5ZWRlMDE4MTYwNDNjMDc5N2FjZThkYTJhYzRlOTlhOGE2YTYxMGZhOTg1NzBlZjM0YjkzNTYxMDkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjIwNDJhNjkwYWYyYmZmYjQyMjhmMTQ3ODk0MzI5MmRhMzBhYjNhZDRlYjQ4YzJhM2QxZDUwZDQ3OTc5Y2M1OTgiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImE4MDc4NjZiOTkyOWQ4NmUxMWJhN2MwODBiYWY4ODBjNmFmMmExMTY1OTZjOTNkNzZiOTY3Y2UzMDFhYzYyMDAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://web/package.json#L32-L42",
+          "version": "repo-lines-v1:sha256:7556966327e024165f256579df53766df576fffc63ece78ed21d47b7d6dffdf8:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjlkYzRkZTdlZDM1YTIzMzY0NTM5ODY0ZGFkYjkzOGI4NzIzMzM3OTE3OWQ2MjkyYjlmZjVmNjE5YTZjMTMxNjQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI3ZTU3ODhkNWQ5ZDczZDI0YTgxZGJjMGE1YTc0YmZhODJjOWMzYjNhZjk5ZTUyYWY3OTZlOTBiNDY4YThhM2QiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImY4MjIzZGQ1YjFmMGU4NmVkNjY5YmY1ZmE1MzlhMTVkZjgyMTcyNjE5YmM2ZTdiODk0OTM0ZTc3MDY5NmQ4YTQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_703848df6d5948df87f2c34f0a9d443e",
+      "statement": "The only Python quality gate is basedpyright in typeCheckingMode=standard scoped to include=['src'] (excluding web, data, .venv), chosen deliberately over the default recommended mode to keep real type errors while dropping style-level diagnostics.",
+      "evidence": [
+        {
+          "resource": "repo://pyproject.toml#L25-L32",
+          "version": "repo-lines-v1:sha256:5158a517ec99f14b30486d4caf8d8f46c00444b1b257a5e28b3b1267ecee12e9:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMWI2MDI2NmE4N2RiNjkwNTM1Yzk3ZmI4YmQzZjMwY2EyYzgwZjFkZjhhYTRhOTBmNjM2OTg0NWY2ZGZhZWI4OCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMjA0MmE2OTBhZjJiZmZiNDIyOGYxNDc4OTQzMjkyZGEzMGFiM2FkNGViNDhjMmEzZDFkNTBkNDc5NzljYzU5OCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYjdkZWJiNWM2NjU2YzY1YmYyNDQ5ZGY2NTdjNjc4ZWMzNWI0YWY0ZTk0YzA1MWQzMGNhY2UxOTlkOTkwMWZmYiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjAsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_9aaa3ae3505a41ee953b227811bbb47e",
+      "statement": "Web quality gates are 'npm run lint' (eslint flat config extending eslint-config-next core-web-vitals and typescript, ignoring .next/out/build) and 'npm run build' (next build, which fails on TypeScript errors); no frontend test runner is installed.",
+      "evidence": [
+        {
+          "resource": "repo://web/eslint.config.mjs#L5-L16",
+          "version": "repo-lines-v1:sha256:f64e96edd922af874036b13f8a7a8991e6445a88b9b0c4148fc547f177f8878a:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM2OGNkYmY5MjYxMTljYjQ2MzJkNjhlMDJjMzBmYTk3MGQ5YjgxYTM5MDY0NzM2NTlhNmJmZmQ3YmM1YWYzNTciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU1ZTI2Y2Q5MjM2NmY2MGQ4ZWQ5MmQwMjM5ZjA3ZmVmNzRjYWMxNGFhNjlhZGRmOWMyY2MwZDExZWIwMGE0NjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjRmODQyNDQ1YjQyN2JkNDQ4ZGUwMjVmNzM5MDI4ODlhNzEzOThjZDJmZWE2MDVhNTVlMzYzY2UyNWRiYWRjODgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoyLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImNlNjUwMzBjMGIwYTYwODYxNDQ1MjkzZjU3NjVjODMwY2RiOWQyZGE3ZTk3NTNmZTQ0OWM3MzUxOTEyNGVmYWIifQ"
+        },
+        {
+          "resource": "repo://web/package.json#L32-L42",
+          "version": "repo-lines-v1:sha256:7556966327e024165f256579df53766df576fffc63ece78ed21d47b7d6dffdf8:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjlkYzRkZTdlZDM1YTIzMzY0NTM5ODY0ZGFkYjkzOGI4NzIzMzM3OTE3OWQ2MjkyYjlmZjVmNjE5YTZjMTMxNjQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI3ZTU3ODhkNWQ5ZDczZDI0YTgxZGJjMGE1YTc0YmZhODJjOWMzYjNhZjk5ZTUyYWY3OTZlOTBiNDY4YThhM2QiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImY4MjIzZGQ1YjFmMGU4NmVkNjY5YmY1ZmE1MzlhMTVkZjgyMTcyNjE5YmM2ZTdiODk0OTM0ZTc3MDY5NmQ4YTQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://web/package.json#L5-L10",
+          "version": "repo-lines-v1:sha256:3a3892b07b08568972148ebd35ee98c8cbfde1e0316d4134feaf64ff70d109ad:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMzQ4MzNkNTk0OWMwM2E0MGNhOTUyNDkxNjEwYTY2NTk2NDRiM2FhNDY2MzYyZjc5OTAyMGRiZjE5ODE1NDdkYiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNGQ1Y2QyZmI0ZjNkZjg4NDUxNTI1NWIzOTUyM2YyZjhiNTQ3MmJlZWE5ZjU2NmZmY2EyMDRkYjgwMjU2MTA0MSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNTBkZTcyYWI5MzIxMDgwZmRjZjJkNjJiOTdjZDBmM2YwOTYyMGE5YzYyMDk2ZjZhZGZiYzIxYjVkZWEyMDBjOCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNjRmOWRiZTg1YjliM2JkY2U0YzM5NjljNzAxZTE1YmU5ZjM1MTJmYmY2N2RhNTZjZTIxMWNhOTVjYTNmZDU4YiJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_30cf781d82a14f80832c55a036f11675",
+      "statement": "The sole GitHub Actions workflow is a documentation-only OpenWiki refresh (cron 0 8 * * * plus workflow_dispatch) that runs 'openwiki code --update' and opens a PR touching openwiki/ and AGENTS.md — it does not run basedpyright, eslint, next build, or any tests.",
+      "evidence": [
+        {
+          "resource": "repo://.github/workflows/openwiki-update.yml#L1-L60",
+          "version": "repo-lines-v1:sha256:cae951dc5df482a74762a21e4e929aeb8781010b1b737ad5c75c23278544b1b4:eyJzZWxlY3RlZExpbmVDb3VudCI6NjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjA2MDI3ODdhZjZkY2MwODM0ZGUxMjFjYmIxY2I5NWY5NDU5YjcyMWVhYjAzNDlmMTA1MDFiOTk2YzFjNzdmZmYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQzYzY1NjlhZjEzYTQxY2UxZjIyMWM4NzQzYTllNjM4MWM5OGE1MmE0ODNlYTE1YjFmNGYwODI4MTU5MGM0ZjYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjMxNTA5ZmY3N2JmOGE4ZmY0ZjA1Nzg4ZDk3OThlN2JmZDJlNDc3NDVlNDlmYTUxZmFjYzMwZWU4NTY1OTAwMTcifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_3e7447603bfd43c28d3c5da2fb83db0d",
+      "statement": "There is no lint/format tool configured for Python (no ruff/flake8/black in pyproject), so Python style is by convention only and the type checker is the sole automated gate.",
+      "evidence": [
+        {
+          "resource": "repo://pyproject.toml#L1-L32",
+          "version": "repo-lines-v1:sha256:903e520df10ad9397ae450cc2d4c89368b8b87be999a4b483574377da7bbc9db:eyJzZWxlY3RlZExpbmVDb3VudCI6MzIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjcwMmE4MWMzODM2ZWRlZjJkMGJhMTFkMjM1M2ZiNmRhYmM3NzcxNTBhN2NhODNlYTBkOWU5YTcwMzEzZmVhYmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjIwNDJhNjkwYWYyYmZmYjQyMjhmMTQ3ODk0MzI5MmRhMzBhYjNhZDRlYjQ4YzJhM2QxZDUwZDQ3OTc5Y2M1OTgiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_65e50b591022459c97c67926f237bc0b",
+      "statement": "The mobile-adaptation plan explicitly records that the project has no frontend test infrastructure (no vitest/jest) and defines each task's verification as 'npm run build + npm run lint pass + manual DevTools walkthrough' without introducing a test framework.",
+      "evidence": [
+        {
+          "resource": "repo://docs/superpowers/plans/2026-09-22-web-mobile-adaptation.md#L20-L20",
+          "version": "repo-lines-v1:sha256:55dc2aaaf3315e57cb310d2b330d4a2a24eeb02a707cf3cf6d62aaccc637646e:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNTVkYzJhYWFmMzMxNWU1N2NiMzEwZDJiMzMwZDRhMmEyNGVlYjAyYTcwN2NmM2NmNmQ2MmFhY2NjNjM3NjQ2ZSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNTVkYzJhYWFmMzMxNWU1N2NiMzEwZDJiMzMwZDRhMmEyNGVlYjAyYTcwN2NmM2NmNmQ2MmFhY2NjNjM3NjQ2ZSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYjBmNDE0YTlhMjFmZWJkYzc3MGJkMjQwNTc1MmQyYzA0ZjE0MDY1ZGIwNDA3NzU3NDBlYmM0OWI2ODMwODk5NCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMjI2NjJhZjQxMjZlY2EyNzYyNDBjNjVmNjczODFlZjEzY2Q0NTI0OThlNTc5NmYyNzZmZTY0NjAyYWQxNjc0YyJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_a176c6b9fe3846758f75d626fe2577e3",
+      "statement": "No CI pipeline runs on pull requests — type errors, lint failures, or build breaks can merge if the author does not manually execute basedpyright and the web lint/build gates.",
+      "evidence": [
+        {
+          "resource": "repo://.github/workflows/openwiki-update.yml#L1-L60",
+          "version": "repo-lines-v1:sha256:cae951dc5df482a74762a21e4e929aeb8781010b1b737ad5c75c23278544b1b4:eyJzZWxlY3RlZExpbmVDb3VudCI6NjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjA2MDI3ODdhZjZkY2MwODM0ZGUxMjFjYmIxY2I5NWY5NDU5YjcyMWVhYjAzNDlmMTA1MDFiOTk2YzFjNzdmZmYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQzYzY1NjlhZjEzYTQxY2UxZjIyMWM4NzQzYTllNjM4MWM5OGE1MmE0ODNlYTE1YjFmNGYwODI4MTU5MGM0ZjYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjMxNTA5ZmY3N2JmOGE4ZmY0ZjA1Nzg4ZDk3OThlN2JmZDJlNDc3NDVlNDlmYTUxZmFjYzMwZWU4NTY1OTAwMTcifQ"
+        },
+        {
+          "resource": "repo://pyproject.toml#L25-L32",
+          "version": "repo-lines-v1:sha256:5158a517ec99f14b30486d4caf8d8f46c00444b1b257a5e28b3b1267ecee12e9:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMWI2MDI2NmE4N2RiNjkwNTM1Yzk3ZmI4YmQzZjMwY2EyYzgwZjFkZjhhYTRhOTBmNjM2OTg0NWY2ZGZhZWI4OCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMjA0MmE2OTBhZjJiZmZiNDIyOGYxNDc4OTQzMjkyZGEzMGFiM2FkNGViNDhjMmEzZDFkNTBkNDc5NzljYzU5OCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYjdkZWJiNWM2NjU2YzY1YmYyNDQ5ZGY2NTdjNjc4ZWMzNWI0YWY0ZTk0YzA1MWQzMGNhY2UxOTlkOTkwMWZmYiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjAsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_32d2555a0ede40bbbbd88ec29747b08a",
+      "statement": "basedpyright's include list covers only src, so frontend type safety is enforced solely through the next build step rather than a dedicated type-check gate.",
+      "evidence": [
+        {
+          "resource": "repo://pyproject.toml#L31-L31",
+          "version": "repo-lines-v1:sha256:1f4998e85d315bdf3e96a2c5360fe8d5d1fb3daaf0c514af1ea67604742cb1d2:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMWY0OTk4ZTg1ZDMxNWJkZjNlOTZhMmM1MzYwZmU4ZDVkMWZiM2RhYWYwYzUxNGFmMWVhNjc2MDQ3NDJjYjFkMiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMWY0OTk4ZTg1ZDMxNWJkZjNlOTZhMmM1MzYwZmU4ZDVkMWZiM2RhYWYwYzUxNGFmMWVhNjc2MDQ3NDJjYjFkMiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZTIzZjcxYTFkN2EyZjk5NTUxMjQwODliOTQxZDExYWVhN2RlZjljODNjYWFhZjhhNTUyOGJjNmI5OTY4NGI1ZCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjEsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMjA0MmE2OTBhZjJiZmZiNDIyOGYxNDc4OTQzMjkyZGEzMGFiM2FkNGViNDhjMmEzZDFkNTBkNDc5NzljYzU5OCJ9"
+        },
+        {
+          "resource": "repo://web/package.json#L7-L7",
+          "version": "repo-lines-v1:sha256:d492f4d61eb462ca70b6ea2fc88d979aaaba69f07e7899e224f0337b7e650ca0:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZDQ5MmY0ZDYxZWI0NjJjYTcwYjZlYTJmYzg4ZDk3OWFhYWJhNjlmMDdlNzg5OWUyMjRmMDMzN2I3ZTY1MGNhMCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZDQ5MmY0ZDYxZWI0NjJjYTcwYjZlYTJmYzg4ZDk3OWFhYWJhNjlmMDdlNzg5OWUyMjRmMDMzN2I3ZTY1MGNhMCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMmY2NmRkNDg4MDJjNGUwZDU2YTE1OTA5YzhkNTY4NzU1ODU4NDY0NmQ1YTk5NDk1M2RjYTgxOWQ5MjIxZjg2MCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNDMzYjdiOGFhZDBmMjJmZTNkY2IzYmNhMTgwNDliZmQxYTJlNjJjYjM2MWJjZmE3MmE4ODY4YWJlYzc1MzExOCJ9"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.5.2",
+    "at": "2026-09-23T02:41:19.131Z"
+  }
+}
