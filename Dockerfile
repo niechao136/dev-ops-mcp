@@ -39,6 +39,11 @@ RUN --mount=type=cache,target=/root/.cache/uv \
 # ---------- Stage 2: 精简运行时镜像 ----------
 FROM python:3.11-slim-bookworm
 
+# venv 里的 uvicorn 等可执行文件必须在 PATH 中，否则启动报 uvicorn: not found
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PATH="/app/.venv/bin:$PATH"
+
 # apt 镜像源：默认官方源，国内服务器在 .env 中配置 APT_MIRROR=mirrors.aliyun.com 提速
 # 注意：只填主机名，不带路径（/debian 已在 sources 文件中，替换时自动保留）
 ARG APT_MIRROR=""
