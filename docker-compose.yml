@@ -1,7 +1,14 @@
 services:
   # 后端 Python API
   api:
-    build: .
+    build:
+      context: .
+      args:
+        # 默认官方源；国内服务器在 .env 中配置国内镜像提速：
+        #   UV_INDEX_URL=https://pypi.tuna.tsinghua.edu.cn/simple
+        #   APT_MIRROR=mirrors.aliyun.com/debian
+        UV_INDEX_URL: ${UV_INDEX_URL:-https://pypi.org/simple}
+        APT_MIRROR: ${APT_MIRROR:-}
     container_name: dev-ops-mcp-api
     env_file: .env
     extra_hosts:
@@ -23,7 +30,14 @@ services:
 
   # 前端 Node.js Server
   web:
-    build: ./web
+    build:
+      context: ./web
+      args:
+        # 默认官方源；国内服务器在 .env 中配置国内镜像提速：
+        #   NPM_REGISTRY=https://registry.npmmirror.com
+        #   ALPINE_MIRROR=mirrors.aliyun.com
+        NPM_REGISTRY: ${NPM_REGISTRY:-https://registry.npmjs.org}
+        ALPINE_MIRROR: ${ALPINE_MIRROR:-}
     container_name: dev-ops-mcp-web
     environment:
       - NEXT_PUBLIC_API_URL=/api

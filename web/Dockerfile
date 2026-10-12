@@ -1,15 +1,25 @@
 # 阶段 1: 构建
 FROM node:20-alpine AS builder
 
+# 镜像源参数：默认官方源，国内服务器在 .env 中配置：
+#   NPM_REGISTRY=https://registry.npmmirror.com
+#   ALPINE_MIRROR=mirrors.aliyun.com
+ARG NPM_REGISTRY=https://registry.npmjs.org
+ARG ALPINE_MIRROR=""
+
 WORKDIR /app
 
 # 部分原生依赖(如 sharp)在 alpine 上需要这个兼容库
-RUN apk add --no-cache libc6-compat
+# 配置了 ALPINE_MIRROR 时将 Alpine CDN 替换为国内镜像
+RUN if [ -n "${ALPINE_MIRROR}" ]; then \
+      sed -i "s|dl-cdn.alpinelinux.org|${ALPINE_MIRROR}|g" /etc/apk/repositories; \
+    fi \
+  && apk add --no-cache libc6-compat
 
 COPY package*.json ./
 
 RUN --mount=type=cache,target=/root/.npm \
-  npm ci
+  npm ci --registry="${NPM_REGISTRY}"
 
 ARG NEXT_PUBLIC_API_URL=/api
 ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
