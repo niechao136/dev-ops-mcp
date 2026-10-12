@@ -165,7 +165,7 @@ if ! command -v at &>/dev/null; then
 fi
 
 # -----------------------------------------------
-# 5. 加固 SSH 配置（禁止 root 直连）
+# 5. 加固 SSH 配置（启用公钥登录，兼容 ssh/sshd 服务名）
 # -----------------------------------------------
 info "Step 5/6 - 加固 SSH 配置..."
 
@@ -187,9 +187,21 @@ set_sshd_option() {
 set_sshd_option "PubkeyAuthentication"   "yes"                 # 启用公钥登录
 set_sshd_option "Port"                   "${SSH_PORT}"
 
-# 重启 SSH 服务
-systemctl restart sshd
-info "SSH 配置加固完成，已重启 sshd。"
+# 语法检查，防止配置写错导致重启失败、把自己锁在外面
+SSHD_BIN=$(command -v sshd || echo /usr/sbin/sshd)
+"${SSHD_BIN}" -t || error "sshd 配置语法错误，已终止，请检查 ${SSHD_CONFIG}"
+
+# 自动探测 SSH 服务名（Ubuntu/Debian 为 ssh，RHEL/CentOS 为 sshd）
+if systemctl list-unit-files | grep -q '^ssh\.service'; then
+    SSH_SERVICE="ssh"
+elif systemctl list-unit-files | grep -q '^sshd\.service'; then
+    SSH_SERVICE="sshd"
+else
+    error "未找到 ssh/sshd 服务，请手动检查系统。"
+fi
+
+systemctl restart "${SSH_SERVICE}"
+info "SSH 配置加固完成，已重启 ${SSH_SERVICE}。"
 
 # -----------------------------------------------
 # 6. 验证连通性
@@ -203,9 +215,9 @@ TEST_RESULT=$(ssh -i "${KEY_DIR}/${KEY_NAME}" \
     -o ConnectTimeout=5 \
     -p "${SSH_PORT}" \
     "${DEVOPS_USER}@127.0.0.1" \
-    "echo SSH_OK" 2>&1)
-
-if echo "${TEST_RESULT}" | grep -q "SSH_OK"; then
+    "echo SSH_OK" 2>&1) && TEST_STATUS=0 || TEST_STATUS=$?
+# set -e 下命令替换失败会直接退出，用 && || 兜底后这里再判断
+if [[ ${TEST_STATUS} -eq 0 ]] && echo "${TEST_RESULT}" | grep -q "SSH_OK"; then
     info "SSH 连接验证成功 ✅"
 else
     warn "SSH 连接验证失败，请手动检查。输出：${TEST_RESULT}"
