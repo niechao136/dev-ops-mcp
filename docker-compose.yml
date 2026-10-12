@@ -6,7 +6,7 @@ services:
       args:
         # 默认官方源；国内服务器在 .env 中配置国内镜像提速：
         #   UV_INDEX_URL=https://pypi.tuna.tsinghua.edu.cn/simple
-        #   APT_MIRROR=mirrors.aliyun.com/debian
+        #   APT_MIRROR=mirrors.aliyun.com   ← 只填主机名，不带 /debian 路径
         UV_INDEX_URL: ${UV_INDEX_URL:-https://pypi.org/simple}
         APT_MIRROR: ${APT_MIRROR:-}
     container_name: dev-ops-mcp-api

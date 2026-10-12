@@ -39,7 +39,8 @@ RUN --mount=type=cache,target=/root/.cache/uv \
 # ---------- Stage 2: 精简运行时镜像 ----------
 FROM python:3.11-slim-bookworm
 
-# apt 镜像源：默认官方源，国内服务器在 .env 中配置 APT_MIRROR=mirrors.aliyun.com/debian 提速
+# apt 镜像源：默认官方源，国内服务器在 .env 中配置 APT_MIRROR=mirrors.aliyun.com 提速
+# 注意：只填主机名，不带路径（/debian 已在 sources 文件中，替换时自动保留）
 ARG APT_MIRROR=""
 
 # 只在这里装运行时真正需要的东西
